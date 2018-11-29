@@ -7,5 +7,5 @@ public interface UserService {
 
     public User findUserByUserName(String userName);
 
-
+    public void register(User user);
 }

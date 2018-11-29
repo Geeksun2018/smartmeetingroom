@@ -1,6 +1,8 @@
 package cn.hephaestus.smartmeetingroom;
 
+import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
+import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
 import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SmartmeetingroomApplicationTests {
     @Autowired
     RedisService redisService;
+    @Autowired
+    UserService userService;
 
     @Test
     public void contextLoads() {
@@ -44,4 +48,14 @@ public class SmartmeetingroomApplicationTests {
         //redisService.set("18934698676","1234");
         System.out.println(redisService.get("18934698676"));
     }
+
+    @Test
+    public void register(){
+        User user = new User();
+        user.setUserName("Geeksun1");
+        user.setPassword("sunwang1");
+        userService.register(user);
+        System.out.println(user.getId());
+    }
+
 }
