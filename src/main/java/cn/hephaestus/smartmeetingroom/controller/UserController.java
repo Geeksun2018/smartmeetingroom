@@ -5,12 +5,15 @@ import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
+import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,5 +81,16 @@ public class UserController {
             return RetJson.fail(-1,"用户已存在！");
         }
         return RetJson.fail(-1,"验证码不正确！");
+    }
+
+    @GetMapping("/helloworld")
+    public String helloworld() throws Exception{
+        Logger log = LogUtils.getExceptionLogger();
+        Logger log1 = LogUtils.getBussinessLogger();
+        Logger log2 = LogUtils.getDBLogger();
+        log.error("getExceptionLogger===日志测试");
+        log1.info("getBussinessLogger===日志测试");
+        log2.debug("getDBLogger===日志测试");
+        return "helloworld";
     }
 }

@@ -16,5 +16,7 @@ spring:
         min-idle: 0
         max-idle: 8
     timeout: 5s
+logging:
+  config: classpath:log4j2.yml
 
 

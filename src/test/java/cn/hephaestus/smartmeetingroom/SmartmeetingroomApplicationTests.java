@@ -57,5 +57,4 @@ public class SmartmeetingroomApplicationTests {
         userService.register(user);
         System.out.println(user.getId());
     }
-
 }
