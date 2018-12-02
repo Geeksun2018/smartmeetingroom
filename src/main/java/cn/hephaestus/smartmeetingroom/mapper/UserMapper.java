@@ -8,8 +8,8 @@ public interface UserMapper {
     @Select("select * from user where username=#{username}")
     public User getUserByUserName(@Param("username") String username);
 
-    @Insert("insert into user(username,password,salt,role) values(#{user.userName},#{user.password},#{user.salt},#{user.role})")
-    @SelectKey(statement = "select id from user where username = #{user.userName}",keyProperty = "id",before = false,resultType = Integer.class)
+    @Insert({"insert into user(username,password,salt,role) values(#{user.username},#{user.password},#{user.salt},#{user.role})"})
+    @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public int register(@Param("user")User user);
 
 }

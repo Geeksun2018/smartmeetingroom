@@ -32,7 +32,7 @@ public class UserController {
     //登入
     @RequestMapping("/login")
     public RetJson login(User user){
-        Boolean b=userService.login(user.getUserName(),user.getPassword());
+        Boolean b=userService.login(user.getUsername(),user.getPassword());
         if (b==true){
             return RetJson.succcess(null);
         }else {
@@ -41,7 +41,10 @@ public class UserController {
     }
 
     @RequestMapping("/getcode")
-    public RetJson sendIdentifyingCode(@Length(max = 11, min = 11, message = "手机号的长度必须是11位.")@RequestParam(value = "phonenumber") String phoneNumber){
+    public RetJson sendIdentifyingCode(@Length(max = 11, min = 11, message = "手机号的长度必须是11位.")@RequestParam(value = "phonenumber") String phoneNumber,int type){
+        if (type==0&&(userService.findUserByUserName(phoneNumber)!=null)){
+            return RetJson.fail(-1,"该用户已经注册");
+        }
         String verificationCode = GenerateVerificationCode.generateVerificationCode(4);
         SendSmsResponse response = null;
         try {
@@ -73,7 +76,7 @@ public class UserController {
         if(redisService.exists(phoneNumber)&&redisService.get(phoneNumber).equals(code)){
             if(userService.findUserByUserName(phoneNumber) == null){
                 User user = new User();
-                user.setUserName(phoneNumber);
+                user.setUsername(phoneNumber);
                 user.setPassword(password);
                 userService.register(user);
                 return RetJson.succcess(null);
@@ -83,14 +86,14 @@ public class UserController {
         return RetJson.fail(-1,"验证码不正确！");
     }
 
-    @GetMapping("/helloworld")
-    public String helloworld() throws Exception{
-        Logger log = LogUtils.getExceptionLogger();
-        Logger log1 = LogUtils.getBussinessLogger();
-        Logger log2 = LogUtils.getDBLogger();
-        log.error("getExceptionLogger===日志测试");
-        log1.info("getBussinessLogger===日志测试");
-        log2.debug("getDBLogger===日志测试");
-        return "helloworld";
-    }
+//    @GetMapping("/helloworld")
+//    public String helloworld() throws Exception{
+//        Logger log = LogUtils.getExceptionLogger();
+//        Logger log1 = LogUtils.getBussinessLogger();
+//        Logger log2 = LogUtils.getDBLogger();
+//        log.error("getExceptionLogger===日志测试");
+//        log1.info("getBussinessLogger===日志测试");
+//        log2.debug("getDBLogger===日志测试");
+//        return "helloworld";
+//    }
 }

@@ -10,6 +10,7 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.apache.shiro.util.SimpleByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
 
@@ -33,8 +34,8 @@ public class ShiroRealm extends AuthorizingRealm {
             return null;//登入失败
         }
         String realmNam=getName();
-        ByteSource salt = ByteSource.Util.bytes(username);
-        SimpleAuthenticationInfo info=new SimpleAuthenticationInfo(dbuser.getUserName(),dbuser.getPassword(),salt,realmNam);
+        ByteSource salt = ByteSource.Util.bytes(dbuser.getSalt());
+        SimpleAuthenticationInfo info=new SimpleAuthenticationInfo(dbuser.getUsername(),dbuser.getPassword(),salt,realmNam);
         return info;
     }
 
@@ -49,11 +50,5 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         SimpleAuthorizationInfo info=new SimpleAuthorizationInfo(roles);
         return info;
-    }
-
-    public static void main(String[] args){
-        ByteSource salt = ByteSource.Util.bytes("user");
-        SimpleHash simpleHash=new SimpleHash("md5","e10adc3949ba59abbe56e057f20f883e","user");
-        System.out.println(simpleHash);
     }
 }
