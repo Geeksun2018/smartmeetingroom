@@ -1,7 +1,9 @@
 package cn.hephaestus.smartmeetingroom.service.UserServiceImpl;
 
+import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
 import cn.hephaestus.smartmeetingroom.model.User;
+import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -23,6 +25,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserInfoMapper userInfoMapper;
     @Override
     public Boolean login(String userName, String password) {
 
@@ -55,6 +59,21 @@ public class UserServiceImpl implements UserService {
         user.setPassword(simpleHash.toHex());
         user.setSalt(salt);
         user.setId(userMapper.register(user));
+    }
+
+    @Override
+    public boolean alterUserInfo(Integer id, UserInfo userInfo) {
+        //判断是否为本人操作
+        if(id == userInfo.getId()){
+            userInfoMapper.alterUserInfo(id,userInfo);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public UserInfo getUserInfo(Integer id) {
+        return userInfoMapper.getUserInfoById(id);
     }
 
     public String produceSalt()

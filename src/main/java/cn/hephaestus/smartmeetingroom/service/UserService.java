@@ -10,8 +10,6 @@ public interface UserService {
 
     public void register(User user);
 
-    public boolean addUserinfo(Integer id,UserInfo userInfo);
-
     public boolean alterUserInfo(Integer id,UserInfo userInfo);
 
     public UserInfo getUserInfo(Integer id);
