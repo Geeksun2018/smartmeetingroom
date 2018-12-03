@@ -5,6 +5,8 @@ import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.UserService;
+import cn.hephaestus.smartmeetingroom.utils.COSUtils;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -13,7 +15,11 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 
 @Service
@@ -42,6 +48,17 @@ public class UserServiceImpl implements UserService {
         }
 
         return true;
+    }
+
+    @Override
+    public Boolean logout(){
+        Subject currentUser=SecurityUtils.getSubject();
+        if (currentUser.isAuthenticated()){
+            currentUser.logout();
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override
@@ -74,6 +91,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfo getUserInfo(Integer id) {
         return userInfoMapper.getUserInfoById(id);
+    }
+
+
+    @Override
+    public String saveUserHeadPortrait(MultipartFile multipartFile, String username) {
+        InputStream inputStream=null;
+        String url=null;
+        try {
+            inputStream=multipartFile.getInputStream();
+
+            url=saveUserHeadPortrait(inputStream,username);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+    private  String saveUserHeadPortrait(InputStream inputStream,String username){
+        try {
+            String url= COSUtils.addFile("head_portrait/"+username+"_headportrait",inputStream);
+            return url;
+        }finally {
+            try {
+                inputStream.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     public String produceSalt()

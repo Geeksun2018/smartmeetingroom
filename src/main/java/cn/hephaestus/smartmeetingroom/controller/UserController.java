@@ -2,6 +2,7 @@ package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.User;
+import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
@@ -12,11 +13,16 @@ import com.aliyuncs.exceptions.ClientException;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author zeng
@@ -86,14 +92,28 @@ public class UserController {
         return RetJson.fail(-1,"验证码不正确！");
     }
 
-//    @GetMapping("/helloworld")
-//    public String helloworld() throws Exception{
-//        Logger log = LogUtils.getExceptionLogger();
-//        Logger log1 = LogUtils.getBussinessLogger();
-//        Logger log2 = LogUtils.getDBLogger();
-//        log.error("getExceptionLogger===日志测试");
-//        log1.info("getBussinessLogger===日志测试");
-//        log2.debug("getDBLogger===日志测试");
-//        return "helloworld";
-//    }
+    @RequestMapping("/getuserinfo")
+    public RetJson getUserInfo(){
+        UserInfo userInfo=userService.getUserInfo(19);
+        if (userInfo==null){
+            return RetJson.fail(-1,"获取用户信息失败");
+        }else{
+            Map<String,Object> map=new LinkedHashMap<>();
+            map.put("useriofo",userInfo);
+            return RetJson.succcess(map);
+        }
+    }
+    @RequestMapping("/alteruserinfo")
+    public RetJson alterUserInfo(UserInfo userInfo){
+        userService.alterUserInfo(19,userInfo);//写死
+        return RetJson.succcess(null);
+    }
+
+    //修改用户头像,涉及到文件上传,单独拿出来
+    @RequestMapping("/alterheadPortrait")
+    public RetJson alterHeadPortrait(@RequestParam("photo") MultipartFile multipartFile){
+        userService.saveUserHeadPortrait(multipartFile,"18100738792");
+        return RetJson.succcess(null);
+    }
+
 }

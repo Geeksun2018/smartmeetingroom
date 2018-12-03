@@ -11,5 +11,4 @@ public interface UserMapper {
     @Insert({"insert into user(username,password,salt,role) values(#{user.username},#{user.password},#{user.salt},#{user.role})"})
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public int register(@Param("user")User user);
-
 }
