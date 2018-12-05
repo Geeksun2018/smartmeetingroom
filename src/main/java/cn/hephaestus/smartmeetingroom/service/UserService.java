@@ -9,11 +9,13 @@ public interface UserService {
 
     public User findUserByUserName(String userName);
 
+    public User getUserByUserName(String userName);
+
     public Boolean logout();
 
     public void register(User user);
 
-    public String saveUserHeadPortrait(MultipartFile multipartFile, String username);
+    public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id);
 
 
     public boolean alterUserInfo(Integer id,UserInfo userInfo);

@@ -3,6 +3,7 @@ package cn.hephaestus.smartmeetingroom.common;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RetJson {
@@ -39,6 +40,12 @@ public class RetJson {
         retJson.setCode(0);
         retJson.setData(map);
         return retJson;
+    }
+
+    public static RetJson succcess(String key,String value){
+        Map<String,Object> map=new HashMap<>();
+        map.put(key,value);
+        return succcess(map);
     }
 
     public static RetJson fail(int code,String mesg){

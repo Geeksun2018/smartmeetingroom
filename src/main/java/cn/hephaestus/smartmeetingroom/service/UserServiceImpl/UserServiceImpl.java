@@ -38,15 +38,13 @@ public class UserServiceImpl implements UserService {
 
         Subject currentUser = SecurityUtils.getSubject();
 
+
         UsernamePasswordToken token=new UsernamePasswordToken(userName,password);
         try {
             currentUser.login(token);//登入验证
-            Session session = currentUser.getSession();
-            session.setAttribute("userName", userName);
         }catch(Exception e){
             return false;
         }
-
         return true;
     }
 
@@ -65,6 +63,12 @@ public class UserServiceImpl implements UserService {
     public User findUserByUserName(String userName) {
         return userMapper.getUserByUserName(userName);
     }
+
+    @Override
+    public User getUserByUserName(String userName) {
+        return userMapper.getUserByUserName(userName);
+    }
+
 
     @Override
     public void register(User user)
@@ -95,17 +99,23 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String saveUserHeadPortrait(MultipartFile multipartFile, String username) {
+    public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id) {
+        String username=userMapper.getUserByUserId(id).getUsername();
+        if (username==null){
+            return false;
+        }
         InputStream inputStream=null;
         String url=null;
         try {
             inputStream=multipartFile.getInputStream();
-
             url=saveUserHeadPortrait(inputStream,username);
         }catch (IOException e){
             e.printStackTrace();
         }
-        return url;
+        if (url!=null) {
+            return userInfoMapper.alterHeadPortrait(id, url);
+        }
+        return false;
     }
 
     private  String saveUserHeadPortrait(InputStream inputStream,String username){
@@ -133,5 +143,6 @@ public class UserServiceImpl implements UserService {
         }
         return randomString.toString();
     }
+
 
 }

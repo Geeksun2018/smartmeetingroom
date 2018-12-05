@@ -13,7 +13,9 @@ public interface UserInfoMapper {
     })
     public UserInfo getUserInfoById(@Param("id")Integer id);
 
-    @Update({"update user_info set phone_num=#{userInfo.phoneNum},email=#{userInfo.email},image_path=#{userInfo.imagePath},sex=#{userInfo.sex} where id=#{userInfo.id}"})
+    @Update({"update user_info set phone_num=#{userInfo.phoneNum},email=#{userInfo.email},sex=#{userInfo.sex} where id=#{userInfo.id}"})
     public void alterUserInfo(@Param("id")Integer id,@Param("userInfo")UserInfo userInfo);
 
+    @Update("update user_info set image_path=#{imagePath} where id=#{id}")
+    public Boolean alterHeadPortrait(@Param("id") Integer id,@Param("imagePath") String url);
 }
