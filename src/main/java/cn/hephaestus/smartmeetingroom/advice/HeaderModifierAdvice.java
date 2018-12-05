@@ -27,6 +27,7 @@ public class HeaderModifierAdvice implements ResponseBodyAdvice<Object> {
     RedisService redisService;
     @Override
     public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> aClass) {
+
         return true;
     }
 

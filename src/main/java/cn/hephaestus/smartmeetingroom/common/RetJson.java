@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class RetJson {
     int code;
-    String err;
+    String msg;
     Map data;
 
     public int getCode() {
@@ -19,12 +19,12 @@ public class RetJson {
         this.code = code;
     }
 
-    public String getErr() {
-        return err;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setErr(String err) {
-        this.err = err;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public Map getData() {
@@ -51,7 +51,7 @@ public class RetJson {
     public static RetJson fail(int code,String mesg){
         RetJson retJson=new RetJson();
         retJson.setCode(code);
-        retJson.setErr(mesg);
+        retJson.setMsg(mesg);
         return retJson;
     }
 

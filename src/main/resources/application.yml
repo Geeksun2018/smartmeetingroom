@@ -21,3 +21,12 @@ spring:
     timeout: 5s
 logging:
   config: classpath:log4j2.yml
+
+#设置不被拦截的uri
+my:
+  config:
+    excludeuri:
+      - /login
+      - /register
+      - /getcode
+      - /error

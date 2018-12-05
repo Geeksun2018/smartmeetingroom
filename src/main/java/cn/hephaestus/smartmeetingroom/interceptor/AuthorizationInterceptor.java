@@ -1,10 +1,12 @@
 package cn.hephaestus.smartmeetingroom.interceptor;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
+import cn.hephaestus.smartmeetingroom.model.ExcludeURI;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.UserServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
+import org.hibernate.validator.constraints.EAN;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +26,15 @@ import java.util.Map;
 public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    ExcludeURI excludeURI;
+
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String url=request.getRequestURI();
+        if (isExclude(url)){
+            return true;
+        }
 
         //获取请求头部中的token
         String token=request.getHeader("Authorization");
@@ -51,4 +62,13 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         }
         return true;
     }
+
+    public boolean isExclude(String uri){
+        List<String> list=excludeURI.getExcludeuri();
+        if (list.contains(uri)){
+            return true;
+        }
+        return false;
+    }
+
 }
