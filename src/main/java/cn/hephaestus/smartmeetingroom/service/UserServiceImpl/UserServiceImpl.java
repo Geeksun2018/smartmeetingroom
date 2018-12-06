@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         SimpleHash simpleHash=new SimpleHash("md5",password,byteSource,ENCRYPT_NUM);
         user.setPassword(simpleHash.toHex());
         user.setSalt(salt);
-        user.setId(userMapper.register(user));
+        userMapper.register(user);
     }
 
     @Override
