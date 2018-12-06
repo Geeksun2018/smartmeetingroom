@@ -1,12 +1,10 @@
-package cn.hephaestus.smartmeetingroom.service.UserServiceImpl;
+package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.ObjectError;
 
-import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 

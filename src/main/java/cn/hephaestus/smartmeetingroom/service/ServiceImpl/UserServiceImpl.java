@@ -1,4 +1,4 @@
-package cn.hephaestus.smartmeetingroom.service.UserServiceImpl;
+package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
@@ -10,7 +10,6 @@ import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,17 +1,17 @@
 package cn.hephaestus.smartmeetingroom.service;
 
-import cn.hephaestus.smartmeetingroom.model.MettingRoom;
+import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
 
 public interface MeetingRoomService {
 
-    public boolean addMeetingRoom(MettingRoom mettingRoom);
+    public boolean addMeetingRoom(MeetingRoom meetingRoom);
 
-    public boolean alterMeetingRoom(MettingRoom mettingRoom);
+    public boolean alterMeetingRoom(MeetingRoom meetingRoom);
 
     public boolean delteteMeetingRoom(Integer roomId);
 
-    public MettingRoom getMeetingRoomWithRoomName(String roomName);
+    public MeetingRoom getMeetingRoomWithRoomName(String roomName);
 
-    public MettingRoom getMeetingRoomWithRoomId( Integer roomId);
+    public MeetingRoom getMeetingRoomWithRoomId(Integer roomId);
 
 }

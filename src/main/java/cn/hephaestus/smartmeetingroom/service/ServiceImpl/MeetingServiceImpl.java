@@ -1,8 +1,7 @@
-package cn.hephaestus.smartmeetingroom.service.UserServiceImpl;
+package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
-import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.mapper.MeetingRoomMapper;
-import cn.hephaestus.smartmeetingroom.model.MettingRoom;
+import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
 import cn.hephaestus.smartmeetingroom.service.MeetingRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,16 +12,16 @@ public class MeetingServiceImpl implements MeetingRoomService {
     private MeetingRoomMapper meetingRoomMapper;
 
     @Override
-    public boolean addMeetingRoom(MettingRoom mettingRoom) {
+    public boolean addMeetingRoom(MeetingRoom meetingRoom) {
         //需判断当先用户是否有权限
-        meetingRoomMapper.addMeetingRoom(mettingRoom);
+        meetingRoomMapper.addMeetingRoom(meetingRoom);
         return true;
     }
 
     @Override
-    public boolean alterMeetingRoom(MettingRoom mettingRoom) {
+    public boolean alterMeetingRoom(MeetingRoom meetingRoom) {
         //需判断当先用户是否有权限
-        meetingRoomMapper.addMeetingRoom(mettingRoom);
+        meetingRoomMapper.addMeetingRoom(meetingRoom);
         return true;
     }
 
@@ -34,12 +33,12 @@ public class MeetingServiceImpl implements MeetingRoomService {
     }
 
     @Override
-    public MettingRoom getMeetingRoomWithRoomName(String roomName) {
+    public MeetingRoom getMeetingRoomWithRoomName(String roomName) {
         return meetingRoomMapper.getMeetingRoomWithRoomName(roomName);
     }
 
     @Override
-    public MettingRoom getMeetingRoomWithRoomId(Integer roomId) {
+    public MeetingRoom getMeetingRoomWithRoomId(Integer roomId) {
         return meetingRoomMapper.getMeetingRoomWithRoomId(roomId);
     }
 }
