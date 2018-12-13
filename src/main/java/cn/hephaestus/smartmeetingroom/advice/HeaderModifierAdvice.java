@@ -1,10 +1,8 @@
 package cn.hephaestus.smartmeetingroom.advice;
 
 import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.UserServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;

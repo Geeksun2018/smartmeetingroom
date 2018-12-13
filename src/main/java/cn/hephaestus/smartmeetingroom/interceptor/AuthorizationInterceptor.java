@@ -3,12 +3,9 @@ package cn.hephaestus.smartmeetingroom.interceptor;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.ExcludeURI;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.UserServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
-import org.hibernate.validator.constraints.EAN;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

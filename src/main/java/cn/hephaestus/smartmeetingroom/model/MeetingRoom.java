@@ -1,11 +1,11 @@
 package cn.hephaestus.smartmeetingroom.model;
 
-public class MettingRoom {
+public class MeetingRoom {
     private int roomId;
     private String roomName;
     private int capacity;
 
-    public MettingRoom(){
+    public MeetingRoom(){
 
     }
 
@@ -33,14 +33,14 @@ public class MettingRoom {
         this.capacity = capacity;
     }
 
-    public MettingRoom(String roomName, int capacity) {
+    public MeetingRoom(String roomName, int capacity) {
         this.roomName = roomName;
         this.capacity = capacity;
     }
 
     @Override
     public String toString() {
-        return "MettingRoom{" +
+        return "MeetingRoom{" +
                 "roomId=" + roomId +
                 ", roomName='" + roomName + '\'' +
                 ", capacity=" + capacity +
