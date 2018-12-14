@@ -22,7 +22,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void set(String key, String value, long expireTime) {
-        redisTemplate.opsForValue().set(key, 19+"", expireTime, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(key, value, expireTime, TimeUnit.SECONDS);
     }
 
     @Override
@@ -32,7 +32,15 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public String hget(String hash, String key) {
-        return (String) redisTemplate.opsForHash().get(hash,key);
+        if (key==null){
+            return null;
+        }
+        Object o=redisTemplate.opsForHash().get(hash,key);
+        if (o==null){
+            return null;
+        }else{
+            return (String)o;
+        }
     }
 
 

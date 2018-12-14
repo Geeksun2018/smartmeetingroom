@@ -12,7 +12,10 @@ public interface UserMapper {
     public User getUserByUserId(@Param("id") Integer id);
 
 
-    @Insert({"insert into user(username,password,salt,role) values(#{user.username},#{user.password},#{user.salt},#{user.role})"})
+    @Insert({"insert into user(username,password,salt,role) values(#{username},#{password},#{salt},#{role})"})
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
-    public void register(@Param("user")User user);
+    public void register(User user);
+
+    @Update("update user set oid=#{oid} where id=#{userId}")
+    public boolean setOriganization(@Param("oid") Integer oid,@Param("userId") Integer userId);
 }

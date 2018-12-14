@@ -3,28 +3,24 @@ package cn.hephaestus.smartmeetingroom.controller;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.service.OrganizationService;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
-import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
+import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
-import io.lettuce.core.ScanStream;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.subject.Subject;
 import org.hibernate.validator.constraints.Length;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailSender;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,19 +31,23 @@ import java.util.UUID;
  * 与用户操作有关的控制器,如登入注册等
  */
 @RestController
-@Validated
 public class UserController {
     @Autowired
     UserService userService;
     @Autowired
     RedisService redisService;
+    @Autowired
+    OrganizationService organizationService;
     //登入
     @RequestMapping("/login")
     public RetJson login(User user, Boolean isRemberMe, HttpServletRequest request){
+        if (!ValidatedUtil.validate(user)){
+            return RetJson.fail(-1,"登入失败，请检查用户名或密码");
+        }
         Boolean b=userService.login(user.getUsername(),user.getPassword());
         if (b==true){
             user=userService.getUserByUserName(user.getUsername());
-            request.setAttribute("id",user.getId());
+            request.setAttribute("id",user.getId()+"");
             //登入成功,并且设置了记住我,则发放token
             if (isRemberMe){
                 //手机app
@@ -56,13 +56,14 @@ public class UserController {
                     UUID uuid=UUID.randomUUID();
                     request.setAttribute("uuid",uuid.toString());
                     String token=JwtUtils.createToken(uuid);
-                    //将uuid和id以键值对的形式存放在redis中
-                    redisService.set(uuid.toString(),String.valueOf(user.getId()),60*60*24*7);
+                    //将uuid和user以键值对的形式存放在redis中
+                    user.setPassword(null);
+                    user.setSalt(null);
+                    redisService.set(uuid.toString(),user.toString(),60*60*24*7);
                     return RetJson.succcess("token",token);
                 }catch (Exception e){
                     System.out.println("token获取失败");
                 }
-
             }
             return RetJson.succcess(null);
         }else {
@@ -70,10 +71,6 @@ public class UserController {
         }
     }
 
-    public static void main(String[] args){
-        Integer a=19;
-        System.out.println(String.valueOf(19));
-    }
     //获取手机验证码
     @RequiresAuthentication
     @RequestMapping("/getcode")
@@ -90,8 +87,6 @@ public class UserController {
         }
         String code = response.getCode();
         String message = response.getMessage();
-        String requestId = response.getRequestId();
-        String bizId = response.getBizId();
         //在redis中存入用户的账号和对应的验证码
         redisService.set(phoneNumber,verificationCode,300);
 
@@ -103,51 +98,58 @@ public class UserController {
 
     //注册
     @RequestMapping("/register")
-    public RetJson userRegister(@Length(min = 11,max = 11, message = "手机号的长度必须是11位.")@RequestParam(value = "username") String phoneNumber
-            ,String password,String code){
-        if(redisService.exists(phoneNumber)&&redisService.get(phoneNumber).equals(code)){
-            if(userService.findUserByUserName(phoneNumber) == null){
-                User user = new User();
-                user.setUsername(phoneNumber);
-                user.setPassword(password);
-                userService.register(user);
-                return RetJson.succcess(null);
-            }
-            return RetJson.fail(-1,"用户已存在！");
+    public RetJson userRegister(User user,String code,Boolean isOrganization) {
+        if (!ValidatedUtil.validate(user)) {
+            return RetJson.fail(-1, "请检查参数");
         }
-        return RetJson.fail(-1,"验证码不正确！");
+//        if (redisService.exists(user.getUsername()) && redisService.get(user.getUsername()).equals(code)) {
+            if (true) {
+                if (userService.findUserByUserName(user.getUsername()) == null) {
+                    if (isOrganization) {
+                        userService.registerForOrganization(user);
+                    } else {
+                        userService.register(user);
+                    }
+                    return RetJson.succcess(null);
+                }
+                return RetJson.fail(-1, "用户已存在！");
+            }
+//        }
+        return RetJson.fail(-1, "验证码不正确！");
     }
 
     //获取用户信息
     @RequestMapping("/getuserinfo")
-    public RetJson getUserInfo(){
-        UserInfo userInfo=userService.getUserInfo(19);
+    public RetJson getUserInfo(HttpServletRequest request){
+        User user=(User)request.getAttribute("user");
+        UserInfo userInfo=userService.getUserInfo(user.getId());
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");
         }else{
             Map<String,Object> map=new LinkedHashMap<>();
-            map.put("useriofo",userInfo);
+            map.put("userinfo",userInfo);
             return RetJson.succcess(map);
         }
     }
     //修改用户信息
     @RequestMapping("/alteruserinfo")
-    public RetJson alterUserInfo(UserInfo userInfo){
-        userService.alterUserInfo(19,userInfo);//写死
+    public RetJson alterUserInfo(UserInfo userInfo,HttpServletRequest request){
+        //将就一下
+        if (!ValidatedUtil.validate(userInfo)){
+            return RetJson.fail(-1,"请检查参数");
+        }
+        Integer id= ((User)request.getAttribute("user")).getId();
+        userInfo.setId(id);
+        userService.alterUserInfo(id,userInfo);//写死
         return RetJson.succcess(null);
     }
 
     //修改用户头像,涉及到文件上传,单独拿出来
     @RequestMapping("/alterheadPortrait")
-    public RetJson alterHeadPortrait(@RequestParam("photo") MultipartFile multipartFile){
+    public RetJson alterHeadPortrait(@RequestParam("photo") MultipartFile multipartFile,HttpServletRequest request){
         //图片校验
-        int id=19;
+        Integer id= ((User)request.getAttribute("user")).getId();
         userService.saveUserHeadPortrait(multipartFile,id);
         return RetJson.succcess(null);
     }
-    @RequestMapping("/test")
-    public void test(){
-        redisService.set("2","19");
-    }
-
 }

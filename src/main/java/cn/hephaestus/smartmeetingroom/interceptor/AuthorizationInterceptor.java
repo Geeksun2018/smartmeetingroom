@@ -2,13 +2,12 @@ package cn.hephaestus.smartmeetingroom.interceptor;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.ExcludeURI;
+import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.UserServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
-import org.hibernate.validator.constraints.EAN;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -30,6 +29,9 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     ExcludeURI excludeURI;
 
+    @Autowired
+    ObjectMapper mapper;
+
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String url=request.getRequestURI();
         if (isExclude(url)){
@@ -47,11 +49,17 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         //解密token
         Map<String, Claim> map=JwtUtils.VerifyToken(token);
         String uuid=map.get("uuid").asString();
+        User user=null;
 
         //判断token是否有效
         if (uuid!=null&&redisService.exists(uuid)){
-            String id=(String) redisService.get(uuid);
-            request.setAttribute("id",id);
+            String json=(String) redisService.get(uuid);
+            try {
+                user=mapper.readValue(json, User.class);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            request.setAttribute("user",user);
             request.setAttribute("uuid",uuid);
         }else {
             //否则提示token过期,要求重新登录

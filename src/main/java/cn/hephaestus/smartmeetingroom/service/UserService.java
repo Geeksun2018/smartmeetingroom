@@ -1,8 +1,11 @@
 package cn.hephaestus.smartmeetingroom.service;
 
+import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.swing.text.StyledEditorKit;
 
 public interface UserService {
     public Boolean login(String userName,String password);
@@ -13,7 +16,11 @@ public interface UserService {
 
     public Boolean logout();
 
+    //注册一个普通账号，供app用户使用
     public void register(User user);
+
+    //注册一个企业（组织）管理账号，供web管理平台使用
+    public boolean registerForOrganization(User user);
 
     public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id);
 
@@ -21,4 +28,6 @@ public interface UserService {
     public boolean alterUserInfo(Integer id,UserInfo userInfo);
 
     public UserInfo getUserInfo(Integer id);
+
+    public boolean setOid(Integer oid,Integer userId);
 }

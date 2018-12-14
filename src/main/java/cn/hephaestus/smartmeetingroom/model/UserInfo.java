@@ -1,71 +1,26 @@
 package cn.hephaestus.smartmeetingroom.model;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+@Getter
+@Setter
+@ToString
 public class UserInfo {
+    @Null
     private  Integer id;
-    private String idNum;
-    private char sex;
+    @NotNull
+    private Boolean sex;
+    @Length(max = 11,min = 11,message = "手机号长度必须是11位")
     private String phoneNum;
+    @Email
     private String email;
+    @Null
     private String imagePath;
-
-    public UserInfo() {}
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getIdNum() {
-        return idNum;
-    }
-
-    public void setIdNum(String idNum) {
-        this.idNum = idNum;
-    }
-
-    public char getSex() {
-        return sex;
-    }
-
-    public void setSex(char sex) {
-        this.sex = sex;
-    }
-
-    public String getPhoneNum() {
-        return phoneNum;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    @Override
-    public String toString() {
-        return "UserInfo{" +
-                "idNum='" + idNum + '\'' +
-                ", sex=" + sex +
-                ", phoneNum='" + phoneNum + '\'' +
-                ", email='" + email + '\'' +
-                ", imagePath='" + imagePath + '\'' +
-                '}';
-    }
 }

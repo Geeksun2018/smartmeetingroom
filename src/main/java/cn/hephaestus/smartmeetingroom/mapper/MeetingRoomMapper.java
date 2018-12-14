@@ -1,33 +1,35 @@
 package cn.hephaestus.smartmeetingroom.mapper;
 
-import cn.hephaestus.smartmeetingroom.model.MettingRoom;
+import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface MeetingRoomMapper {
 
-    @Insert({"insert into meeting_room(room_name,capacity) values(#{meetingRoom.roomName},#{meetingRoom.capacity})"})
+    @Insert({"insert into meeting_room(room_name,capacity,address,oid) values(#{roomName},#{capacity},#{address},#{oid})"})
     @Options(useGeneratedKeys = true,keyProperty = "roomId",keyColumn = "room_id")
-    public int addMeetingRoom(@Param("meetingRoom") MettingRoom mettingRoom);
+    public int addMeetingRoom(MeetingRoom meetingRoom);
 
-    @Update("update meeting_room set room_name=#{meetingRoom.roomName},capacity=#{meetingRoom.capacity}")
-    public void alterMeetingRoom(@Param("meetingRoom") MettingRoom mettingRoom);
+    @Update("update meeting_room set room_name=#{roomName},capacity=#{capacity},address=#{address} where oid=#{oid}")
+    public void alterMeetingRoom(MeetingRoom meetingRoom);
 
-    @Delete("delete from meeting_room where room_id=#{roomId}")
-    public void deleteMeetingRoom(@Param("roomId") Integer roomId);
+    @Delete("delete from meeting_room where room_id=#{roomId} and oid=#{oid}")
+    public Boolean deleteMeetingRoom(@Param("oid") Integer oid,@Param("roomId") Integer roomId);
 
-    @Select("select * from meeting_room where room_id=#{roomId}")
+    @Select("select * from meeting_room where room_id=#{roomId} and oid=#{oid}")
     @Results({
             @Result(column = "room_id",property = "roomId"),
             @Result(column = "room_name",property = "roomName")
     })
-    public MettingRoom getMeetingRoomWithRoomId(@Param("roomId") Integer roomId);
+    public MeetingRoom getMeetingRoomWithRoomId(@Param("oid") Integer oid,@Param("roomId") Integer roomId);
 
-    @Select("select * from meeting_room where room_name=#{roomName}")
+    @Select("select * from meeting_room where room_name=#{roomName} and oid=#{oid}")
     @Results({
             @Result(column = "room_id",property = "roomId"),
             @Result(column = "room_name",property = "roomName")
     })
-    public MettingRoom getMeetingRoomWithRoomName(@Param("roomName") String roomName);
+    public MeetingRoom getMeetingRoomWithRoomName(@Param("oid") Integer oid,@Param("roomName") String roomName);
 
+    @Select("select * from meeting_room where oid=#{oid}")
+    public MeetingRoom[] getMeetingRoomList(@Param("oid") Integer oid);
 }

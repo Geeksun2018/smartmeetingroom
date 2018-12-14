@@ -48,6 +48,13 @@ public class RetJson {
         return succcess(map);
     }
 
+    public static RetJson succcess(String key,Object value){
+        Map<String,Object> map=new HashMap<>();
+        map.put(key,value);
+        return succcess(map);
+    }
+
+
     public static RetJson fail(int code,String mesg){
         RetJson retJson=new RetJson();
         retJson.setCode(code);

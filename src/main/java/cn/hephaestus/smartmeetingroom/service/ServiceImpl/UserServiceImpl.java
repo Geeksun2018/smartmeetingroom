@@ -2,8 +2,10 @@ package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
+import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.service.OrganizationService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 
@@ -32,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private UserInfoMapper userInfoMapper;
+    @Autowired
+    private OrganizationService organizationService;
     @Override
     public Boolean login(String userName, String password) {
 
@@ -82,6 +86,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean registerForOrganization(User user) {
+        //注册根用户
+        user.setRole(2);
+        this.register(user);
+        //注册企业
+        OrganizationInfo organizationInfo=new OrganizationInfo();
+        organizationInfo.setRootId(user.getId());
+        organizationService.addOne(organizationInfo);
+        //用户所属组织
+        this.setOid(organizationInfo.getId(),user.getId());
+        return true;
+    }
+
+    @Override
     public boolean alterUserInfo(Integer id, UserInfo userInfo) {
         //判断是否为本人操作
         if(id == userInfo.getId()){
@@ -94,6 +112,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfo getUserInfo(Integer id) {
         return userInfoMapper.getUserInfoById(id);
+    }
+
+    @Override
+    public boolean setOid(Integer oid, Integer userId) {
+        return userMapper.setOriganization(oid,userId);
     }
 
 

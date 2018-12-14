@@ -1,7 +1,5 @@
 package cn.hephaestus.smartmeetingroom.service;
 
-import org.springframework.validation.ObjectError;
-
 public interface RedisService {
     /**
      * 将 key，value 存放到redis数据库中，默认设置过期时间为一周

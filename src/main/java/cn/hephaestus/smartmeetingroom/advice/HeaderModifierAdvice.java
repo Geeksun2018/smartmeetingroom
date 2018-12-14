@@ -1,10 +1,8 @@
 package cn.hephaestus.smartmeetingroom.advice;
 
 import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.UserServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -35,15 +33,18 @@ public class HeaderModifierAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object o, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass,
                                   ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
 
-        //参数转换
+        //1.参数转换
         ServletServerHttpResponse ssResp = (ServletServerHttpResponse)serverHttpResponse;
         ServletServerHttpRequest ssReq = (ServletServerHttpRequest)serverHttpRequest;
         HttpServletResponse resp=ssResp.getServletResponse();
         HttpServletRequest res=ssReq.getServletRequest();
 
-        //判断是否是login方法,对login方法做特殊处理
+        //2.判断是否是login方法,对login方法做特殊处理
         if (methodParameter.getMethod().getName().equals("login")){
-            String id=Integer.toString((Integer) res.getAttribute("id"));
+            String id=(String) res.getAttribute("id");
+            if (id==null){
+                return o;
+            }
             String lastUserUid=redisService.hget("curent_u",id);
             if (lastUserUid!=null){//之前已经有用户登入了,被挤下线
                 redisService.remove(lastUserUid);
