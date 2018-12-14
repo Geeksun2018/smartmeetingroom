@@ -1,7 +1,6 @@
 package cn.hephaestus.smartmeetingroom.utils;
 
 
-import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.ServiceImpl.RedisServiceImpl;
 import com.auth0.jwt.JWT;
