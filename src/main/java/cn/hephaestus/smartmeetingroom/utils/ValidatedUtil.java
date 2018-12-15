@@ -1,5 +1,4 @@
 package cn.hephaestus.smartmeetingroom.utils;
-import cn.hephaestus.smartmeetingroom.model.User;
 import org.hibernate.validator.HibernateValidator;
 
 import javax.validation.ConstraintViolation;
@@ -16,12 +15,5 @@ public class ValidatedUtil {
         }else{
             return false;
         }
-    }
-
-    public static void main(String[] args){
-        User user=new User();
-        user.setUsername("1800738792");
-        user.setPassword("e10adc3949ba59abbe56e057f20f883e");
-        ValidatedUtil.validate(user);
     }
 }

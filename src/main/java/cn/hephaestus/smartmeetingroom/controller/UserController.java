@@ -3,6 +3,7 @@ package cn.hephaestus.smartmeetingroom.controller;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.service.EmailService;
 import cn.hephaestus.smartmeetingroom.service.OrganizationService;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
@@ -12,6 +13,7 @@ import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
+import com.sun.org.apache.bcel.internal.classfile.Code;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public class UserController {
     RedisService redisService;
     @Autowired
     OrganizationService organizationService;
+    @Autowired
+    EmailService emailService;
     //登入
     @RequestMapping("/login")
     public RetJson login(User user, Boolean isRemberMe, HttpServletRequest request){
@@ -151,5 +155,22 @@ public class UserController {
         Integer id= ((User)request.getAttribute("user")).getId();
         userService.saveUserHeadPortrait(multipartFile,id);
         return RetJson.succcess(null);
+    }
+
+    //验证用户邮箱
+    @RequestMapping("/bindMailbox")
+    public RetJson bindMailbox(String email,String code){
+        String redisCode=(String) redisService.get(email);
+        if (code.equals(redisCode)){
+            return RetJson.succcess(null);
+        }
+        return RetJson.fail(-1,"邮箱验证码错误");
+    }
+
+
+    //获取邮箱验证码
+    @RequestMapping("/getEmailCode")
+    public void getEmailCode(@RequestParam("email") String email){
+        emailService.sentVerificationCode(email);
     }
 }

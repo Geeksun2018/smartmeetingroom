@@ -1,5 +1,6 @@
 package cn.hephaestus.smartmeetingroom.advice;
 
+import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class HeaderModifierAdvice implements ResponseBodyAdvice<Object> {
         //获取旧的uuid
         String uuid=(String) res.getAttribute("uuid");
         //获取用户id
-        String id=(String)res.getAttribute("id");
+        String id=((User)res.getAttribute("user")).getId()+"";
 
         String newToken=null;
         try{
