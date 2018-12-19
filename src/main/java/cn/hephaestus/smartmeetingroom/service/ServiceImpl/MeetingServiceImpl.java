@@ -28,7 +28,8 @@ public class MeetingServiceImpl implements MeetingRoomService {
     @Override
     public boolean delteteMeetingRoom(Integer oid,Integer roomId) {
         //需判断当先用户是否有权限
-        return meetingRoomMapper.deleteMeetingRoom(oid,roomId);
+        meetingRoomMapper.deleteMeetingRoom(oid,roomId);
+        return true;
     }
 
     @Override

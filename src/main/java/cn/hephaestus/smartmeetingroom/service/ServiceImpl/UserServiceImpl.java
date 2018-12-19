@@ -1,10 +1,12 @@
 package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
+import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
 import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.service.DepartmentService;
 import cn.hephaestus.smartmeetingroom.service.OrganizationService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
@@ -36,6 +38,9 @@ public class UserServiceImpl implements UserService {
     private UserInfoMapper userInfoMapper;
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private DepartmentService departmentService;
+
     @Override
     public Boolean login(String userName, String password) {
 
@@ -46,6 +51,7 @@ public class UserServiceImpl implements UserService {
         try {
             currentUser.login(token);//登入验证
         }catch(Exception e){
+            e.printStackTrace();
             return false;
         }
         return true;
@@ -110,8 +116,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfo getUserInfo(Integer id) {
-        return userInfoMapper.getUserInfoById(id);
+    public UserInfoEntity getUserInfo(Integer id) {
+        UserInfo userInfo = userInfoMapper.getUserInfoById(id);
+        String departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
+        String orgName = organizationService.getOne(userInfo.getOid()).getOrgName();
+        UserInfoEntity userInfoEntity = new UserInfoEntity(userInfo.getId(),userInfo.getSex(),userInfo.getPhoneNum(),userInfo.getEmail(),userInfo.getImagePath()
+        ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName);
+        return userInfoEntity;
     }
 
     @Override

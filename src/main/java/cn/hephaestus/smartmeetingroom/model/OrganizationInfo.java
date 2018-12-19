@@ -13,7 +13,7 @@ import lombok.ToString;
 public class OrganizationInfo {
     public int id;
     public int rootId;//根用户id
-    public String name;//组织名称
+    public String orgName;//组织名称
     public String address;//企业地址
     public String email;//企业邮箱
     public String introduction;//组织介绍

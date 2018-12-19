@@ -1,10 +1,7 @@
 package cn.hephaestus.smartmeetingroom.mapper;
 
 import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface OrganizationMapper {
@@ -13,6 +10,9 @@ public interface OrganizationMapper {
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public boolean addOrganization(OrganizationInfo organizationInfo);
 
-    @Update("update organization set name=#{name},email=#{email},address=#{address},introduction=#{introduction} where id=#{id}")
+    @Update("update organization set org.name=#{orgName},email=#{email},address=#{address},introduction=#{introduction} where id=#{id}")
     public boolean alterOrganization(OrganizationInfo organizationInfo);
+
+    @Select("select * from organization where id=#{oid}")
+    public OrganizationInfo getOrganization(Integer oid);
 }

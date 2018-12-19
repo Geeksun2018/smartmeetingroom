@@ -1,6 +1,7 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
+import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.EmailService;
@@ -13,18 +14,19 @@ import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
-import com.sun.org.apache.bcel.internal.classfile.Code;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -69,7 +71,9 @@ public class UserController {
                     System.out.println("token获取失败");
                 }
             }
-            return RetJson.succcess(null);
+            Map<String,Object> map=new LinkedHashMap<>();
+            map.put("id",user.getId());
+            return RetJson.succcess(map);
         }else {
             return RetJson.fail(-1,"登入失败,请检查用户名或密码");
         }
@@ -102,7 +106,13 @@ public class UserController {
 
     //注册
     @RequestMapping("/register")
-    public RetJson userRegister(User user,String code,Boolean isOrganization) {
+    public RetJson userRegister(User user, String code, Boolean isOrganization, BindingResult result) {
+        if(result.hasErrors()){
+            List<ObjectError> ls = result.getAllErrors();
+            for (int i = 0; i < ls.size(); i++) {
+                System.out.println("error:"+ls.get(i));
+            }
+        }
         if (!ValidatedUtil.validate(user)) {
             return RetJson.fail(-1, "请检查参数");
         }
@@ -123,10 +133,10 @@ public class UserController {
     }
 
     //获取用户信息
-    @RequestMapping("/getuserinfo")
+    @RequestMapping("/getUserinfo")
     public RetJson getUserInfo(HttpServletRequest request){
         User user=(User)request.getAttribute("user");
-        UserInfo userInfo=userService.getUserInfo(user.getId());
+        UserInfoEntity userInfo=userService.getUserInfo(user.getId());
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");
         }else{
@@ -136,7 +146,7 @@ public class UserController {
         }
     }
     //修改用户信息
-    @RequestMapping("/alteruserinfo")
+    @RequestMapping("/alterUserinfo")
     public RetJson alterUserInfo(UserInfo userInfo,HttpServletRequest request){
         //将就一下
         if (!ValidatedUtil.validate(userInfo)){
@@ -149,7 +159,7 @@ public class UserController {
     }
 
     //修改用户头像,涉及到文件上传,单独拿出来
-    @RequestMapping("/alterheadPortrait")
+    @RequestMapping("/alterHeadPortrait")
     public RetJson alterHeadPortrait(@RequestParam("photo") MultipartFile multipartFile,HttpServletRequest request){
         //图片校验
         Integer id= ((User)request.getAttribute("user")).getId();

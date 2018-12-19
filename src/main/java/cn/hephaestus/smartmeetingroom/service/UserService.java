@@ -1,11 +1,9 @@
 package cn.hephaestus.smartmeetingroom.service;
 
-import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
+import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.swing.text.StyledEditorKit;
 
 public interface UserService {
     public Boolean login(String userName,String password);
@@ -27,7 +25,7 @@ public interface UserService {
 
     public boolean alterUserInfo(Integer id,UserInfo userInfo);
 
-    public UserInfo getUserInfo(Integer id);
+    public UserInfoEntity getUserInfo(Integer id);
 
     public boolean setOid(Integer oid,Integer userId);
 }

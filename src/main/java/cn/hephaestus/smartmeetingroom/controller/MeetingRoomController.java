@@ -32,7 +32,7 @@ public class MeetingRoomController {
             return RetJson.fail(-1,"请检查参数");
         }
         //设置oid
-        meetingRoom.setOid(user.getOid());
+        meetingRoom.setOid(meetingRoom.getOid());
         if(meetingRoomService.addMeetingRoom(meetingRoom)){
             return RetJson.succcess(null);
         }
@@ -48,7 +48,7 @@ public class MeetingRoomController {
         if (!ValidatedUtil.validate(meetingRoom)){
             return RetJson.fail(-1,"请检查参数");
         }
-        meetingRoom.setOid(user.getOid());
+        meetingRoom.setOid(meetingRoom.getOid());
         if(meetingRoomService.alterMeetingRoom(meetingRoom)){
             return RetJson.succcess(null);
         }
@@ -56,21 +56,21 @@ public class MeetingRoomController {
     }
     //3.删除会议室
     @RequestMapping("deleteMeetingRoom")
-    public RetJson deleteMeetingRoom(Integer roomId,HttpServletRequest request){
+    public RetJson deleteMeetingRoom(Integer oid,Integer roomId,HttpServletRequest request){
         User user=(User)request.getAttribute("user");
         if (user.getRole()!=0){
             return RetJson.fail(-1,"当前用户没有权限！");
         }
-        if(meetingRoomService.delteteMeetingRoom(user.getOid(),roomId)){
+        if(meetingRoomService.delteteMeetingRoom(oid,roomId)){
             return RetJson.succcess(null);
         }
         return RetJson.fail(-1,"当前用户没有权限！");
     }
     //4.获取会议室
     @RequestMapping("/getMeetingRoom")
-    public RetJson getMeetingRoomWithRoomId(Integer roomId,HttpServletRequest request){
+    public RetJson getMeetingRoomWithRoomId(Integer oid,Integer roomId,HttpServletRequest request){
         User user=(User)request.getAttribute("user");
-        MeetingRoom meetingRoom = meetingRoomService.getMeetingRoomWithRoomId(user.getOid(),roomId);
+        MeetingRoom meetingRoom = meetingRoomService.getMeetingRoomWithRoomId(oid,roomId);
         if (meetingRoom==null){
             return RetJson.fail(-1,"找不到该会议室");
         }
@@ -79,9 +79,9 @@ public class MeetingRoomController {
 
     //5.获取所有会议室
     @RequestMapping("/getMeetingRoomList")
-    public RetJson getMeetingRoomList(HttpServletRequest request) {
+    public RetJson getMeetingRoomList(Integer oid,HttpServletRequest request) {
         User user=(User)request.getAttribute("user");
-        MeetingRoom[] meetingRooms=meetingRoomService.getMeetingRoomList(user.getOid());
+        MeetingRoom[] meetingRooms=meetingRoomService.getMeetingRoomList(oid);
         return RetJson.succcess("meetingRooms",meetingRooms);
     }
 }

@@ -9,20 +9,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class FaceInfoServiceImpl implements FaceInfoService {
     @Autowired
-    UserFaceInfoMapper userFaceInfoMapper;
+    private UserFaceInfoMapper userFaceInfoMapper;
     @Override
-    public void addFaceInfo(UserFaceInfo userFaceInfo) {
+    public boolean addFaceInfo(UserFaceInfo userFaceInfo) {
         userFaceInfoMapper.addFaceInfo(userFaceInfo);
+        return true;
     }
 
     @Override
-    public void deleteFaceInfo(Integer faceInfoId) {
+    public boolean deleteFaceInfo(Integer faceInfoId) {
         userFaceInfoMapper.deleteFaceInfo(faceInfoId);
+        return true;
     }
 
     @Override
-    public void updateFaceInfo(UserFaceInfo userFaceInfo) {
+    public boolean updateFaceInfo(UserFaceInfo userFaceInfo) {
         userFaceInfoMapper.updateFaceInfo(userFaceInfo);
+        return true;
     }
 
     @Override

@@ -20,4 +20,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     public boolean alterOne(OrganizationInfo organizationInfo) {
         return organizationMapper.alterOrganization(organizationInfo);
     }
+
+    @Override
+    public OrganizationInfo getOne(Integer oid) {
+        return organizationMapper.getOrganization(oid);
+    }
 }

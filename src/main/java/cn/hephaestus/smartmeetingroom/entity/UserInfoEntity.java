@@ -1,20 +1,19 @@
-package cn.hephaestus.smartmeetingroom.model;
+package cn.hephaestus.smartmeetingroom.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+//entity本该与数据库的字段对应，但是因为已经有了model类，因此在此处交换一下
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
-public class UserInfo {
+public class UserInfoEntity {
     @Null
     private  Integer id;
     @NotNull
@@ -25,14 +24,12 @@ public class UserInfo {
     private String email;
 
     private String imagePath;
-    //人脸数据id
-    private Integer fid;
-    //组织id
-    private Integer oid;
-    //部门id
-    private Integer did;
 
     private String name;
 
     private String nickName;
+
+    private String orgName;
+
+    private String departmentName;
 }

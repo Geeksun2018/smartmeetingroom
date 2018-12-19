@@ -14,7 +14,7 @@ public interface MeetingRoomMapper {
     public void alterMeetingRoom(MeetingRoom meetingRoom);
 
     @Delete("delete from meeting_room where room_id=#{roomId} and oid=#{oid}")
-    public Boolean deleteMeetingRoom(@Param("oid") Integer oid,@Param("roomId") Integer roomId);
+    public void deleteMeetingRoom(@Param("oid") Integer oid,@Param("roomId") Integer roomId);
 
     @Select("select * from meeting_room where room_id=#{roomId} and oid=#{oid}")
     @Results({

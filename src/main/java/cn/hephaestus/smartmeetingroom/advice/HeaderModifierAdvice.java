@@ -51,7 +51,8 @@ public class HeaderModifierAdvice implements ResponseBodyAdvice<Object> {
                 redisService.remove(lastUserUid);
             }
             //设置当前在线用户
-            String uuid=(String) res.getAttribute("uuid");redisService.hset("curent_u",id,uuid);
+            String uuid=(String) res.getAttribute("uuid");
+            redisService.hset("curent_u",id,uuid);
             return o;
         }
 
