@@ -134,9 +134,10 @@ public class UserController {
 
     //获取用户信息
     @RequestMapping("/getUserinfo")
-    public RetJson getUserInfo(HttpServletRequest request){
-        User user=(User)request.getAttribute("user");
-        UserInfoEntity userInfo=userService.getUserInfo(user.getId());
+    public RetJson getUserInfo(Integer id,HttpServletRequest request){
+        //因为可能要获取他人的信息，因此这里修改了一下
+        //User user=(User)request.getAttribute("user");
+        UserInfoEntity userInfo=userService.getUserInfo(id);
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");
         }else{

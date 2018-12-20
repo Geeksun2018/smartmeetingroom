@@ -14,5 +14,8 @@ public interface OrganizationMapper {
     public boolean alterOrganization(OrganizationInfo organizationInfo);
 
     @Select("select * from organization where id=#{oid}")
+    @Results({
+            @Result(column = "org_name",property = "orgName")
+    })
     public OrganizationInfo getOrganization(Integer oid);
 }

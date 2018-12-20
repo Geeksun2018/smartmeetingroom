@@ -1,9 +1,6 @@
 package cn.hephaestus.smartmeetingroom.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
@@ -14,6 +11,7 @@ import javax.validation.constraints.Null;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserInfo {
     @Null
     private  Integer id;
