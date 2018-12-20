@@ -2,7 +2,7 @@ package cn.hephaestus.smartmeetingroom.model;
 
 public class UserFaceInfo {
     private Integer faceInfoId;
-    private String featureData;
+    private byte[] featureData;
 
     public Integer getFaceInfoId() {
         return faceInfoId;
@@ -12,11 +12,11 @@ public class UserFaceInfo {
         this.faceInfoId = faceInfoId;
     }
 
-    public String getFeatureData() {
+    public byte[] getFeatureData() {
         return featureData;
     }
 
-    public void setFeatureData(String featureData) {
+    public void setFeatureData(byte[] featureData) {
         this.featureData = featureData;
     }
 }

@@ -45,8 +45,6 @@ public class UserServiceImpl implements UserService {
     public Boolean login(String userName, String password) {
 
         Subject currentUser = SecurityUtils.getSubject();
-
-
         UsernamePasswordToken token=new UsernamePasswordToken(userName,password);
         try {
             currentUser.login(token);//登入验证
@@ -69,8 +67,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserByUserName(String userName) {
-        return userMapper.getUserByUserName(userName);
+    public User getUserByUserId(Integer id) {
+        return userMapper.getUserByUserId(id);
     }
 
     @Override
@@ -116,20 +114,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoEntity getUserInfo(Integer id) {
+    public UserInfo getUserInfo(Integer id) {
         UserInfo userInfo = userInfoMapper.getUserInfoById(id);
-        String departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
-        String orgName = organizationService.getOne(userInfo.getOid()).getOrgName();
-        UserInfoEntity userInfoEntity = new UserInfoEntity(userInfo.getId(),userInfo.getSex(),userInfo.getPhoneNum(),userInfo.getEmail(),userInfo.getImagePath()
-        ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName);
-        return userInfoEntity;
+        return userInfo;
     }
 
     @Override
     public boolean setOid(Integer oid, Integer userId) {
-        return userMapper.setOriganization(oid,userId);
+        return userInfoMapper.setOriganization(oid,userId);
     }
 
+    @Override
+    public UserInfoEntity getUserInfoEntity(Integer id) {
+        UserInfo userInfo = userInfoMapper.getUserInfoById(id);
+        String departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
+        String orgName = organizationService.getOne(userInfo.getOid()).getOrgName();
+        UserInfoEntity userInfoEntity = new UserInfoEntity(userInfo.getId(),userInfo.getSex(),userInfo.getPhoneNum(),userInfo.getEmail(),userInfo.getImagePath()
+                ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName);
+        return userInfoEntity;
+    }
+
+    @Override
+    public boolean setFid(Integer fid, Integer userId) {
+        return userInfoMapper.setFaceFeatureData(fid,userId);
+    }
 
     @Override
     public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id) {

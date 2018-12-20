@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @RestController
 public class MeetingRoomController {
@@ -83,5 +84,10 @@ public class MeetingRoomController {
         User user=(User)request.getAttribute("user");
         MeetingRoom[] meetingRooms=meetingRoomService.getMeetingRoomList(oid);
         return RetJson.succcess("meetingRooms",meetingRooms);
+    }
+
+    @RequestMapping("/reserveRoom")
+    public RetJson reserveMeetingRoom(Integer roomId, Integer oid, Date beginTime,Integer duration,HttpServletRequest request){
+        return RetJson.succcess(null);
     }
 }

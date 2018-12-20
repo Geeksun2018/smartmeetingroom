@@ -20,4 +20,10 @@ public interface UserInfoMapper {
 
     @Update("update user_info set image_path=#{imagePath} where id=#{id}")
     public Boolean alterHeadPortrait(@Param("id") Integer id,@Param("imagePath") String url);
+
+    @Update("update user_info set oid=#{oid} where id=#{userId}")
+    public boolean setOriganization(@Param("oid") Integer oid,@Param("userId") Integer userId);
+
+    @Update("update user_info set fid=#{fid} where id=#{userId}")
+    public boolean setFaceFeatureData(@Param("fid") Integer fid,@Param("userId") Integer userId);
 }

@@ -5,14 +5,10 @@ import cn.hephaestus.smartmeetingroom.service.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
-import org.apache.shiro.util.SimpleByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.origin.SystemEnvironmentOrigin;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +24,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
         UsernamePasswordToken usernamePasswordToken=(UsernamePasswordToken)token;
         String username=usernamePasswordToken.getUsername();
-        User dbuser=userService.findUserByUserName(username);
+        User dbuser=userService.getUserByUserName(username);
 
         if (dbuser==null){
             return null;//登入失败

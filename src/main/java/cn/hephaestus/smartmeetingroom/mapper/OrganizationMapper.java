@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface OrganizationMapper {
 //    增加一个企业
-    @Insert("insert into organization(rootId) values(#{rootId})")
+    @Insert({"insert into organization(rootId) values(#{rootId})"})
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public boolean addOrganization(OrganizationInfo organizationInfo);
 

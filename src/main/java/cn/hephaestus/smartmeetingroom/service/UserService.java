@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UserService {
     public Boolean login(String userName,String password);
 
-    public User findUserByUserName(String userName);
+    public User getUserByUserId(Integer Id);
 
     public User getUserByUserName(String userName);
 
@@ -25,7 +25,11 @@ public interface UserService {
 
     public boolean alterUserInfo(Integer id,UserInfo userInfo);
 
-    public UserInfoEntity getUserInfo(Integer id);
+    public UserInfo getUserInfo(Integer id);
 
     public boolean setOid(Integer oid,Integer userId);
+
+    public UserInfoEntity getUserInfoEntity(Integer id);
+
+    public boolean setFid(Integer fid,Integer userId);
 }

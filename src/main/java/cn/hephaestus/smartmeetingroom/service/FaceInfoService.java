@@ -10,6 +10,6 @@ public interface FaceInfoService {
 
     public boolean updateFaceInfo(UserFaceInfo userFaceInfo);
 
-    public String getFaceInfo(Integer faceInfoId);
+    public UserFaceInfo getFaceInfo(Integer faceInfoId);
 
 }

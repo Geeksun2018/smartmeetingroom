@@ -29,7 +29,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public String getFaceInfo(Integer faceInfoId) {
+    public UserFaceInfo getFaceInfo(Integer faceInfoId) {
         return userFaceInfoMapper.getFaceInfo(faceInfoId);
     }
 }

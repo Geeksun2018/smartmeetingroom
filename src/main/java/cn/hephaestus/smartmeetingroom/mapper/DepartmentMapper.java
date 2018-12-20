@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface DepartmentMapper {
-    @Insert({"insert into department(department_name,oid) values(#{department.departmentName},#{department.oid})"})
+    @Insert({"insert into department(department_name,oid) values(#{departmentName},#{oid})"})
     @Options(useGeneratedKeys = true,keyProperty = "departmentId",keyColumn = "department_id")
     public int addDepartment(Department department);
 

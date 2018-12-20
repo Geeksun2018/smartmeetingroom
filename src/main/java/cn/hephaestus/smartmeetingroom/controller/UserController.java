@@ -3,11 +3,9 @@ package cn.hephaestus.smartmeetingroom.controller;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.model.User;
+import cn.hephaestus.smartmeetingroom.model.UserFaceInfo;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
-import cn.hephaestus.smartmeetingroom.service.EmailService;
-import cn.hephaestus.smartmeetingroom.service.OrganizationService;
-import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.UserService;
+import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
@@ -44,6 +42,8 @@ public class UserController {
     OrganizationService organizationService;
     @Autowired
     EmailService emailService;
+    @Autowired
+    FaceInfoService faceInfoService;
     //登入
     @RequestMapping("/login")
     public RetJson login(User user, Boolean isRemberMe, HttpServletRequest request){
@@ -52,6 +52,7 @@ public class UserController {
         }
         Boolean b=userService.login(user.getUsername(),user.getPassword());
         if (b==true){
+            //从数据库中取出这个用户
             user=userService.getUserByUserName(user.getUsername());
             request.setAttribute("id",user.getId()+"");
             //登入成功,并且设置了记住我,则发放token
@@ -66,7 +67,10 @@ public class UserController {
                     user.setPassword(null);
                     user.setSalt(null);
                     redisService.set(uuid.toString(),user.toString(),60*60*24*7);
-                    return RetJson.succcess("token",token);
+                    Map<String,Object> map=new LinkedHashMap<>();
+                    map.put("token",token);
+                    map.put("id",user.getId());
+                    return RetJson.succcess(map);
                 }catch (Exception e){
                     System.out.println("token获取失败");
                 }
@@ -83,7 +87,7 @@ public class UserController {
     @RequiresAuthentication
     @RequestMapping("/getcode")
     public RetJson sendIdentifyingCode(@Length(max = 11, min = 11, message = "手机号的长度必须是11位.")@RequestParam(value = "phonenumber") String phoneNumber,int type){
-        if (type==0&&(userService.findUserByUserName(phoneNumber)!=null)){
+        if (type==0&&(userService.getUserByUserName(phoneNumber)!=null)){
             return RetJson.fail(-1,"该用户已经注册");
         }
         String verificationCode = GenerateVerificationCode.generateVerificationCode(4);
@@ -118,7 +122,7 @@ public class UserController {
         }
 //        if (redisService.exists(user.getUsername()) && redisService.get(user.getUsername()).equals(code)) {
             if (true) {
-                if (userService.findUserByUserName(user.getUsername()) == null) {
+                if (userService.getUserByUserName(user.getUsername()) == null) {
                     if (isOrganization) {
                         userService.registerForOrganization(user);
                     } else {
@@ -137,7 +141,7 @@ public class UserController {
     public RetJson getUserInfo(Integer id,HttpServletRequest request){
         //因为可能要获取他人的信息，因此这里修改了一下
         //User user=(User)request.getAttribute("user");
-        UserInfoEntity userInfo=userService.getUserInfo(id);
+        UserInfoEntity userInfo=userService.getUserInfoEntity(id);
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");
         }else{
@@ -181,7 +185,36 @@ public class UserController {
 
     //获取邮箱验证码
     @RequestMapping("/getEmailCode")
-    public void getEmailCode(@RequestParam("email") String email){
+    public RetJson getEmailCode(@RequestParam("email") String email){
         emailService.sentVerificationCode(email);
+        return RetJson.succcess(null);
+    }
+
+    //上传人脸信息
+    @RequestMapping("/uploadFeatureData")
+    public RetJson uploadFeatureData(String encryptedString,HttpServletRequest request){
+        User user = (User)request.getAttribute("user");
+
+        //通过解密的算法，将encryptedString解密成bytes
+
+        byte[] bytes = new byte[]{1,2,3,4,5};
+
+        //在此处检测bytes数组的长度是否为1023byte，sdk中规定了字节数组的大小
+
+        UserFaceInfo userFaceInfo = new UserFaceInfo();
+        userFaceInfo.setFeatureData(bytes);
+        faceInfoService.addFaceInfo(userFaceInfo);
+        userService.setFid(userFaceInfo.getFaceInfoId(),user.getId());
+        return RetJson.succcess(null);
+    }
+    @RequestMapping("/judgeFeatureData")
+    public RetJson uploadFeatureData(String encryptedString,Integer roomId,HttpServletRequest request){
+        //1.先查询将在改会议室开会的用户
+
+        //2.得到他们所有人的人脸信息list
+
+        //3.将传入的人脸信息与list中的比较
+
+        return RetJson.succcess(null);
     }
 }
