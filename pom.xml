@@ -145,23 +145,6 @@
         </dependency>
 
 
-        <!--Springboot整合redis-->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
-            <!--<version>2.0.0.RELEASE</version>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>log4j-to-slf4j</artifactId>-->
-                    <!--<groupId>org.apache.logging.log4j</groupId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>logback-classic</artifactId>-->
-                    <!--<groupId>ch.qos.logback</groupId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
-
         <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
         <dependency>
             <groupId>com.auth0</groupId>

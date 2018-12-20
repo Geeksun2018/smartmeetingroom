@@ -52,28 +52,16 @@ public class UserController {
         }
         Boolean b=userService.login(user.getUsername(),user.getPassword());
         if (b==true){
-            user=userService.getUserByUserName(user.getUsername());
-            request.setAttribute("id",user.getId()+"");
-            //登入成功,并且设置了记住我,则发放token
-            if (isRemberMe){
-                //手机app
-                try {
-                    //生成一个随机的不重复的uuid
-                    UUID uuid=UUID.randomUUID();
-                    request.setAttribute("uuid",uuid.toString());
-                    String token=JwtUtils.createToken(uuid);
-                    //将uuid和user以键值对的形式存放在redis中
-                    user.setPassword(null);
-                    user.setSalt(null);
-                    redisService.set(uuid.toString(),user.toString(),60*60*24*7);
-                    return RetJson.succcess("token",token);
-                }catch (Exception e){
-                    System.out.println("token获取失败");
-                }
+            try {
+                user=userService.getUserByUserName(user.getUsername());
+                UUID uuid=UUID.randomUUID();
+                String token=JwtUtils.createToken(uuid,user.getId().toString());
+                redisService.set("user:"+user.getId(),uuid.toString(),60*60*24*7);
+                return RetJson.succcess("token",token);
+            }catch (Exception e){
+                e.printStackTrace();
+                return RetJson.fail(-1,"登入失败，服务端错误");
             }
-            Map<String,Object> map=new LinkedHashMap<>();
-            map.put("id",user.getId());
-            return RetJson.succcess(map);
         }else {
             return RetJson.fail(-1,"登入失败,请检查用户名或密码");
         }
@@ -135,8 +123,6 @@ public class UserController {
     //获取用户信息
     @RequestMapping("/getUserinfo")
     public RetJson getUserInfo(Integer id,HttpServletRequest request){
-        //因为可能要获取他人的信息，因此这里修改了一下
-        //User user=(User)request.getAttribute("user");
         UserInfoEntity userInfo=userService.getUserInfo(id);
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");

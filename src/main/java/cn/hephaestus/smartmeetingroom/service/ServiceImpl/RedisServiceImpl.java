@@ -26,6 +26,11 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public void expire(String key,long time) {
+        redisTemplate.expire(key,time,TimeUnit.SECONDS);
+    }
+
+    @Override
     public void hset(String hash, String key, String value) {
         redisTemplate.opsForHash().put(hash,key,value);
     }
@@ -41,6 +46,11 @@ public class RedisServiceImpl implements RedisService {
         }else{
             return (String)o;
         }
+    }
+
+    @Override
+    public void hdel(String hash, String key) {
+        redisTemplate.opsForHash().delete(hash,key);
     }
 
 
@@ -63,5 +73,10 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
+    }
+
+    @Override
+    public void setbit(String key,long pos,boolean flag){
+        redisTemplate.opsForValue().setBit(key,pos,flag);
     }
 }

@@ -2,6 +2,8 @@ package cn.hephaestus.smartmeetingroom.configuration;
 
 import cn.hephaestus.smartmeetingroom.interceptor.AuthorizationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,7 +18,4 @@ public class WebAppConfig implements WebMvcConfigurer {
         InterceptorRegistration interceptorRegistration=registry.addInterceptor(authorizationInterceptor);
         interceptorRegistration.addPathPatterns("/**");
     }
-
-
-
 }

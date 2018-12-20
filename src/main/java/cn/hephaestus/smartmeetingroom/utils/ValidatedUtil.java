@@ -1,5 +1,8 @@
 package cn.hephaestus.smartmeetingroom.utils;
+import cn.hephaestus.smartmeetingroom.service.RedisService;
+import cn.hephaestus.smartmeetingroom.service.ServiceImpl.RedisServiceImpl;
 import org.hibernate.validator.HibernateValidator;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -16,4 +19,5 @@ public class ValidatedUtil {
             return false;
         }
     }
+
 }

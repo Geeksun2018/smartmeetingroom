@@ -1,5 +1,6 @@
 package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
+import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private OrganizationService organizationService;
     @Autowired
     private DepartmentService departmentService;
+
 
     @Override
     public Boolean login(String userName, String password) {

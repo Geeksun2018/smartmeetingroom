@@ -28,4 +28,6 @@ public interface UserService {
     public UserInfoEntity getUserInfo(Integer id);
 
     public boolean setOid(Integer oid,Integer userId);
+
+
 }
