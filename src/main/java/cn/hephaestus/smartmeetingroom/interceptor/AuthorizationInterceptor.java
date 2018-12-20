@@ -1,5 +1,6 @@
 package cn.hephaestus.smartmeetingroom.interceptor;
 
+import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.ExcludeURI;
 import cn.hephaestus.smartmeetingroom.model.User;
@@ -33,6 +34,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     ObjectMapper mapper;
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        //排除部分url
         String url=request.getRequestURI();
         if (isExclude(url)){
             return true;
@@ -40,35 +42,41 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
         //获取请求头部中的token
         String token=request.getHeader("Authorization");
-        if (token==null){
-            Writer writer=response.getWriter();
-            writer.write(RetJson.fail(-2,"token已过期,请重新登入").toString());
-            writer.flush();
-            return false;
-        }
-        //解密token
-        Map<String, Claim> map=JwtUtils.VerifyToken(token);
-        String uuid=map.get("uuid").asString();
-        User user=null;
+        if (token!=null){
+            //解密token
+            Map<String, Claim> map=JwtUtils.VerifyToken(token);
+            String uuid=map.get("uuid").asString();
+            String id=map.get("id").asString();
 
-        //判断token是否有效
-        if (uuid!=null&&redisService.exists(uuid)){
-            String json=(String) redisService.get(uuid);
-            try {
-                user=mapper.readValue(json, User.class);
-            }catch (Exception e){
-                e.printStackTrace();
+
+
+            //判断token是否有效
+            if (uuid!=null&&id!=null&&redisService.exists("user:"+id)){
+                String ret=(String) redisService.get("user:"+id);
+                if (ret.equals(uuid)){
+                    //更新过期时间,连续七天不活动则token失效
+                    redisService.expire("user:"+id,60*60*24*7);
+                    RedisSession redisSession=RedisSession.getInstance(uuid,Long.valueOf(id));
+                    if (redisSession!=null){
+                        request.setAttribute("redisSession",redisSession);
+                    }
+                    //设置在线状态
+                    if (redisSession!=null&&!url.equals("/offLine")){
+                        redisSession.setUserActiveStatu(true);
+                    }
+                    return true;
+                }else{
+                    return false;
+                }
             }
-            request.setAttribute("user",user);
-            request.setAttribute("uuid",uuid);
-        }else {
-            //否则提示token过期,要求重新登录
-            Writer writer=response.getWriter();
-            writer.write(RetJson.fail(-2,"token已过期,请重新登入").toString());
-            writer.flush();
-            return false;
         }
-        return true;
+
+        //否则提示token过期,要求重新登录
+        Writer writer=response.getWriter();
+        writer.write(RetJson.fail(-2,"token已过期,请重新登入").toString());
+        writer.flush();
+        return false;
+
     }
 
     public boolean isExclude(String uri){
