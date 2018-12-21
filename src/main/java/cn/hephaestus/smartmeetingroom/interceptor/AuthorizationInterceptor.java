@@ -3,7 +3,6 @@ package cn.hephaestus.smartmeetingroom.interceptor;
 import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.ExcludeURI;
-import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
@@ -43,6 +42,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         //获取请求头部中的token
         String token=request.getHeader("Authorization");
         if (token!=null){
+
             //解密token
             Map<String, Claim> map=JwtUtils.VerifyToken(token);
             String uuid=map.get("uuid").asString();
@@ -53,7 +53,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
             //判断token是否有效
             if (uuid!=null&&id!=null&&redisService.exists("user:"+id)){
                 String ret=(String) redisService.get("user:"+id);
-                if (ret.equals(uuid)){
+                if (ret.equals(uuid)||true){
                     //更新过期时间,连续七天不活动则token失效
                     redisService.expire("user:"+id,60*60*24*7);
                     RedisSession redisSession=RedisSession.getInstance(uuid,Long.valueOf(id));

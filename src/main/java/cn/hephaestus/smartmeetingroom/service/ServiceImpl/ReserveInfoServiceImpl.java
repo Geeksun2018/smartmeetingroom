@@ -33,7 +33,12 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     }
 
     @Override
-    public ReserveInfo getReserveInfoByRoomId(Integer rid) {
+    public ReserveInfo[] getReserveInfoByRoomId(Integer rid) {
         return reserveTableMapper.getReserveInfoByRoomId(rid);
+    }
+
+    @Override
+    public ReserveInfo[] queryIsAvaliable(Integer rid, String beginTime, String endTime) {
+        return reserveTableMapper.queryIsAvaliable(rid,beginTime,endTime);
     }
 }

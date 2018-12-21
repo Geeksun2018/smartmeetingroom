@@ -66,7 +66,10 @@ public class UserController {
                     user.setPassword(null);
                     user.setSalt(null);
                     redisService.set(uuid.toString(),user.toString(),60*60*24*7);
-                    return RetJson.succcess("token",token);
+                    Map map = new LinkedHashMap();
+                    map.put("token",token);
+                    map.put("id",user.getId());
+                    return RetJson.succcess(map);
                 }catch (Exception e){
                     System.out.println("token获取失败");
                 }

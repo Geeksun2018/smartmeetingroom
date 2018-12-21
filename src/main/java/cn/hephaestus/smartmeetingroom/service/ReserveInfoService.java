@@ -12,6 +12,7 @@ public interface ReserveInfoService {
 
     public ReserveInfo getReserveInfoByReserveId(Integer reserveId);
 
-    public ReserveInfo getReserveInfoByRoomId(Integer rid);
+    public ReserveInfo[] getReserveInfoByRoomId(Integer rid);
 
+    public ReserveInfo[] queryIsAvaliable(Integer rid,String beginTime,String endTime);
 }

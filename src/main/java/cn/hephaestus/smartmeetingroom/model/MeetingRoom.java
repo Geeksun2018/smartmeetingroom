@@ -1,12 +1,14 @@
 package cn.hephaestus.smartmeetingroom.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class MeetingRoom {
     private int roomId;
     private int oid;//组织id
