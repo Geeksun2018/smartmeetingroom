@@ -1,12 +1,14 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
+import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
 import cn.hephaestus.smartmeetingroom.service.OrganizationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 /**
  * 用来管理一个企业或者学校机构账号，通过该控制器注册的账号权限均为root
  */

@@ -48,8 +48,6 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
             String uuid=map.get("uuid").asString();
             String id=map.get("id").asString();
 
-
-
             //判断token是否有效
             if (uuid!=null&&id!=null&&redisService.exists("user:"+id)){
                 String ret=(String) redisService.get("user:"+id);
@@ -70,7 +68,6 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
-
         //否则提示token过期,要求重新登录
         Writer writer=response.getWriter();
         writer.write(RetJson.fail(-2,"token已过期,请重新登入").toString());

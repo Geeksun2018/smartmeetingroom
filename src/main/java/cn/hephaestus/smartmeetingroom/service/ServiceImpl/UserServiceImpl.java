@@ -128,9 +128,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoEntity getUserInfoEntity(Integer id) {
+        String departmentName=null;
+        String orgName=null;
         UserInfo userInfo = userInfoMapper.getUserInfoById(id);
-        String departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
-        String orgName = organizationService.getOne(userInfo.getOid()).getOrgName();
+        if (userInfo.getDid()!=null&&userInfo.getOid()!=null){
+            departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
+            orgName= organizationService.getOne(userInfo.getOid()).getOrgName();
+        }
+
         UserInfoEntity userInfoEntity = new UserInfoEntity(userInfo.getId(),userInfo.getSex(),userInfo.getPhoneNum(),userInfo.getEmail(),userInfo.getImagePath()
                 ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName);
         return userInfoEntity;

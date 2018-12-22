@@ -65,7 +65,8 @@ public class UserController {
                     //将uuid和user以键值对的形式存放在redis中
                     user.setPassword(null);
                     user.setSalt(null);
-                    redisService.set(uuid.toString(),user.toString(),60*60*24*7);
+                    redisService.set("user:"+user.getId(),uuid.toString(),60*60*24*7);
+
                     Map map = new LinkedHashMap();
                     map.put("token",token);
                     map.put("id",user.getId());
@@ -139,7 +140,6 @@ public class UserController {
     @RequestMapping("/getUserinfo")
     public RetJson getUserInfo(Integer id,HttpServletRequest request){
         //因为可能要获取他人的信息，因此这里修改了一下
-        //User user=(User)request.getAttribute("user");
         UserInfoEntity userInfo=userService.getUserInfoEntity(id);
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");
