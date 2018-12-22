@@ -55,23 +55,10 @@ public class JwtUtils {
         return jwt.getClaims();
     }
 
-//    //判断用户是是否有效
-//    public static void isUsefulToken(String token){
-//        RedisService redisService=new RedisServiceImpl();
-//        redisService.exists(token);
-//    }
-//
-//    //刷新用户token
-//    public  static void refreshUserToken(String token,int id){
-//        RedisService redisService=new RedisServiceImpl();
-//        redisService.set(token,String.valueOf(id),60*60*24*7);
-//    }
-//
-//    //根据用户token获取用户信息
-//    public  Integer getUserIdByToken(String token){
-//        RedisService redisService=new RedisServiceImpl(redisTemplate);
-//        return (Integer) redisService.get(token);
-//    }
+    public static Integer getId(String token){
+        Map<String,Claim> map=JwtUtils.VerifyToken(token);
+        return Integer.valueOf(map.get("id").asString());
+    }
 
 
 }
