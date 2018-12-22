@@ -119,7 +119,7 @@ public class UserController {
         if (!ValidatedUtil.validate(user)) {
             return RetJson.fail(-1, "请检查参数");
         }
-//        if (redisService.exists(user.getUsername()) && redisService.get(user.getUsername()).equals(code)) {
+        if (redisService.exists(user.getUsername()) && redisService.get(user.getUsername()).equals(code)) {
             if (true) {
                 if (userService.getUserByUserName(user.getUsername()) == null) {
                     if (isOrganization) {
@@ -131,14 +131,13 @@ public class UserController {
                 }
                 return RetJson.fail(-1, "用户已存在！");
             }
-//        }
+        }
         return RetJson.fail(-1, "验证码不正确！");
     }
 
     //获取用户信息
     @RequestMapping("/getUserinfo")
     public RetJson getUserInfo(Integer id,HttpServletRequest request){
-        //因为可能要获取他人的信息，因此这里修改了一下
         UserInfoEntity userInfo=userService.getUserInfoEntity(id);
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");
@@ -175,6 +174,8 @@ public class UserController {
     public RetJson bindMailbox(String email,String code){
         String redisCode=(String) redisService.get(email);
         if (code.equals(redisCode)){
+            //修改用户邮箱
+            //.....
             return RetJson.succcess(null);
         }
         return RetJson.fail(-1,"邮箱验证码错误");

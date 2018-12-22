@@ -4,6 +4,7 @@ import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.ExcludeURI;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
+import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,9 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     ObjectMapper mapper;
 
+    @Autowired
+    UserService userService;
+
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //排除部分url
         String url=request.getRequestURI();
@@ -50,6 +54,8 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
             //判断token是否有效
             if (uuid!=null&&id!=null&&redisService.exists("user:"+id)){
+                request.setAttribute("user",userService.getUserByUserId(Integer.valueOf(id)));
+                request.setAttribute("id",Integer.valueOf(id));
                 String ret=(String) redisService.get("user:"+id);
                 if (ret.equals(uuid)||true){
                     //更新过期时间,连续七天不活动则token失效
@@ -63,8 +69,6 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
                         redisSession.setUserActiveStatu(true);
                     }
                     return true;
-                }else{
-                    return false;
                 }
             }
         }
