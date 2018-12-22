@@ -5,6 +5,8 @@ import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface UserService {
     public Boolean login(String userName,String password);
 
@@ -32,4 +34,8 @@ public interface UserService {
     public UserInfoEntity getUserInfoEntity(Integer id);
 
     public boolean setFid(Integer fid,Integer userId);
+
+    public List<UserInfo> getUserinfoListByOid(Integer oid);
+
+    public List<UserInfo> getUserInfoListByDid(Integer oid,Integer did);
 }

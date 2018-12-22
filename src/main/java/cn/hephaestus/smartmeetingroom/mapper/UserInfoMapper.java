@@ -3,6 +3,8 @@ package cn.hephaestus.smartmeetingroom.mapper;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserInfoMapper {
 
@@ -26,4 +28,20 @@ public interface UserInfoMapper {
 
     @Update("update user_info set fid=#{fid} where id=#{userId}")
     public boolean setFaceFeatureData(@Param("fid") Integer fid,@Param("userId") Integer userId);
+
+    @Select("select * from user_info where oid = #{oid}")
+    @Results({
+            @Result(column = "phone_num",property = "phoneNum"),
+            @Result(column = "image_path",property = "imagePath"),
+            @Result(column = "nick_name",property = "nickName")
+    })
+    public List<UserInfo> getUserinfoListByOid(@Param("oid") Integer oid);
+
+    @Select("select * from user_info where oid = #{oid} and did = #{did}")
+    @Results({
+            @Result(column = "phone_num",property = "phoneNum"),
+            @Result(column = "image_path",property = "imagePath"),
+            @Result(column = "nick_name",property = "nickName")
+    })
+    public List<UserInfo> getUserinfoListByDid(@Param("oid") Integer oid,@Param("did") Integer did);
 }

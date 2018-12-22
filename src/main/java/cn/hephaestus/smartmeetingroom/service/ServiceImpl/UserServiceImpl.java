@@ -1,6 +1,5 @@
 package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
-import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
@@ -11,7 +10,6 @@ import cn.hephaestus.smartmeetingroom.service.DepartmentService;
 import cn.hephaestus.smartmeetingroom.service.OrganizationService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -21,13 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Random;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService{
 
     final char []codeSequence = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
     final int SALT_LENGTH = 8;//盐值长度
@@ -144,6 +142,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean setFid(Integer fid, Integer userId) {
         return userInfoMapper.setFaceFeatureData(fid,userId);
+    }
+
+    @Override
+    public List<UserInfo> getUserinfoListByOid(Integer oid) {
+        return userInfoMapper.getUserinfoListByOid(oid);
+    }
+
+    @Override
+    public List<UserInfo> getUserInfoListByDid(Integer oid,Integer did) {
+        return userInfoMapper.getUserinfoListByDid(oid,did);
     }
 
     @Override

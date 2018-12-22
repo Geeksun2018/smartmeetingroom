@@ -2,9 +2,13 @@ package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.mapper.UserFaceInfoMapper;
 import cn.hephaestus.smartmeetingroom.model.UserFaceInfo;
+import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.FaceInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class FaceInfoServiceImpl implements FaceInfoService {
@@ -32,4 +36,15 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     public UserFaceInfo getFaceInfo(Integer faceInfoId) {
         return userFaceInfoMapper.getFaceInfo(faceInfoId);
     }
+
+    @Override
+    public List<UserFaceInfo> getUserFaceInfoList(List<UserInfo> lists) {
+            List<UserFaceInfo> UserFaceInfoLists = new LinkedList<>();
+            for(int i = 0;i < lists.size();i++){
+                UserFaceInfo userFaceInfo = getFaceInfo(lists.get(i).getFid());
+                ((LinkedList<UserFaceInfo>) UserFaceInfoLists).push(userFaceInfo);
+            }
+            return UserFaceInfoLists;
+    }
+
 }
