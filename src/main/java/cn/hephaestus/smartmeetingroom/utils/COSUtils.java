@@ -18,7 +18,6 @@ public class COSUtils {
     private static final String region_name="ap-guangzhou";
     private static final String bucketName="smartmeetingroom-1257009269";
 
-
     //上传文件
     public static String addFile(String key,InputStream inputStream){
         COSCredentials cred = new BasicCOSCredentials(secretId,secretKey);
