@@ -10,8 +10,8 @@ public interface ArticleMapper {
     @Options(useGeneratedKeys = true,keyProperty = "articleId",keyColumn = "article_id")
     public boolean insertArticle(Article article);
 
-    @Update("update article set content = #{article.content},user_id = #{article.userId}, article_name = #{article.articleName},creat_time = #{article.creatTime}" +
-            ",like_list = #{article.likeList} where article_id = #{article.articleId}")
+    @Update("update article set content = #{article.content},user_id = #{article.userId}, article_name = #{article.articleName}" +
+            " where article_id = #{article.articleId}")
     public boolean updateArticle(@Param("article") Article article);
 
     @Delete("delete from article where article_id = #{articleId}")

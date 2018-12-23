@@ -25,4 +25,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     public OrganizationInfo getOne(Integer oid) {
         return organizationMapper.getOrganization(oid);
     }
+
+    @Override
+    public OrganizationInfo[] getOrganizationInfos() {
+        return organizationMapper.getOrganizations();
+    }
 }

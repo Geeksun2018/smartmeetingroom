@@ -21,7 +21,7 @@ public interface CommentMapper {
     })
     public Comment[] getComments(@Param("articleId") Integer articleId);
 
-    @Update("update article_comment set article_id = #{comment.articleId},content = #{comment.content},uid = #{comment.uid},creat_time = #{comment.creatTime} where " +
+    @Update("update article_comment set article_id = #{comment.articleId},content = #{comment.content},uid = #{comment.uid} where " +
             "comment_id = #{comment.commentId}")
     public boolean updateComment(@Param("comment") Comment comment);
 

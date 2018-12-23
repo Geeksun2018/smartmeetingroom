@@ -12,18 +12,18 @@ public class DepartmentServiceImpl implements DepartmentService {
     DepartmentMapper departmentMapper;
 
     @Override
-    public int addDepartment(Department department) {
+    public boolean addDepartment(Department department) {
         return departmentMapper.addDepartment(department);
     }
 
     @Override
-    public void alterDepartment(Department department) {
-        departmentMapper.alterDerpartment(department);
+    public boolean alterDepartment(Department department) {
+        return departmentMapper.alterDerpartment(department);
     }
 
     @Override
-    public void deleteDepartment(Integer did, Integer oid) {
-        departmentMapper.deleteDepartment(did,oid);
+    public boolean deleteDepartment(Integer did, Integer oid) {
+        return departmentMapper.deleteDepartment(did,oid);
     }
 
     @Override

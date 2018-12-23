@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 public interface DepartmentMapper {
     @Insert({"insert into department(department_name,oid) values(#{departmentName},#{oid})"})
     @Options(useGeneratedKeys = true,keyProperty = "departmentId",keyColumn = "department_id")
-    public int addDepartment(Department department);
+    public boolean addDepartment(Department department);
 
     @Delete("delete from department where department_id=#{did} and oid=#{oid}")
     public boolean deleteDepartment(@Param("did") Integer did,@Param("oid") Integer oid);

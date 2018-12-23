@@ -16,7 +16,7 @@ public class ArticleController {
     @Autowired
     ArticleService articleService;
 
-    @RequestMapping("/uploacArticle")
+    @RequestMapping("/uploadArticle")
     public RetJson uploadArticle(Article article, HttpServletRequest request){
         //校验参数！
         User user = (User) request.getAttribute("user");

@@ -1,12 +1,9 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
-import cn.hephaestus.smartmeetingroom.common.RedisSession;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
 import cn.hephaestus.smartmeetingroom.service.OrganizationService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 /**
@@ -25,5 +22,10 @@ public class OrganizationController {
             return RetJson.succcess(null);
         }
         return RetJson.fail(-1,"修改信息失败");
+    }
+
+    @RequestMapping("/getOrganizations")
+    public RetJson getOrganizations(){
+        return RetJson.succcess("organizations",organizationService.getOrganizationInfos());
     }
 }

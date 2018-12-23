@@ -18,4 +18,11 @@ public interface OrganizationMapper {
             @Result(column = "org_name",property = "orgName")
     })
     public OrganizationInfo getOrganization(Integer oid);
+
+
+    @Select("select * from organization")
+    @Results({
+            @Result(column = "org_name",property = "orgName")
+    })
+    public OrganizationInfo[] getOrganizations();
 }

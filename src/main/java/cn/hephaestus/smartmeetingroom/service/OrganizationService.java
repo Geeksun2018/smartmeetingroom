@@ -8,4 +8,6 @@ public interface OrganizationService {
     public boolean alterOne(OrganizationInfo organizationInfo);
 
     public OrganizationInfo getOne(Integer oid);
+
+    public OrganizationInfo[] getOrganizationInfos();
 }

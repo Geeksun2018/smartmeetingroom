@@ -4,11 +4,11 @@ import cn.hephaestus.smartmeetingroom.model.Department;
 
 public interface DepartmentService {
 
-    public int addDepartment(Department department);
+    public boolean addDepartment(Department department);
 
-    public void  alterDepartment(Department department);
+    public boolean  alterDepartment(Department department);
     //根据部门id与组织id删除该部门
-    public  void deleteDepartment(Integer did,Integer oid);
+    public  boolean deleteDepartment(Integer did,Integer oid);
 
     public Department getDepartment(Integer did);
 
