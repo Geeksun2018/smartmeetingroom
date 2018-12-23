@@ -150,12 +150,14 @@ public class UserController {
     //修改用户信息
     @RequestMapping("/alterUserinfo")
     public RetJson alterUserInfo(UserInfo userInfo,HttpServletRequest request){
+        Integer id= ((User)request.getAttribute("user")).getId();
+        UserInfo pastUserInfo = userService.getUserInfo(id);
+        userInfo.setFid(pastUserInfo.getFid());
+        userInfo.setImagePath(pastUserInfo.getImagePath());
         //将就一下
         if (!ValidatedUtil.validate(userInfo)){
             return RetJson.fail(-1,"请检查参数");
         }
-        Integer id= ((User)request.getAttribute("user")).getId();
-        userInfo.setId(id);
         userService.alterUserInfo(id,userInfo);//写死
         return RetJson.succcess(null);
     }
