@@ -1,23 +1,17 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
-import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
-import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
-import cn.hephaestus.smartmeetingroom.model.User;
-import cn.hephaestus.smartmeetingroom.model.UserInfo;
-import cn.hephaestus.smartmeetingroom.service.MeetingRoomService;
-import cn.hephaestus.smartmeetingroom.service.ReserveInfoService;
-import cn.hephaestus.smartmeetingroom.service.UserService;
+import cn.hephaestus.smartmeetingroom.model.*;
+import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
+import com.arcsoft.face.FaceFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class MeetingRoomController {
@@ -28,6 +22,10 @@ public class MeetingRoomController {
     UserService userService;
     @Autowired
     ReserveInfoService reserveInfoService;
+    @Autowired
+    FaceInfoService faceInfoService;
+    @Autowired
+    FaceEngineService faceEngineService;
     //1.添加会议室
     @RequestMapping("/addMeetingRoom")
     public RetJson addMeetingRoom(MeetingRoom meetingRoom, HttpServletRequest request){
@@ -137,4 +135,31 @@ public class MeetingRoomController {
         return RetJson.fail(-1,"只能查询自己公司的会议室");
     }
 
+    @RequestMapping("/judgeFeatureData")
+    public RetJson uploadFeatureData(String encryptedString,Integer oid,Integer roomId,HttpServletRequest request){
+        FaceFeature targetFaceFeature = new FaceFeature();
+        FaceFeature sourceFaceFeature = new FaceFeature();
+        User user = (User)request.getAttribute("user");
+        Base64.Decoder decoder = Base64.getDecoder();
+        //通过解密的算法，将encryptedString解密成bytes
+        byte[] featureData = decoder.decode(encryptedString);
+        targetFaceFeature.setFeatureData(featureData);
+        //暂时先查询是否为该公司的员工
+        //1.先查询将在该会议室开会的用户
+        List<UserFaceInfo> lists = new LinkedList<>();
+        lists = faceInfoService.getUserFaceInfoList(userService.getUserinfoListByOid(oid));
+        //3.将传入的人脸信息与list中的比较
+        for(int i = 0;i < lists.size();i++){
+
+            sourceFaceFeature.setFeatureData(lists.get(i).getFeatureData());
+            try {
+                if(faceEngineService.compareFaceFeature(targetFaceFeature,sourceFaceFeature) > 80){
+                    return RetJson.succcess(null);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return RetJson.fail(-1,"人脸验证失败！");
+    }
 }

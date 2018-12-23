@@ -3,11 +3,9 @@ package cn.hephaestus.smartmeetingroom.controller;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
 import cn.hephaestus.smartmeetingroom.model.User;
+import cn.hephaestus.smartmeetingroom.model.UserFaceInfo;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
-import cn.hephaestus.smartmeetingroom.service.EmailService;
-import cn.hephaestus.smartmeetingroom.service.OrganizationService;
-import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.UserService;
+import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
@@ -25,10 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author zeng
@@ -44,6 +39,10 @@ public class UserController {
     OrganizationService organizationService;
     @Autowired
     EmailService emailService;
+    @Autowired
+    FaceInfoService faceInfoService;
+    @Autowired
+    MeetingRoomService meetingRoomService;
     //登入
     @RequestMapping("/login")
     public RetJson login(User user, Boolean isRemberMe, HttpServletRequest request){
@@ -188,4 +187,21 @@ public class UserController {
     public void getEmailCode(@RequestParam("email") String email){
         emailService.sentVerificationCode(email);
     }
+
+    //上传人脸信息
+    @RequestMapping("/uploadFeatureData")
+    public RetJson uploadFeatureData(String encryptedString,HttpServletRequest request){
+        User user = (User)request.getAttribute("user");
+        Base64.Decoder decoder = Base64.getDecoder();
+        //通过解密的算法，将encryptedString解密成bytes
+        byte[] bytes = decoder.decode(encryptedString);
+        //在此处检测bytes数组的长度是否为1023byte，sdk中规定了字节数组的大小
+
+        UserFaceInfo userFaceInfo = new UserFaceInfo();
+        userFaceInfo.setFeatureData(bytes);
+        faceInfoService.addFaceInfo(userFaceInfo);
+        userService.setFid(userFaceInfo.getFaceInfoId(),user.getId());
+        return RetJson.succcess(null);
+    }
+
 }
