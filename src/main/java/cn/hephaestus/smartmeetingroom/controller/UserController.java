@@ -69,7 +69,6 @@ public class UserController {
                     Map map = new LinkedHashMap();
                     map.put("token",token);
                     map.put("id",user.getId());
-                    map.put("role",user.getRole());
                     return RetJson.succcess(map);
                 }catch (Exception e){
                     System.out.println("token获取失败");

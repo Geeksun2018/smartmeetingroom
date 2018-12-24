@@ -128,6 +128,7 @@ public class UserServiceImpl implements UserService{
     public UserInfoEntity getUserInfoEntity(Integer id) {
         String departmentName=null;
         String orgName=null;
+        User user = userMapper.getUserByUserId(id);
         UserInfo userInfo = userInfoMapper.getUserInfoById(id);
         if (userInfo.getDid()!=null&&userInfo.getOid()!=null){
             departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
@@ -135,7 +136,7 @@ public class UserServiceImpl implements UserService{
         }
 
         UserInfoEntity userInfoEntity = new UserInfoEntity(userInfo.getId(),userInfo.getSex(),userInfo.getPhoneNum(),userInfo.getEmail(),userInfo.getImagePath()
-                ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName);
+                ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName,user.getRole());
         return userInfoEntity;
     }
 
