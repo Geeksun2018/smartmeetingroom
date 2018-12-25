@@ -34,4 +34,8 @@ public class UserInfoEntity {
     private String departmentName;
 
     private int role;
+
+    private Integer oid;
+
+    private Integer did;
 }

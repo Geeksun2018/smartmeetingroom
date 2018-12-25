@@ -38,4 +38,6 @@ public interface UserService {
     public List<UserInfo> getUserinfoListByOid(Integer oid);
 
     public List<UserInfo> getUserInfoListByDid(Integer oid,Integer did);
+
+    public String getHeadPortrait(Integer uid);
 }

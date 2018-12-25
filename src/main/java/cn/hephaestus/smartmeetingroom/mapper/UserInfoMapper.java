@@ -44,4 +44,10 @@ public interface UserInfoMapper {
             @Result(column = "nick_name",property = "nickName")
     })
     public List<UserInfo> getUserinfoListByDid(@Param("oid") Integer oid,@Param("did") Integer did);
+
+    @Select("select image_path from user_info where id = #{uid}")
+    @Results({
+            @Result(column = "image_path",property = "imagePath")
+    })
+    public String getHeadPortrait(@Param("uid") Integer uid);
 }

@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService{
         }
 
         UserInfoEntity userInfoEntity = new UserInfoEntity(userInfo.getId(),userInfo.getSex(),userInfo.getPhoneNum(),userInfo.getEmail(),userInfo.getImagePath()
-                ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName,user.getRole());
+                ,userInfo.getName(),userInfo.getNickName(),orgName,departmentName,user.getRole(),userInfo.getOid(),userInfo.getDid());
         return userInfoEntity;
     }
 
@@ -153,6 +153,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<UserInfo> getUserInfoListByDid(Integer oid,Integer did) {
         return userInfoMapper.getUserinfoListByDid(oid,did);
+    }
+
+    @Override
+    public String getHeadPortrait(Integer uid) {
+        return userInfoMapper.getHeadPortrait(uid);
     }
 
     @Override

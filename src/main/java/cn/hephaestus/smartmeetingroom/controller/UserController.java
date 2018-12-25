@@ -168,7 +168,8 @@ public class UserController {
         //图片校验
         Integer id= ((User)request.getAttribute("user")).getId();
         userService.saveUserHeadPortrait(multipartFile,id);
-        return RetJson.succcess(null);
+        String imagePath = userService.getHeadPortrait(id);
+        return RetJson.succcess("imagePath",imagePath);
     }
 
     //验证用户邮箱
