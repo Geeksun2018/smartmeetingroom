@@ -25,11 +25,13 @@ public interface UserService {
     public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id);
 
 
-    public boolean alterUserInfo(Integer id,UserInfo userInfo);
+    public boolean alterUserInfo(UserInfo userInfo);
 
     public UserInfo getUserInfo(Integer id);
 
     public boolean setOid(Integer oid,Integer userId);
+
+    public boolean setDid(Integer did,Integer userId);
 
     public UserInfoEntity getUserInfoEntity(Integer id);
 

@@ -104,13 +104,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean alterUserInfo(Integer id, UserInfo userInfo) {
-        //判断是否为本人操作
-        if(id == userInfo.getId()){
-            userInfoMapper.alterUserInfo(id,userInfo);
-            return true;
-        }
-        return false;
+    public boolean alterUserInfo(UserInfo userInfo) {
+        return userInfoMapper.alterUserInfo(userInfo);
     }
 
     @Override
@@ -122,6 +117,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean setOid(Integer oid, Integer userId) {
         return userInfoMapper.setOriganization(oid,userId);
+    }
+
+    @Override
+    public boolean setDid(Integer did, Integer userId) {
+        return userInfoMapper.setDepartment(did,userId);
     }
 
     @Override

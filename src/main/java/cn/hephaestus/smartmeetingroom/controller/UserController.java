@@ -2,6 +2,7 @@ package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
+import cn.hephaestus.smartmeetingroom.model.Department;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserFaceInfo;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
@@ -43,6 +44,8 @@ public class UserController {
     FaceInfoService faceInfoService;
     @Autowired
     MeetingRoomService meetingRoomService;
+    @Autowired
+    DepartmentService departmentService;
     //登入
     @RequestMapping("/login")
     public RetJson login(User user, Boolean isRemberMe, HttpServletRequest request){
@@ -150,15 +153,16 @@ public class UserController {
     //修改用户信息
     @RequestMapping("/alterUserinfo")
     public RetJson alterUserInfo(UserInfo userInfo,HttpServletRequest request){
-        Integer id= ((User)request.getAttribute("user")).getId();
-        UserInfo pastUserInfo = userService.getUserInfo(id);
-        userInfo.setFid(pastUserInfo.getFid());
-        userInfo.setImagePath(pastUserInfo.getImagePath());
         //将就一下
         if (!ValidatedUtil.validate(userInfo)){
             return RetJson.fail(-1,"请检查参数");
         }
-        userService.alterUserInfo(id,userInfo);//写死
+        Integer id= ((User)request.getAttribute("user")).getId();
+        UserInfo pastUserInfo = userService.getUserInfo(id);
+        userInfo.setFid(pastUserInfo.getFid());
+        userInfo.setImagePath(pastUserInfo.getImagePath());
+        userInfo.setId(id);
+        userService.alterUserInfo(userInfo);//写死
         return RetJson.succcess(null);
     }
 
@@ -199,7 +203,9 @@ public class UserController {
         //通过解密的算法，将encryptedString解密成bytes
         byte[] bytes = decoder.decode(encryptedString);
         //在此处检测bytes数组的长度是否为1023byte，sdk中规定了字节数组的大小
-
+        if(bytes.length != 1023){
+            return RetJson.fail(-1,"参数格式不正确！");
+        }
         UserFaceInfo userFaceInfo = new UserFaceInfo();
         userFaceInfo.setFeatureData(bytes);
         faceInfoService.addFaceInfo(userFaceInfo);
@@ -207,4 +213,16 @@ public class UserController {
         return RetJson.succcess(null);
     }
 
+    @RequestMapping("/updateDepartment")
+    public RetJson updateOrganizationAndDepartment(Integer oid,Integer did,HttpServletRequest request){
+        User user = (User)request.getAttribute("user");
+        Integer id = user.getId();
+        Department department = departmentService.getDepartment(did);
+        if(oid != department.getOid()){
+            return RetJson.fail(-1,"参数不合法");
+        }
+        userService.setOid(oid,id);
+        userService.setDid(did,id);
+        return RetJson.succcess(null);
+    }
 }
