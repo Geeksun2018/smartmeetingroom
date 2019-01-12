@@ -94,26 +94,6 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public long sSet(String key, String... values) {
-        try {
-            return redisTemplate.opsForSet().add(key,values);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    @Override
-    public Set<String> sGet(String key) {
-        try {
-            return redisTemplate.opsForSet().members(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
     public void del(String ... key){
         if(key!=null&&key.length>0){
             if(key.length==1){

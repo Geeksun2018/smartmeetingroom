@@ -28,12 +28,7 @@ public interface RedisService {
 
     public Set<String> sget(String key);
 
-
     public void setbit(String key,long pos,boolean flag);
-
-    public long sSet(String key, String...values);
-
-    public Set<String> sGet(String key);
 
     public void del(String ... key);
 }

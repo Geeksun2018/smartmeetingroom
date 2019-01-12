@@ -129,7 +129,7 @@ public class MeetingRoomController {
                 reserveInfo.setRid(roomId);
                 Integer reserveInfoId = reserveInfoService.addReserveInfo(reserveInfo);
                 meetingParticipantService.addParticipants(reserveInfoId,participants);
-                redisService.sSet("cm" + reserveInfoId,toStringArray(participants));
+                redisService.sadd("cm" + reserveInfoId,toStringArray(participants));
                 redisService.expire("cm" + reserveInfoId,31536000);
                 return RetJson.succcess("meetingId",reserveInfoId);
             }
@@ -173,9 +173,7 @@ public class MeetingRoomController {
             return RetJson.fail(-1,"参与者暂未注册！");
         }
         meetingParticipantService.deleteParticant(reserveId,participant);
-        Set set = redisService.sGet("cm" + reserveId);
-        set.remove(participant.toString());
-        redisService.sSet("cm" + reserveId,toStringArray(set));
+        redisService.sdel("cm" + reserveId,participant.toString());
         return RetJson.succcess(null);
     }
 
@@ -188,15 +186,15 @@ public class MeetingRoomController {
             return RetJson.fail(-1,"参与者暂未注册！");
         }
         meetingParticipantService.addParticant(reserveId,participant);
-        Set set = redisService.sGet("cm" + reserveId);
+        Set set = redisService.sget("cm" + reserveId);
         set.add(participant.toString());
-        redisService.sSet("cm" + reserveId,toStringArray(set));
+        redisService.sadd("cm" + reserveId,toStringArray(set));
         return RetJson.succcess(null);
     }
 
     @RequestMapping("/getParticipants")
     public RetJson addMeetingParticipant(Integer reserveId){
-        Set set = redisService.sGet("cm" + reserveId);
+        Set set = redisService.sget("cm" + reserveId);
         return RetJson.succcess("participants",set);
     }
 

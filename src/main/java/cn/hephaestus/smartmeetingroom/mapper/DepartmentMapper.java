@@ -26,4 +26,6 @@ public interface DepartmentMapper {
     @ResultMap(value = "departmentMap")
     public Department[] getDepartmentList(Integer oid);
 
+    @Update("update user_info set did = #{did} where id = #{userId}")
+    public Boolean setDepartment(@Param("did") Integer did,@Param("userId") Integer userId);
 }

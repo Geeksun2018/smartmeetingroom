@@ -1,6 +1,7 @@
 package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
+import cn.hephaestus.smartmeetingroom.mapper.DepartmentMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
 import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
 import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
@@ -39,6 +40,8 @@ public class UserServiceImpl implements UserService{
     private OrganizationService organizationService;
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
 
     @Override
@@ -121,7 +124,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean setDid(Integer did, Integer userId) {
-        return userInfoMapper.setDepartment(did,userId);
+        return departmentMapper.setDepartment(did,userId);
     }
 
     @Override
