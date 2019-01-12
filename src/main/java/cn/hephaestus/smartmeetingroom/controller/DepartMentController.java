@@ -24,10 +24,11 @@ public class DepartMentController {
 
     @RequestMapping("/getDepartments")
     public RetJson getDepartmentsByOid(Integer oid,HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
-        if(userService.getUserInfo(user.getId()).getOid() != oid){
-            return RetJson.fail(-1,"非法操作！");
-        }
+//        在修改公司时，需要查询部门的信息，因此不能判断该员工是否为该公司
+//        User user = (User)request.getAttribute("user");
+//        if(userService.getUserInfo(user.getId()).getOid() != oid){
+//            return RetJson.fail(-1,"非法操作！");
+//        }
         return RetJson.succcess("Departments",departmentService.getDepartmentList(oid));
     }
 
