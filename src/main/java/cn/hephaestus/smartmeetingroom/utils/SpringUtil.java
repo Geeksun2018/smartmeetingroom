@@ -16,7 +16,6 @@ public class SpringUtil{
     }
 
     public static ApplicationContext getApplicationContext() {
-
         return applicationContext;
 
     }

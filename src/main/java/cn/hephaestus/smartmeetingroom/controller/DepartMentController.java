@@ -1,7 +1,6 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
-import cn.hephaestus.smartmeetingroom.mapper.DepartmentMapper;
 import cn.hephaestus.smartmeetingroom.model.Department;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.DepartmentService;
@@ -12,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * 部门管理
+ */
 @RestController
 public class DepartMentController {
 

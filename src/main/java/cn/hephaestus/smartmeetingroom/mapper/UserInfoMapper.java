@@ -50,4 +50,8 @@ public interface UserInfoMapper {
             @Result(column = "image_path",property = "imagePath")
     })
     public String getHeadPortrait(@Param("uid") Integer uid);
+
+
+    @Select("select id from user_info where oid=#{oid} and did=#{did}")
+    public Integer[] getAllUserIdByDepartment(@Param("oid") int oid,@Param("did") int did);
 }

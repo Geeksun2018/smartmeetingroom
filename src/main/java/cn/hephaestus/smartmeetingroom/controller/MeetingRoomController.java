@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * 会议室的管理
+ */
 @RestController
 public class MeetingRoomController {
 
@@ -148,9 +151,9 @@ public class MeetingRoomController {
         //1.先查询将在该会议室开会的用户
         List<UserFaceInfo> lists = new LinkedList<>();
         lists = faceInfoService.getUserFaceInfoList(userService.getUserinfoListByOid(oid));
+
         //3.将传入的人脸信息与list中的比较
         for(int i = 0;i < lists.size();i++){
-
             sourceFaceFeature.setFeatureData(lists.get(i).getFeatureData());
             try {
                 if(faceEngineService.compareFaceFeature(targetFaceFeature,sourceFaceFeature) > 80){
