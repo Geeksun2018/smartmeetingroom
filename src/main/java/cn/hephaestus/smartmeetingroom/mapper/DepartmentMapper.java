@@ -25,4 +25,5 @@ public interface DepartmentMapper {
     @Select("select * from department where oid=#{oid}")
     @ResultMap(value = "departmentMap")
     public Department[] getDepartmentList(Integer oid);
+
 }

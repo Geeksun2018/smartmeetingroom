@@ -24,6 +24,11 @@ public interface RedisService {
 
     public void sadd(String key,String... arr);
 
+    public void sdel(String key,Object o);
+
+    public Set<String> sget(String key);
+
+
     public void setbit(String key,long pos,boolean flag);
 
     public long sSet(String key, String...values);

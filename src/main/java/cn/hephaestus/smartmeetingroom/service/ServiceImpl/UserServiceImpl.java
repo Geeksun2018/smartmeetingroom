@@ -161,6 +161,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public Integer[] getAllUserByDeparment(int oid, int did) {
+        return userInfoMapper.getAllUserIdByDepartment(oid,did);
+    }
+
+    @Override
     public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id) {
         String username=userMapper.getUserByUserId(id).getUsername();
         if (username==null){

@@ -58,7 +58,18 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void sadd(String key, String... values){
-//        redisTemplate.opsForSet().add(key,values,100);
+       redisTemplate.opsForSet().add(key,values);
+    }
+
+    @Override
+    public void sdel(String key, Object o) {
+        redisTemplate.opsForSet().remove(key,o);
+    }
+
+    @Override
+    public Set<String> sget(String key) {
+      Set<String> set=redisTemplate.opsForSet().members(key);
+      return set;
     }
 
     @Override

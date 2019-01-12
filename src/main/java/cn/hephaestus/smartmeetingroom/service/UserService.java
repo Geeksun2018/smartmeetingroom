@@ -42,4 +42,6 @@ public interface UserService {
     public List<UserInfo> getUserInfoListByDid(Integer oid,Integer did);
 
     public String getHeadPortrait(Integer uid);
+
+    public Integer[] getAllUserByDeparment(int oid,int did);
 }
