@@ -28,4 +28,9 @@ public class OrganizationController {
     public RetJson getOrganizations(){
         return RetJson.succcess("organizations",organizationService.getOrganizationInfos());
     }
+
+    @RequestMapping("/getOrganization")
+    public RetJson getOrganizationByOid(Integer oid){
+        return RetJson.succcess("organization",organizationService.getOne(oid));
+    }
 }

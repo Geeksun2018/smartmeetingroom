@@ -4,7 +4,9 @@ import cn.hephaestus.smartmeetingroom.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -79,4 +81,36 @@ public class RedisServiceImpl implements RedisService {
     public void setbit(String key,long pos,boolean flag){
         redisTemplate.opsForValue().setBit(key,pos,flag);
     }
+
+    @Override
+    public long sSet(String key, String... values) {
+        try {
+            return redisTemplate.opsForSet().add(key,values);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public Set<String> sGet(String key) {
+        try {
+            return redisTemplate.opsForSet().members(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void del(String ... key){
+        if(key!=null&&key.length>0){
+            if(key.length==1){
+                redisTemplate.delete(key[0]);
+            }else{
+                redisTemplate.delete(CollectionUtils.arrayToList(key));
+            }
+        }
+    }
+
 }

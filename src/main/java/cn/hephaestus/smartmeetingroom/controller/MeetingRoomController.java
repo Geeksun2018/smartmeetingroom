@@ -26,6 +26,10 @@ public class MeetingRoomController {
     FaceInfoService faceInfoService;
     @Autowired
     FaceEngineService faceEngineService;
+    @Autowired
+    MeetingParticipantService meetingParticipantService;
+    @Autowired
+    RedisService redisService;
     //1.添加会议室
     @RequestMapping("/addMeetingRoom")
     public RetJson addMeetingRoom(MeetingRoom meetingRoom, HttpServletRequest request){
@@ -94,7 +98,7 @@ public class MeetingRoomController {
     }
 
     @RequestMapping("/reserveRoom")
-    public RetJson reserveMeetingRoom(Integer roomId, Integer oid, String beginTime,String endTime,HttpServletRequest request){
+    public RetJson reserveMeetingRoom(Integer roomId, Integer oid, String beginTime,String endTime,Integer[] participants,HttpServletRequest request){
         Date beginDate;
         Date endDate;
         ReserveInfo reserveInfo = new ReserveInfo();
@@ -109,14 +113,22 @@ public class MeetingRoomController {
             e.printStackTrace();
             return RetJson.fail(-1,"时间格式错误！");
         }
+        for(Integer participant:participants){
+            if(userService.getUserByUserId(participant) == null){
+                return RetJson.fail(-1,"参与者暂未注册！");
+            }
+        }
         //只能预定自己公司的房间
         if(userInfo.getOid() == oid){
             if(reserveInfoService.queryIsAvaliable(roomId,beginTime,endTime).length == 0){
                 reserveInfo.setStartTime(beginDate);
                 reserveInfo.setEndTime(endDate);
                 reserveInfo.setRid(roomId);
-                reserveInfoService.addReserveInfo(reserveInfo);
-                return RetJson.succcess(null);
+                Integer reserveInfoId = reserveInfoService.addReserveInfo(reserveInfo);
+                meetingParticipantService.addParticipants(reserveInfoId,participants);
+                redisService.sSet("cm" + reserveInfoId,toStringArray(participants));
+                redisService.expire("cm" + reserveInfoId,31536000);
+                return RetJson.succcess("meetingId",reserveInfoId);
             }
             return RetJson.fail(-1,"会议室已被占用！");
         }
@@ -135,6 +147,56 @@ public class MeetingRoomController {
         return RetJson.fail(-1,"只能查询自己公司的会议室");
     }
 
+    @RequestMapping("/updateParticipants")
+    public RetJson updateMeetingParticipants(Integer reserveId,Integer[] participants){
+        if(reserveInfoService.getReserveInfoByReserveId(reserveId) == null){
+            return RetJson.fail(-1,"未查询到预定信息！");
+        }
+        for(Integer participant:participants){
+            if(userService.getUserByUserId(participant) == null){
+                return RetJson.fail(-1,"参与者暂未注册！");
+            }
+        }
+        meetingParticipantService.deleteParticipants(reserveId);
+        redisService.del("cm" + reserveId);
+        meetingParticipantService.addParticipants(reserveId,participants);
+        redisService.sadd("cm" + reserveId,toStringArray(participants));
+        return RetJson.succcess(null);
+    }
+
+    @RequestMapping("/deleteParticipant")
+    public RetJson deleteMeetingParticipant(Integer reserveId,Integer participant){
+        if(userService.getUserByUserId(participant) == null){
+            return RetJson.fail(-1,"参与者暂未注册！");
+        }
+        meetingParticipantService.deleteParticant(reserveId,participant);
+        Set set = redisService.sGet("cm" + reserveId);
+        set.remove(participant.toString());
+        redisService.sSet("cm" + reserveId,toStringArray(set));
+        return RetJson.succcess(null);
+    }
+
+    @RequestMapping("/addParticipant")
+    public RetJson addMeetingParticipant(Integer reserveId,Integer participant){
+        if(reserveInfoService.getReserveInfoByReserveId(reserveId) == null){
+            return RetJson.fail(-1,"预定信息不存在！");
+        }
+        if(userService.getUserByUserId(participant) == null){
+            return RetJson.fail(-1,"参与者暂未注册！");
+        }
+        meetingParticipantService.addParticant(reserveId,participant);
+        Set set = redisService.sGet("cm" + reserveId);
+        set.add(participant.toString());
+        redisService.sSet("cm" + reserveId,toStringArray(set));
+        return RetJson.succcess(null);
+    }
+
+    @RequestMapping("/getParticipants")
+    public RetJson addMeetingParticipant(Integer reserveId){
+        Set set = redisService.sGet("cm" + reserveId);
+        return RetJson.succcess("participants",set);
+    }
+
     @RequestMapping("/judgeFeatureData")
     public RetJson uploadFeatureData(String encryptedString,Integer oid,Integer roomId,HttpServletRequest request){
         FaceFeature targetFaceFeature = new FaceFeature();
@@ -150,7 +212,6 @@ public class MeetingRoomController {
         lists = faceInfoService.getUserFaceInfoList(userService.getUserinfoListByOid(oid));
         //3.将传入的人脸信息与list中的比较
         for(int i = 0;i < lists.size();i++){
-
             sourceFaceFeature.setFeatureData(lists.get(i).getFeatureData());
             try {
                 if(faceEngineService.compareFaceFeature(targetFaceFeature,sourceFaceFeature) > 80){
@@ -161,5 +222,23 @@ public class MeetingRoomController {
             }
         }
         return RetJson.fail(-1,"人脸验证失败！");
+    }
+
+    String[] toStringArray(Integer[] arrays){
+        List<String> lString = new ArrayList<>();
+        for(Integer num:arrays){
+            lString.add(num.toString());
+        }
+        return (String[])lString.toArray();
+    }
+
+    String[] toStringArray(Set set){
+        List<String> lString = new ArrayList<>();
+        Iterator<String> it = set.iterator();
+        while (it.hasNext()) {
+            String str = it.next();
+            lString.add(str);
+        }
+        return (String[])lString.toArray();
     }
 }
