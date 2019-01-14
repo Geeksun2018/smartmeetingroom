@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean alterUserInfo(UserInfo userInfo) {
-        return userInfoMapper.alterUserInfo(userInfo.getId(),userInfo);
+        return userInfoMapper.alterUserInfo(userInfo);
     }
 
     @Override

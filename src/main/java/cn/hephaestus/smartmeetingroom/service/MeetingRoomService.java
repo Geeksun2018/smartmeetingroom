@@ -16,4 +16,6 @@ public interface MeetingRoomService {
 
     public MeetingRoom[] getMeetingRoomList(Integer oid);
 
+    public MeetingRoom getMeetingRoomWithMacAddress(String macAddress);
+
 }

@@ -46,4 +46,9 @@ public class MeetingServiceImpl implements MeetingRoomService {
     public MeetingRoom[] getMeetingRoomList(Integer oid) {
         return meetingRoomMapper.getMeetingRoomList(oid);
     }
+
+    @Override
+    public MeetingRoom getMeetingRoomWithMacAddress(String macAddress) {
+        return meetingRoomMapper.getMeetingRoomWithMacAddress(macAddress);
+    }
 }

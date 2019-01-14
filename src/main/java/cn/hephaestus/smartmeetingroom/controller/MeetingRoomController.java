@@ -4,13 +4,11 @@ import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.*;
 import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
-import com.arcsoft.face.FaceFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -101,35 +99,31 @@ public class MeetingRoomController {
     }
 
     @RequestMapping("/reserveRoom")
-    public RetJson reserveMeetingRoom(Integer roomId, Integer oid, String beginTime,String endTime,Integer[] participants,HttpServletRequest request){
-        Date beginDate;
-        Date endDate;
-        ReserveInfo reserveInfo = new ReserveInfo();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        User user = (User)request.getAttribute("user");
-        UserInfo userInfo = userService.getUserInfo(34);
-        System.out.println(beginTime);
-        try {
-            beginDate = format.parse(beginTime);
-            endDate = format.parse(endTime);
-        }catch (Exception e){
-            e.printStackTrace();
-            return RetJson.fail(-1,"时间格式错误！");
+    public RetJson reserveMeetingRoom(ReserveInfo reserveInfo,HttpServletRequest request){
+        System.out.println(reserveInfo);
+        User user=(User) request.getAttribute("user");
+        UserInfo userInfo=userService.getUserInfo(user.getId());
+        //判断该用户是否拥有预定会议室的权限
+        if (user.getRole()==0){
+            return RetJson.fail(-1,"你没有预定会议室的权限");
         }
-        for(Integer participant:participants){
+
+        //判断参会人员是否合法
+        for(Integer participant:reserveInfo.getParticipants()){
             if(userService.getUserByUserId(participant) == null){
                 return RetJson.fail(-1,"参与者暂未注册！");
             }
         }
-        //只能预定自己公司的房间
-        if(userInfo.getOid() == oid){
-            if(reserveInfoService.queryIsAvaliable(roomId,beginTime,endTime).length == 0){
-                reserveInfo.setStartTime(beginDate);
-                reserveInfo.setEndTime(endDate);
-                reserveInfo.setRid(roomId);
+
+        //看该会议室是否存在
+        MeetingRoom room=meetingRoomService.getMeetingRoomWithRoomId(userInfo.getOid(),reserveInfo.getRid());
+
+        //预定会议室
+        if(room!=null){
+            if(reserveInfoService.queryIsAvaliable(reserveInfo.getRid(),reserveInfo.getStartTime().toString(),reserveInfo.getEndTime().toString()).length == 0){
                 Integer reserveInfoId = reserveInfoService.addReserveInfo(reserveInfo);
-                meetingParticipantService.addParticipants(reserveInfoId,participants);
-                redisService.sadd("cm" + reserveInfoId,toStringArray(participants));
+                meetingParticipantService.addParticipants(reserveInfoId,reserveInfo.getParticipants());
+                redisService.sadd("cm" + reserveInfoId,toStringArray(reserveInfo.getParticipants()));
                 redisService.expire("cm" + reserveInfoId,31536000);
                 return RetJson.succcess("meetingId",reserveInfoId);
             }
@@ -198,33 +192,6 @@ public class MeetingRoomController {
         return RetJson.succcess("participants",set);
     }
 
-    @RequestMapping("/judgeFeatureData")
-    public RetJson uploadFeatureData(String encryptedString,Integer oid,Integer roomId,HttpServletRequest request){
-        FaceFeature targetFaceFeature = new FaceFeature();
-        FaceFeature sourceFaceFeature = new FaceFeature();
-        User user = (User)request.getAttribute("user");
-        Base64.Decoder decoder = Base64.getDecoder();
-        //通过解密的算法，将encryptedString解密成bytes
-        byte[] featureData = decoder.decode(encryptedString);
-        targetFaceFeature.setFeatureData(featureData);
-        //暂时先查询是否为该公司的员工
-        //1.先查询将在该会议室开会的用户
-        List<UserFaceInfo> lists = new LinkedList<>();
-        lists = faceInfoService.getUserFaceInfoList(userService.getUserinfoListByOid(oid));
-
-        //3.将传入的人脸信息与list中的比较
-        for(int i = 0;i < lists.size();i++){
-            sourceFaceFeature.setFeatureData(lists.get(i).getFeatureData());
-            try {
-                if(faceEngineService.compareFaceFeature(targetFaceFeature,sourceFaceFeature) > 80){
-                    return RetJson.succcess(null);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        return RetJson.fail(-1,"人脸验证失败！");
-    }
 
     String[] toStringArray(Integer[] arrays){
         List<String> lString = new ArrayList<>();

@@ -6,6 +6,8 @@ import cn.hephaestus.smartmeetingroom.service.ReserveInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class ReserveInfoServiceImpl implements ReserveInfoService {
 
@@ -33,8 +35,8 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     }
 
     @Override
-    public ReserveInfo[] getReserveInfoByRoomId(Integer rid) {
-        return reserveTableMapper.getReserveInfoByRoomId(rid);
+    public ReserveInfo[] getReserveInfoByRoomId(Integer rid, Date date) {
+        return reserveTableMapper.getReserveInfoByRoomId(rid,date);
     }
 
     @Override

@@ -8,11 +8,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+//@NoArgsConstructor
 public class MeetingRoom {
     private int roomId;
     private int oid;//组织id
     private String roomName;
     private int capacity;
     private String address;
+    private String macAddress;//mac地址,使用md5加密
 }

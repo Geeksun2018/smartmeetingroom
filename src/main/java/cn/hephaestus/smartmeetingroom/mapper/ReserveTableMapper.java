@@ -3,6 +3,8 @@ package cn.hephaestus.smartmeetingroom.mapper;
 import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
+
 @Mapper
 public interface ReserveTableMapper {
 
@@ -24,13 +26,13 @@ public interface ReserveTableMapper {
     })
     public ReserveInfo getReserveInfoByReserveId(@Param("reserveId") Integer reserveId);
 
-    @Select("select * from reserve_table where rid = #{rid}")
+    @Select("select * from reserve_table where rid = #{rid} and to_days(start_time)=to_days(#{date})")
     @Results({
             @Result(property = "reserveId",column = "reserve_id"),
             @Result(property = "startTime",column = "start_time"),
             @Result(property = "endTime",column = "end_time")
     })
-    public ReserveInfo[] getReserveInfoByRoomId(@Param("rid") Integer rid);
+    public ReserveInfo[] getReserveInfoByRoomId(@Param("rid") Integer rid, @Param("date")Date date);
 
     @Select("select * from reserve_table where ((#{beginTime} between start_time and end_time)or " +
             "(#{endTime} between start_time and end_time)) and rid = rid")

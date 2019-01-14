@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface MeetingRoomMapper {
 
-    @Insert({"insert into meeting_room(room_name,capacity,address,oid) values(#{roomName},#{capacity},#{address},#{oid})"})
+    @Insert({"insert into meeting_room(room_name,capacity,address,oid,mac_address) values(#{roomName},#{capacity},#{address},#{oid},#{macAddress})"})
     @Options(useGeneratedKeys = true,keyProperty = "roomId",keyColumn = "room_id")
     public int addMeetingRoom(MeetingRoom meetingRoom);
 
@@ -30,6 +30,14 @@ public interface MeetingRoomMapper {
     })
     public MeetingRoom getMeetingRoomWithRoomName(@Param("oid") Integer oid,@Param("roomName") String roomName);
 
+    @Select("select * from meeting_room where mac_address=#{macAddress}")
+    @Results({
+            @Result(column = "room_id",property = "roomId"),
+            @Result(column = "room_name",property = "roomName")
+    })
+    public MeetingRoom getMeetingRoomWithMacAddress(String macAddress);
+
     @Select("select * from meeting_room where oid=#{oid}")
     public MeetingRoom[] getMeetingRoomList(@Param("oid") Integer oid);
+
 }
