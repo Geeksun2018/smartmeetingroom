@@ -40,5 +40,6 @@ my:
       - /getcode
       - /error
       - /alterorganization
-
+server:
+  port: 8081
 #邮箱服务
