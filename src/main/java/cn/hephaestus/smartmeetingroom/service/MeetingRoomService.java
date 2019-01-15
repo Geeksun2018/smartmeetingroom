@@ -10,9 +10,9 @@ public interface MeetingRoomService {
 
     public boolean delteteMeetingRoom(Integer oid,Integer roomId);
 
-    public MeetingRoom getMeetingRoomWithRoomName(Integer oid,String roomName);
+    public MeetingRoom getMeetingRoomWithRoomName(String roomName);
 
-    public MeetingRoom getMeetingRoomWithRoomId(Integer oid,Integer roomId);
+    public MeetingRoom getMeetingRoomWithRoomId(Integer roomId);
 
     public MeetingRoom[] getMeetingRoomList(Integer oid);
 

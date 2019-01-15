@@ -182,7 +182,11 @@
             <systemPath>${basedir}/lib/arcsoft-sdk-face-2.0.0.0.jar</systemPath>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

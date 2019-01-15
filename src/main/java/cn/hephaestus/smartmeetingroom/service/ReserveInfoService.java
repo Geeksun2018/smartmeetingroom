@@ -6,7 +6,7 @@ import java.util.Date;
 
 public interface ReserveInfoService {
 
-    public int addReserveInfo(ReserveInfo reserveInfo);
+    public boolean addReserveInfo(ReserveInfo reserveInfo);
 
     public boolean deleteReserveInfo(Integer reserveId);
 
@@ -17,4 +17,6 @@ public interface ReserveInfoService {
     public ReserveInfo[] getReserveInfoByRoomId(Integer rid, Date date);
 
     public ReserveInfo[] queryIsAvaliable(Integer rid,String beginTime,String endTime);
+
+    public Integer queryIsAvaliableByReserveId(Integer reserveId,String beginTime,String endTime);
 }

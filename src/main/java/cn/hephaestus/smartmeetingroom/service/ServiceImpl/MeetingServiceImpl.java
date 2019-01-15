@@ -33,13 +33,13 @@ public class MeetingServiceImpl implements MeetingRoomService {
     }
 
     @Override
-    public MeetingRoom getMeetingRoomWithRoomName(Integer oid,String roomName) {
-        return meetingRoomMapper.getMeetingRoomWithRoomName(oid,roomName);
+    public MeetingRoom getMeetingRoomWithRoomName(String roomName) {
+        return meetingRoomMapper.getMeetingRoomWithRoomName(roomName);
     }
 
     @Override
-    public MeetingRoom getMeetingRoomWithRoomId(Integer oid,Integer roomId) {
-        return meetingRoomMapper.getMeetingRoomWithRoomId(oid,roomId);
+    public MeetingRoom getMeetingRoomWithRoomId(Integer roomId) {
+        return meetingRoomMapper.getMeetingRoomWithRoomId(roomId);
     }
 
     @Override

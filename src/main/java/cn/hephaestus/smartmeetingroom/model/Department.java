@@ -10,6 +10,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class Department {
+
     private Integer departmentId;
 
     private Integer oid;            //组织id

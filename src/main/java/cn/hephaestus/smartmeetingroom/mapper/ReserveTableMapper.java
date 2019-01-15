@@ -10,7 +10,7 @@ public interface ReserveTableMapper {
 
     @Insert({"insert into reserve_table(start_time,end_time,rid) values(#{startTime},#{endTime},#{rid})"})
     @Options(useGeneratedKeys = true,keyProperty = "reserveId",keyColumn = "reserve_id")
-    public int addReserveInfo(ReserveInfo reserveInfo);
+    public boolean addReserveInfo(ReserveInfo reserveInfo);
 
     @Delete("delete from reserve_table where reserve_id = #{reserveId}")
     public boolean deleteReserveInfo(@Param("reserveId") Integer reserveId);
@@ -34,12 +34,16 @@ public interface ReserveTableMapper {
     })
     public ReserveInfo[] getReserveInfoByRoomId(@Param("rid") Integer rid, @Param("date")Date date);
 
-    @Select("select * from reserve_table where ((#{beginTime} between start_time and end_time)or " +
-            "(#{endTime} between start_time and end_time)) and rid = rid")
+    @Select("select * from reserve_table where ((#{startTime} > start_time and #{startTime} < end_time)or(#{endTime} > start_time and #{endTime} < end_time) " +
+            "or (start_time >= #{startTime} and end_time <= #{endTime})) and rid=#{rid}")
     @Results({
             @Result(property = "reserveId",column = "reserve_id"),
             @Result(property = "startTime",column = "start_time"),
             @Result(property = "endTime",column = "end_time")
     })
-    public ReserveInfo[] queryIsAvaliable(@Param("rid") Integer rid,@Param("beginTime") String beginTime,@Param("endTime") String endTime);
+    public ReserveInfo[] queryIsAvaliable(@Param("rid") Integer rid,@Param("startTime") String startTime,@Param("endTime") String endTime);
+
+    @Select("select rid from reserve_table where ((#{beginTime} between start_time and end_time)or " +
+            "(#{endTime} between start_time and end_time)) and reserve_id = #{reserveId}")
+    public Integer queryIsAvaliableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") String beginTime,@Param("endTime") String endTime);
 }

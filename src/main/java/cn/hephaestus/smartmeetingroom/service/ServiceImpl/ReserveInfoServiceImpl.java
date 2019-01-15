@@ -15,7 +15,7 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     ReserveTableMapper reserveTableMapper;
 
     @Override
-    public int addReserveInfo(ReserveInfo reserveInfo) {
+    public boolean addReserveInfo(ReserveInfo reserveInfo) {
         return reserveTableMapper.addReserveInfo(reserveInfo);
     }
 
@@ -42,5 +42,10 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     @Override
     public ReserveInfo[] queryIsAvaliable(Integer rid, String beginTime, String endTime) {
         return reserveTableMapper.queryIsAvaliable(rid,beginTime,endTime);
+    }
+
+    @Override
+    public Integer queryIsAvaliableByReserveId(Integer reserveId, String beginTime, String endTime) {
+        return reserveTableMapper.queryIsAvaliableByReserveId(reserveId,beginTime,endTime);
     }
 }

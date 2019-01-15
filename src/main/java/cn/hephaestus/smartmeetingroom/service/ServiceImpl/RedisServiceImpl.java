@@ -104,4 +104,9 @@ public class RedisServiceImpl implements RedisService {
         }
     }
 
+    @Override
+    public Set<String> sGetByPattern(String pattern) {
+        return redisTemplate.keys(pattern + "*");
+    }
+
 }

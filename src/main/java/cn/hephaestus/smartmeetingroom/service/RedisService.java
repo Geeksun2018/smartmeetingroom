@@ -31,4 +31,6 @@ public interface RedisService {
     public void setbit(String key,long pos,boolean flag);
 
     public void del(String ... key);
+    //获取以pattern开头的Set
+    public Set<String> sGetByPattern(String pattern);
 }
