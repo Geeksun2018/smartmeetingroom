@@ -43,8 +43,12 @@ public class DepartMentController {
         if(user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限！");
         }
-        if(departmentService.deleteDepartment(did,oid)){
-            return RetJson.succcess(null);
+        try{
+            if(departmentService.deleteDepartment(did,oid)){
+                return RetJson.succcess(null);
+            }
+        }catch (Exception e){
+            return  RetJson.fail(-1,"请把该部门的员工转到其他部门！");
         }
         return  RetJson.fail(-1,"删除失败！");
     }
@@ -60,5 +64,6 @@ public class DepartMentController {
         }
         return RetJson.fail(-1,"插入失败！");
     }
+
 
 }

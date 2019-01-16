@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 public class CommentController {
@@ -20,7 +21,7 @@ public class CommentController {
     @Autowired
     ArticleService articleService;
     @RequestMapping("/addComment")
-    public RetJson addComment(Comment comment, HttpServletRequest request){
+    public RetJson addComment(@Valid Comment comment, HttpServletRequest request){
         User user = (User)request.getAttribute("user");
         if(comment.getUid() != user.getId()){
             return RetJson.fail(-1,"非法操作");
@@ -34,6 +35,9 @@ public class CommentController {
     @RequestMapping("/delComment")
     public RetJson deleteComment(Integer commentId,Integer uid, HttpServletRequest request){
         Comment comment = commentService.getComment(commentId);
+        if(comment == null){
+            return RetJson.fail(-1,"该评论不存在！");
+        }
         Article article = articleService.getArticle(comment.getArticleId());
         if(uid == comment.getUid()||uid == article.getUserId()){
             commentService.deleteComment(commentId);
