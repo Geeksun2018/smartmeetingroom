@@ -14,6 +14,9 @@ public interface ArticleService {
 
     public Article getArticle(Integer articleId);
 
+    //获取与该用户相同部门的人的动态
+    public List<Article> getDepartmentArticle(Integer uid);
+
     public List<Integer>  getLikeList(Integer articleId);
 
     public boolean deleteLikeById(Integer uid,Integer articleId);

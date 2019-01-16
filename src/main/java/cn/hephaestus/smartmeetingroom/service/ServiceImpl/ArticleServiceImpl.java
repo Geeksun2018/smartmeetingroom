@@ -35,9 +35,18 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public List<Article> getDepartmentArticle(Integer uid) {
+
+        return null;
+    }
+
+    @Override
     public List<Integer> getLikeList(Integer articleId) {
         List<Integer> userIdList = new LinkedList<>();
         String[] userIdStrings = articleMapper.getLikeList(articleId).split("\\.");
+        if (userIdStrings[0].equals("")||userIdStrings==null||userIdStrings.length==0){
+            return null;
+        }
         for(int i = 0;i < userIdStrings.length;i++){
             ((LinkedList<Integer>) userIdList).push(Integer.parseInt(userIdStrings[i]));
         }
@@ -66,7 +75,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void like(Integer uid, Integer articleId) {
         String likeList = articleMapper.getLikeList(articleId);
-        if(likeList.endsWith("")){
+        if(likeList==null||likeList.endsWith("")){
             likeList = uid.toString();
             articleMapper.updateLikeList(articleId,likeList);
             return;
@@ -78,6 +87,10 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     public boolean isLiked(Integer uid, Integer articleId){
+        List<Integer> list=getLikeList(articleId);
+        if (list==null){
+            return false;
+        }
         return getLikeList(articleId).contains(uid);
     }
 }

@@ -23,9 +23,7 @@ public class CommentController {
     @RequestMapping("/addComment")
     public RetJson addComment(@Valid Comment comment, HttpServletRequest request){
         User user = (User)request.getAttribute("user");
-        if(comment.getUid() != user.getId()){
-            return RetJson.fail(-1,"非法操作");
-        }
+        comment.setUid(user.getId());
         if(commentService.insertComment(comment)){
             return RetJson.succcess("commentId",comment.getCommentId());
         }
@@ -33,7 +31,8 @@ public class CommentController {
     }
 
     @RequestMapping("/delComment")
-    public RetJson deleteComment(Integer commentId,Integer uid, HttpServletRequest request){
+    public RetJson deleteComment(Integer commentId, HttpServletRequest request){
+        Integer uid = ((User)request.getAttribute("user")).getId();
         Comment comment = commentService.getComment(commentId);
         if(comment == null){
             return RetJson.fail(-1,"该评论不存在！");
@@ -44,18 +43,6 @@ public class CommentController {
             return RetJson.succcess(null);
         }
         return RetJson.fail(-1,"删除失败！");
-    }
-
-    @RequestMapping("/updateComment")
-    public RetJson updateComment(Comment comment, HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
-        if(comment.getUid() != user.getId()){
-            return RetJson.fail(-1,"非法操作");
-        }
-        if(commentService.updateComment(comment)){
-            return RetJson.succcess("commentId",comment.getCommentId());
-        }
-        return RetJson.fail(-1,"非法操作!");
     }
 
     @RequestMapping("/getComments")

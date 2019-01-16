@@ -17,9 +17,9 @@ public class AgentEventController {
 
     @RequestMapping("/addAgentEvent")
     public RetJson addAgentTime(AgentEvent agentEvent, HttpServletRequest request){
-        //校验...
         Integer uid= (Integer) request.getAttribute("id");
         agentEvent.setUid(uid);
+
         if (agentEventService.addAgentEvent(agentEvent)){
             return RetJson.succcess(null);
         }else {
@@ -38,8 +38,7 @@ public class AgentEventController {
     }
 
     @RequestMapping("/alterAgentEvent")
-    public RetJson alterAgentTime(int id, AgentEvent agentEvent, HttpServletRequest request){
-        //验证
+    public RetJson alterAgentTime(AgentEvent agentEvent, HttpServletRequest request){
         Integer uid= (Integer) request.getAttribute("id");
         agentEvent.setUid(uid);
         if (agentEventService.alterAgentEvent(agentEvent)){
