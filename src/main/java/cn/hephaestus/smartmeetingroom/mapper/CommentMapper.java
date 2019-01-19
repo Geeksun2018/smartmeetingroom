@@ -33,4 +33,7 @@ public interface CommentMapper {
     })
     public Comment getComment(@Param("commentId") Integer commentId);
 
+    @Delete("delete * from article_comment where article_id = #{articleId}")
+    public boolean deleteCommentsByArticleId(@Param("articleId") Integer articleId);
+
 }

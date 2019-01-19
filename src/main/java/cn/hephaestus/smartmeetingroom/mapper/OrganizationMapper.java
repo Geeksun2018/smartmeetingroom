@@ -10,7 +10,7 @@ public interface OrganizationMapper {
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public boolean addOrganization(OrganizationInfo organizationInfo);
 
-    @Update("update organization set org.name=#{orgName},email=#{email},address=#{address},introduction=#{introduction} where id=#{id}")
+    @Update("update organization set org_name=#{orgName},email=#{email},address=#{address},introduction=#{introduction} where id=#{id}")
     public boolean alterOrganization(OrganizationInfo organizationInfo);
 
     @Select("select * from organization where id=#{oid}")

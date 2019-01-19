@@ -77,7 +77,7 @@ public class MeetingRoomController {
         return RetJson.fail(-1,"当前用户没有权限！");
     }
     //3.删除会议室
-    @RequestMapping("deleteMeetingRoom")
+    @RequestMapping("/deleteMeetingRoom")
     public RetJson deleteMeetingRoom(Integer oid,Integer roomId,HttpServletRequest request){
         User user=(User)request.getAttribute("user");
         if (user.getRole()==0){
@@ -142,11 +142,7 @@ public class MeetingRoomController {
                 reserveInfoService.addReserveInfo(reserveInfo);
                 //插入后直接映射到实体类了!!!
                 Integer reserveInfoId = reserveInfo.getReserveId();
-                meetingParticipantService.addParticipants(reserveInfoId,reserveInfo.getParticipants());
-                //Object 数组不能转对象数组。
-                String[] participants = toStringArray(reserveInfo.getParticipants());
-                redisService.sadd(oid + "cm" + reserveInfoId,participants);
-                redisService.expire(oid  + "cm" + reserveInfoId,31536000);
+                meetingParticipantService.addParticipants(oid,reserveInfoId,reserveInfo.getParticipants());
                 return RetJson.succcess("meetingId",reserveInfoId);
             }
             return RetJson.fail(-1,"会议室已被占用！");
@@ -189,10 +185,8 @@ public class MeetingRoomController {
                 return RetJson.fail(-1,"参与者暂未注册！");
             }
         }
-        meetingParticipantService.deleteParticipants(reserveId);
-        meetingParticipantService.addParticipants(reserveId,participants);
-        redisService.del(oid + "cm" + reserveId);
-        redisService.sadd(oid + "cm" + reserveId,toStringArray(participants));
+        meetingParticipantService.deleteParticipants(oid,reserveId);
+        meetingParticipantService.addParticipants(oid,reserveId,participants);
         return RetJson.succcess(null);
     }
 
@@ -207,8 +201,7 @@ public class MeetingRoomController {
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有删除参与者的的权限");
         }
-        meetingParticipantService.deleteParticant(reserveId,participant);
-        redisService.sdel(oid + "cm" + reserveId,participant.toString());
+        meetingParticipantService.deleteParticipant(oid,reserveId,participant);
         return RetJson.succcess(null);
     }
 
@@ -226,8 +219,7 @@ public class MeetingRoomController {
         if(userService.getUserByUserId(participant) == null){
             return RetJson.fail(-1,"参与者暂未注册！");
         }
-        meetingParticipantService.addParticant(reserveId,participant);
-        redisService.sadd(oid + "cm" + reserveId,participant.toString());
+        meetingParticipantService.addParticipant(oid,reserveId,participant);
         return RetJson.succcess(null);
     }
 
@@ -259,26 +251,6 @@ public class MeetingRoomController {
                 roomSet.add(occupiedRoomId);
             }
         }
-        Map map = new LinkedHashMap();
-        map.put("occupiedRoomId",roomSet);
-        return RetJson.succcess(map);
-    }
-
-    String[] toStringArray(Integer[] arrays){
-        List<String> lString = new ArrayList<>();
-        for(Integer num:arrays){
-            lString.add(num.toString());
-        }
-        return lString.toArray(new String[0]);
-    }
-
-    String[] toStringArray(Set set){
-        List<String> lString = new ArrayList<>();
-        Iterator<String> it = set.iterator();
-        while (it.hasNext()) {
-            String str = it.next();
-            lString.add(str);
-        }
-        return lString.toArray(new String[0]);
+        return RetJson.succcess("occupiedRoomId",roomSet);
     }
 }

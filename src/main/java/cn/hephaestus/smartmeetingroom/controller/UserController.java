@@ -225,4 +225,23 @@ public class UserController {
         userService.setDid(did,id);
         return RetJson.succcess(null);
     }
+
+    @RequestMapping("/getMeetings")
+    public RetJson getUserMeetinds(HttpServletRequest request){
+        User user = (User)request.getAttribute("user");
+        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
+        Integer uid = user.getId();
+        Integer oid = userInfo.getOid();
+        Set<String> keys = redisService.sGetByPattern(oid + "cm");
+        Set<Integer> mids = new LinkedHashSet<>();
+        for(String key:keys){
+            Set<String> set = redisService.sget(key);
+            if(set.contains(uid.toString())){
+                key = key.substring(key.indexOf('m') + 1);
+                Integer reserveId = Integer.parseInt(key);
+                mids.add(reserveId);
+            }
+        }
+        return RetJson.succcess("mids",mids);
+    }
 }

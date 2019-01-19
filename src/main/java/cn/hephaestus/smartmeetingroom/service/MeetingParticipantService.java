@@ -1,13 +1,13 @@
 package cn.hephaestus.smartmeetingroom.service;
 
 public interface MeetingParticipantService {
-    public int addParticant(Integer reserveInfoId,Integer uid);
+    public int addParticipant(Integer oid,Integer reserveInfoId,Integer uid);
 
-    public boolean deleteParticant(Integer reserveInfoId,Integer uid);
+    public boolean deleteParticipant(Integer oid,Integer reserveInfoId,Integer uid);
 
-    public Integer[] getParticipants(Integer reserveInfoId);
+    public Integer[] getParticipants(Integer oid,Integer reserveInfoId);
 
-    public boolean addParticipants(Integer reserveInfoId,Integer[] uids);
+    public boolean addParticipants(Integer oid,Integer reserveInfoId,Integer[] uids);
 
-    public boolean deleteParticipants(Integer reserveInfoId);
+    public boolean deleteParticipants(Integer oid,Integer reserveInfoId);
 }

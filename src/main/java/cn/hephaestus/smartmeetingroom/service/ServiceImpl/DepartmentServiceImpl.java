@@ -23,6 +23,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public boolean deleteDepartment(Integer did, Integer oid) {
+        //删除前必须把所有员工的部门都改成另外的部门！
         return departmentMapper.deleteDepartment(did,oid);
     }
 

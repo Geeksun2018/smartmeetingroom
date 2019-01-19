@@ -62,8 +62,8 @@ public class AndroidThingsController {
 
 
     @RequestMapping("/faceOpen")
-    public RetJson faceOpen(String encryptedString,String macAddress){
-
+    public RetJson faceOpen(String encryptedString,String macAddress, HttpServletRequest request){
+        UserInfo userInfo1 = (UserInfo) request.getAttribute("userInfo");
         FaceFeature targetFaceFeature = new FaceFeature();
         FaceFeature sourceFaceFeature = new FaceFeature();
 
@@ -93,10 +93,10 @@ public class AndroidThingsController {
         }
 
         //找到参加该会的人
-        Integer[] uids=meetingParticipantService.getParticipants(reserve.getReserveId());
+        Integer[] uids=meetingParticipantService.getParticipants(userInfo1.getOid(),reserve.getReserveId());
 
         List<UserInfo> list=new LinkedList<>();
-        UserInfo userInfo=new UserInfo();
+        UserInfo userInfo=null;
         for (Integer uid:uids){
             userInfo=userService.getUserInfo(uid);
             list.add(userInfo);
