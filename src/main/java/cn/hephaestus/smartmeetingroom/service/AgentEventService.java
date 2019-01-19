@@ -10,5 +10,7 @@ public interface AgentEventService {
 
     public AgentEvent[] getAllAgentEvent(int uid);
 
+    public AgentEvent getAgentById(int id,int uid);
+
     public boolean alterAgentEvent(AgentEvent agentEvent);
 }

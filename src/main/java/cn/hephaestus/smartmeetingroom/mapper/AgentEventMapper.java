@@ -11,10 +11,16 @@ public interface AgentEventMapper {
     @Update("delete from agent_event where id=#{id} and uid=#{uid}")
     public boolean deleteAgentEvent(@Param("uid") int uid, @Param("id") int id);
 
-    @Update("update agent_event set content=#{content},startTime=#{startTime},endTime=#{endTime},status=#{status} where id=#{id} and uid=#{uid}")
+    @Update("update agent_event set content=#{content},startTime=#{startTime},endTime=#{endTime},state=#{state} where id=#{id} and uid=#{uid}")
     public boolean alterAgentEvent(AgentEvent agentEvent);
+
 
     @Select("select * from agent_event where uid=#{uid}")
     @Options(useGeneratedKeys = true,keyColumn = "id",keyProperty = "id")
-    public AgentEvent[] getAgentEvent(int uid);
+    public AgentEvent[] getAllAgentEvents(int uid);
+
+    @Select("select * from agent_event where uid=#{uid} and id=#{id}")
+    @Options(useGeneratedKeys = true,keyColumn = "id",keyProperty = "id")
+    public AgentEvent getAgentEventById(@Param("id") int id,@Param("uid") int uid);
+
 }

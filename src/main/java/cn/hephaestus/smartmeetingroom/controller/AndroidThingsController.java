@@ -63,6 +63,10 @@ public class AndroidThingsController {
 
     @RequestMapping("/faceOpen")
     public RetJson faceOpen(String encryptedString,String macAddress, HttpServletRequest request){
+        //测试期间
+        if (encryptedString!=null){
+            return RetJson.succcess(null);
+        }
         UserInfo userInfo1 = (UserInfo) request.getAttribute("userInfo");
         FaceFeature targetFaceFeature = new FaceFeature();
         FaceFeature sourceFaceFeature = new FaceFeature();
@@ -96,7 +100,7 @@ public class AndroidThingsController {
         Integer[] uids=meetingParticipantService.getParticipants(userInfo1.getOid(),reserve.getReserveId());
 
         List<UserInfo> list=new LinkedList<>();
-        UserInfo userInfo=null;
+        UserInfo userInfo=new UserInfo();
         for (Integer uid:uids){
             userInfo=userService.getUserInfo(uid);
             list.add(userInfo);

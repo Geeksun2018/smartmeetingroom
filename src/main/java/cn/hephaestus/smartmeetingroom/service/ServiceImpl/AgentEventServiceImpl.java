@@ -20,13 +20,34 @@ public class AgentEventServiceImpl implements AgentEventService {
         return agentEventMapper.deleteAgentEvent(uid,id);
     }
 
+
+
     @Override
     public AgentEvent[] getAllAgentEvent(int uid) {
-        return agentEventMapper.getAgentEvent(uid);
+        return agentEventMapper.getAllAgentEvents(uid);
+    }
+
+    @Override
+    public AgentEvent getAgentById(int uid,int id) {
+        return agentEventMapper.getAgentEventById(id,uid);
     }
 
     @Override
     public boolean alterAgentEvent(AgentEvent agentEvent) {
-        return agentEventMapper.alterAgentEvent(agentEvent);
+        AgentEvent a=getAgentById(agentEvent.getUid(),agentEvent.getId());
+        if (a==null){
+            return false;
+        }
+        if (agentEvent.getContent()!=null){
+            a.setContent(agentEvent.getContent());
+        }
+        if (agentEvent.getStartTime()!=null){
+            a.setStartTime(agentEvent.getStartTime());
+        }
+        if (agentEvent.getEndTime()!=null){
+            a.setEndTime(agentEvent.getEndTime());
+        }
+        a.setState(agentEvent.isState());
+        return agentEventMapper.alterAgentEvent(a);
     }
 }

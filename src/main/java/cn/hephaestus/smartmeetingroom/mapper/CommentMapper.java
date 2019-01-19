@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface CommentMapper {
 
-    @Insert({"insert into article_comment(article_id,content,uid,creat_time) values(#{articleId},#{content},#{uid},#{creatTime})"})
+    @Insert({"insert into article_comment(article_id,content,uid) values(#{articleId},#{content},#{uid})"})
     @Options(useGeneratedKeys = true,keyProperty = "commentId",keyColumn = "comment_id")
     public boolean insertComment(Comment comment);
 

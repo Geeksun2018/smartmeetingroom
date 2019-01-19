@@ -6,13 +6,12 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface ArticleMapper {
 
-    @Insert({"insert into article(content,user_id,article_name,creat_time,like_list) values(#{content},#{userId},#{articleName},#{creatTime},#{likeList})"})
+    @Insert({"insert into article(content,user_id,creat_time) values(#{content},#{userId},#{creatTime})"})
     @Options(useGeneratedKeys = true,keyProperty = "articleId",keyColumn = "article_id")
     public boolean insertArticle(Article article);
 
-    @Update("update article set content = #{article.content},user_id = #{article.userId}, article_name = #{article.articleName}" +
-            " where article_id = #{article.articleId}")
-    public boolean updateArticle(@Param("article") Article article);
+    @Update("update article set content = #{content} where article_id = #{articleId} and user_id=#{userId}")
+    public boolean updateArticle(Article article);
 
     @Delete("delete from article where article_id = #{articleId}")
     public boolean deleteArticleByArticleId(@Param("articleId")Integer articleId);
@@ -20,7 +19,6 @@ public interface ArticleMapper {
     @Select("select * from article where article_id = #{articleId}")
     @Results(value = {
             @Result(column = "article_id",property = "articleId"),
-            @Result(column = "article_name",property = "articleName"),
             @Result(column = "creat_time",property = "creatTime"),
             @Result(column = "like_list",property = "likeList"),
             @Result(column = "user_id",property = "userId")

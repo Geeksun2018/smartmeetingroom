@@ -5,7 +5,9 @@ import cn.hephaestus.smartmeetingroom.model.Article;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,11 +22,11 @@ public class ArticleController {
     public RetJson uploadArticle(Article article, HttpServletRequest request){
         //校验参数！
         User user = (User) request.getAttribute("user");
-        if(user.getId() == article.getUserId()) {
-            return RetJson.fail(-1,"非法操作");
-        }
-        if(articleService.insertArticle(article))
+        article.setUserId(user.getId());
+
+        if(articleService.insertArticle(article)){
             return RetJson.succcess("articleId",article.getArticleId());
+        }
         return RetJson.fail(-1,"插入失败！");
     }
 
@@ -32,16 +34,16 @@ public class ArticleController {
     public RetJson updateArticle(Article article, HttpServletRequest request){
         //校验参数！
         User user = (User) request.getAttribute("user");
-        if(user.getId() == article.getUserId()) {
-            return RetJson.fail(-1,"非法操作");
-        }
-        if(articleService.insertArticle(article))
+        article.setUserId(user.getId());
+        if(articleService.updateArticle(article)){
             return RetJson.succcess(null);
+        }
         return RetJson.fail(-1,"更新失败！");
     }
 
     @RequestMapping("/like")
-    public RetJson likeArticle(Integer uid,Integer articleId, HttpServletRequest request){
+    public RetJson likeArticle(Integer articleId, HttpServletRequest request){
+        Integer uid=((User)request.getAttribute("user")).getId();
         if(articleService.isLiked(uid,articleId)){
             return RetJson.fail(-1,"重复点赞！");
         }
@@ -50,8 +52,9 @@ public class ArticleController {
     }
 
     @RequestMapping("/deleteLike")
-    public RetJson deleteLike(Integer uid,Integer articleId, HttpServletRequest request){
-        if(articleService.isLiked(uid,articleId)){
+    public RetJson deleteLike(Integer articleId, HttpServletRequest request){
+        Integer uid=((User)request.getAttribute("user")).getId();
+        if(!articleService.isLiked(uid,articleId)){
             return RetJson.fail(-1,"非法操作！");
         }
         articleService.deleteLikeById(uid,articleId);
@@ -62,6 +65,13 @@ public class ArticleController {
     public RetJson getArticleById(Integer articleId, HttpServletRequest request){
         Article article = articleService.getArticle(articleId);
         return RetJson.succcess("Article",article);
+    }
+
+    @RequestMapping("/getDepartmentArticle")
+    public RetJson getDepartmentArticle(HttpServletRequest request){
+        Integer uid=((User)request.getAttribute("user")).getId();
+
+        return RetJson.succcess(null);
     }
 
 }

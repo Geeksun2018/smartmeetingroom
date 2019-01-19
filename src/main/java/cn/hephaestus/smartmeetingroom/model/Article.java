@@ -1,7 +1,9 @@
 package cn.hephaestus.smartmeetingroom.model;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Getter
@@ -12,11 +14,11 @@ import java.util.Date;
 public class Article {
     Integer articleId;
 
+    @Length(max = 300,min = 1)
+    @NotNull
     String content;
 
     Integer userId;
-
-    String articleName;
 
     Date creatTime;
     //1.2.3.4.5.6.11.12点赞的用户id 用'.'分割
