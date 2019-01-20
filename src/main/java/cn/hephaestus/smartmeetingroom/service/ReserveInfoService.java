@@ -8,7 +8,7 @@ public interface ReserveInfoService {
 
     public boolean addReserveInfo(ReserveInfo reserveInfo);
 
-    public boolean deleteReserveInfo(Integer reserveId);
+    public boolean deleteReserveInfo(Integer oid,Integer reserveId);
 
     public boolean updateReserveInfo(ReserveInfo reserveInfo);
 
@@ -16,7 +16,7 @@ public interface ReserveInfoService {
 
     public ReserveInfo[] getReserveInfoByRoomId(Integer rid, Date date);
 
-    public ReserveInfo[] queryIsAvaliable(Integer rid,String beginTime,String endTime);
+    public ReserveInfo[] queryIsAvailable(Integer rid,String beginTime,String endTime);
 
-    public Integer queryIsAvaliableByReserveId(Integer reserveId,String beginTime,String endTime);
+    public Integer queryIsAvailableByReserveId(Integer reserveId,String beginTime,String endTime);
 }
