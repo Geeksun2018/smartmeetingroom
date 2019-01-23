@@ -14,4 +14,6 @@ public interface DepartmentService {
 
     //查询组织中的所有部门
     public Department[] getDepartmentList(Integer oid);
+
+    public Integer[] getDepartmentStaff(Integer did);
 }

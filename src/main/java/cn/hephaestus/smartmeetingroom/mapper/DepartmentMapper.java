@@ -28,4 +28,7 @@ public interface DepartmentMapper {
 
     @Update("update user_info set did = #{did} where id = #{userId}")
     public Boolean setDepartment(@Param("did") Integer did,@Param("userId") Integer userId);
+
+    @Select("select id from user_info where did=#{did}")
+    public Integer[] getDepartmentStaff(@Param("did") Integer did);
 }

@@ -36,4 +36,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department[] getDepartmentList(Integer oid) {
         return departmentMapper.getDepartmentList(oid);
     }
+
+    @Override
+    public Integer[] getDepartmentStaff(Integer did){
+        return departmentMapper.getDepartmentStaff(did);
+    }
 }

@@ -3,6 +3,7 @@ package cn.hephaestus.smartmeetingroom.controller;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.Department;
 import cn.hephaestus.smartmeetingroom.model.User;
+import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.DepartmentService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,15 @@ public class DepartMentController {
         return RetJson.fail(-1,"插入失败！");
     }
 
+    @RequestMapping("/getStaff")
+    public RetJson getDepartmentStaff(Integer did,HttpServletRequest request){
+        if(departmentService.getDepartment(did) == null){
+            return RetJson.fail(-1,"部门不存在！");
+        }
+        User user = (User)request.getAttribute("user");
+        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
+        Integer[] staffs = departmentService.getDepartmentStaff(did);
+        return RetJson.succcess("staffs",staffs);
+    }
 
 }
