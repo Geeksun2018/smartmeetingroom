@@ -77,15 +77,20 @@ public class MessageSocketServer {
             userInfo = userService.getUserInfo(id);
             webSocketMap.put(id,this);//有新的连接，加入map中
             //判断又没有该用户的信息，如果有就发送
-            List<String> list=waitToSent.get(id);//获取信息
-            Integer oid = userInfo.getOid();
+            List<String> list = null;
+            if(waitToSent.get(id) != null){
+                list = waitToSent.get(id);//获取信息
+            }else{
+                list = new ArrayList<>();
+            }
+            Integer did = userInfo.getDid();
             //查询所有私发给该用户的信息kind=person
             Set<String> messages = redisService.sget("person" + id);
             if(messages.size() != 0){
                 list.addAll(messages);
             }
             //查询所有通知该部门的信息
-            messages = redisService.sget("department" + oid);
+            messages = redisService.sget("department" + did);
             if(messages.size() != 0){
                 list.addAll(messages);
             }
@@ -94,7 +99,7 @@ public class MessageSocketServer {
             for(String meeting:meetingId){
                 String midStr = meeting.substring(7);
                 Integer mid = Integer.parseInt(midStr);
-                Integer[] participants = meetingParticipantService.getParticipants(oid,mid);
+                Integer[] participants = meetingParticipantService.getParticipants(did,mid);
                 for(Integer pid:participants){
                     if(pid.equals(id)){
                         list.addAll(redisService.sget("meeting" + mid));
@@ -102,9 +107,9 @@ public class MessageSocketServer {
                     }
                 }
             }
-            removeDuplicate(list);
             String message;
-            if (list!=null){
+            if (list.size()!=0){
+                removeDuplicate(list);
                 for (int i=0;i<list.size();i++){
                     message=list.get(i);
                     if (message!=null){
@@ -166,8 +171,8 @@ public class MessageSocketServer {
             Integer[] integers=userService.getAllUserByDeparment(userInfo.getOid(),userInfo.getDid());
             sentAll(integers,message);//发送
             if(m.getExpire() != 0){
-                redisService.sadd(m.getType() + userInfo.getOid(),m.getContent());
-                redisService.expire(m.getType() + userInfo.getOid(),m.getExpire() * 3600);
+                redisService.sadd(m.getType() + userInfo.getDid(),m.getContent());
+                redisService.expire(m.getType() + userInfo.getDid(),m.getExpire() * 3600);
             }
         }
         System.out.println("发送了消息"+m.toString());
