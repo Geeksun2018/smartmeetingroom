@@ -1,6 +1,5 @@
 package cn.hephaestus.smartmeetingroom.utils;
 
-import cn.hephaestus.smartmeetingroom.service.RedisService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 

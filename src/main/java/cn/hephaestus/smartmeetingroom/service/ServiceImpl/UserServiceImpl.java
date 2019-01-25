@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService{
         User user = userMapper.getUserByUserId(id);
         UserInfo userInfo = userInfoMapper.getUserInfoById(id);
         if (userInfo.getDid()!=null&&userInfo.getOid()!=null){
-            departmentName = departmentService.getDepartment(userInfo.getDid()).getDepartmentName();
+            departmentName = departmentService.getDepartment(userInfo.getOid(),userInfo.getDid()).getDepartmentName();
             orgName= organizationService.getOne(userInfo.getOid()).getOrgName();
         }
 
@@ -211,6 +211,5 @@ public class UserServiceImpl implements UserService{
         }
         return randomString.toString();
     }
-
 
 }

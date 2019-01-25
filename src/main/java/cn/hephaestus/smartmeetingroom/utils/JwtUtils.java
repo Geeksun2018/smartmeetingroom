@@ -63,5 +63,10 @@ public class JwtUtils {
         return Integer.valueOf(map.get("id").asString());
     }
 
+    public static String getUID(String token){
+        Map<String,Claim> map=JwtUtils.VerifyToken(token);
+        return map.get("uuid").asString();
+    }
+
 
 }
