@@ -20,11 +20,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 @ServerEndpoint("/getMessageServer/{token}")
 @Component
@@ -106,6 +102,7 @@ public class MessageSocketServer {
                     }
                 }
             }
+            removeDuplicate(list);
             String message;
             if (list!=null){
                 for (int i=0;i<list.size();i++){
@@ -180,5 +177,13 @@ public class MessageSocketServer {
     public void sendMessage(Integer id,String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
     }
+
+    private List removeDuplicate(List list) {
+        HashSet h = new HashSet(list);
+        list.clear();
+        list.addAll(h);
+        return list;
+    }
+
 }
 
