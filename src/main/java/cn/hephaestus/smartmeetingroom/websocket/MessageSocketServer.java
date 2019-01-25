@@ -1,16 +1,16 @@
 package cn.hephaestus.smartmeetingroom.websocket;
 
+import cn.hephaestus.smartmeetingroom.model.Message;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.service.MeetingParticipantService;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
+import cn.hephaestus.smartmeetingroom.service.ServiceImpl.MeetingParticipantServiceImpl;
+import cn.hephaestus.smartmeetingroom.service.ServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.service.ServiceImpl.UserServiceImpl;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import cn.hephaestus.smartmeetingroom.utils.SpringUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.OnClose;
@@ -20,15 +20,15 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 @ServerEndpoint("/getMessageServer/{token}")
 @Component
 public class MessageSocketServer {
-
-    @Autowired
-    RedisService redisService;
 
     private static HashMap<Integer,MessageSocketServer> webSocketMap = new HashMap<>();
     private static HashMap<Integer,List<String>> waitToSent=new HashMap<>();
@@ -73,11 +73,39 @@ public class MessageSocketServer {
     public void onOpen(Session session,@PathParam("token") String token) throws IOException {
         this.session=session;
         Integer id=JwtUtils.getId(token);
+        UserService userService= SpringUtil.getBean(UserServiceImpl.class);
+        RedisService redisService = SpringUtil.getBean(RedisServiceImpl.class);
+        MeetingParticipantService meetingParticipantService = SpringUtil.getBean(MeetingParticipantServiceImpl.class);
         if (id!=null){
             this.id=id;
+            userInfo = userService.getUserInfo(id);
             webSocketMap.put(id,this);//有新的连接，加入map中
             //判断又没有该用户的信息，如果有就发送
             List<String> list=waitToSent.get(id);//获取信息
+            Integer oid = userInfo.getOid();
+            //查询所有私发给该用户的信息kind=person
+            Set<String> messages = redisService.sget("person" + id);
+            if(messages.size() != 0){
+                list.addAll(messages);
+            }
+            //查询所有通知该部门的信息
+            messages = redisService.sget("department" + oid);
+            if(messages.size() != 0){
+                list.addAll(messages);
+            }
+            //查询所有会议的通知信息
+            Set<String>meetingId = redisService.sGetByPattern("meeting");
+            for(String meeting:meetingId){
+                String midStr = meeting.substring(7);
+                Integer mid = Integer.parseInt(midStr);
+                Integer[] participants = meetingParticipantService.getParticipants(oid,mid);
+                for(Integer pid:participants){
+                    if(pid.equals(id)){
+                        list.addAll(redisService.sget("meeting" + mid));
+                        break;
+                    }
+                }
+            }
             String message;
             if (list!=null){
                 for (int i=0;i<list.size();i++){
@@ -105,6 +133,7 @@ public class MessageSocketServer {
     @OnMessage
     public void onMessage(String message) throws IOException {
         UserService userService= SpringUtil.getBean(UserServiceImpl.class);
+        RedisService redisService = SpringUtil.getBean(RedisServiceImpl.class);
         ObjectMapper objectMapper=new ObjectMapper();
         Message m=null;
 
@@ -117,6 +146,10 @@ public class MessageSocketServer {
 
         if (m.getType().equals(Message.PERSON)){//个人对个人
             webSocketMap.get(m.getReciveId()).session.getAsyncRemote().sendText(m.toString());
+            if(m.getExpire() != 0){
+                redisService.sadd(m.getType() + m.getReciveId(),m.getContent());
+                redisService.expire(m.getType() + m.getReciveId(),m.getExpire() * 3600);
+            }
         }else if (m.getType().equals(Message.MEETING)){
             Set<String> set=redisService.sget(m.getReciveId().toString());
             List<Integer> list=new LinkedList<>();
@@ -125,12 +158,20 @@ public class MessageSocketServer {
             }
             Integer[] idArray= (Integer[]) list.toArray();
             sentAll(idArray,message);
+            if(m.getExpire() != 0){
+                redisService.sadd(m.getType() + m.getReciveId(),m.getContent());
+                redisService.expire(m.getType() + m.getReciveId(),m.getExpire() * 3600);
+            }
         }else if (m.getType().equals(Message.DEPARTMENT)){//发送给整个部门
             if (userInfo==null){
                 userInfo=userService.getUserInfo(id);
             }
             Integer[] integers=userService.getAllUserByDeparment(userInfo.getOid(),userInfo.getDid());
             sentAll(integers,message);//发送
+            if(m.getExpire() != 0){
+                redisService.sadd(m.getType() + userInfo.getOid(),m.getContent());
+                redisService.expire(m.getType() + userInfo.getOid(),m.getExpire() * 3600);
+            }
         }
         System.out.println("发送了消息"+m.toString());
     }
@@ -141,35 +182,3 @@ public class MessageSocketServer {
     }
 }
 
-/**
- * 定义一条消息
- */
-@Setter
-@Getter
-@AllArgsConstructor
-class Message{
-    public Message() {
-    }
-    public static final String MEETING="meeting";
-    public static final String DEPARTMENT="department";
-    public static final String PERSON="person";
-    private String type;//种类
-
-    private Integer sentId;//发送者id
-
-    private Integer reciveId;//接受者id
-
-    public String content;//内容
-
-    public long time;//发送时间
-
-    public String toString(){
-        ObjectMapper objectMapper=new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(this);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return "{}";
-    }
-}
