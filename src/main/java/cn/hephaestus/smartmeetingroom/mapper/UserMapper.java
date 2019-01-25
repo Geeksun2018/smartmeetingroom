@@ -17,5 +17,5 @@ public interface UserMapper {
     public void register(User user);
 
     @Update("update user set role=#{role} where id=#{id} ")
-    public User alterRole(@Param("id") Integer id,@Param("role") Integer role);
+    public boolean alterRole(@Param("id") Integer id,@Param("role") Integer role);
 }

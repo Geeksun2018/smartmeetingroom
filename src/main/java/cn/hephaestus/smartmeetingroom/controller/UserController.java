@@ -217,7 +217,7 @@ public class UserController {
     public RetJson updateOrganizationAndDepartment(Integer oid,Integer did,HttpServletRequest request){
         User user = (User)request.getAttribute("user");
         Integer id = user.getId();
-        Department department = departmentService.getDepartment(did);
+        Department department = departmentService.getDepartment(oid,did);
         if(oid != department.getOid()){
             return RetJson.fail(-1,"参数不合法");
         }

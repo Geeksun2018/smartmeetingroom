@@ -11,12 +11,7 @@ import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
 import cn.hephaestus.smartmeetingroom.utils.SpringUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -26,16 +21,10 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint("/getMessageServer/{token}")
 @Component
 public class MessageSocketServer {
-    private static ConcurrentHashMap<Integer,MessageSocketServer> webSocketMap = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<Integer,List<String>> waitToSent=new ConcurrentHashMap<>();
-
-    @Autowired
-    RedisService redisService;
 
     private static HashMap<Integer,MessageSocketServer> webSocketMap = new HashMap<>();
     private static HashMap<Integer,List<String>> waitToSent=new HashMap<>();
@@ -43,12 +32,6 @@ public class MessageSocketServer {
     private Session session;
     private Integer id;
     private UserInfo userInfo;
-
-    RedisService redisService=null;
-
-    public Session getSession(){
-        return this.session;
-    }
 
     //发送给所有的用户
     public static void sentAll(String message){
@@ -84,11 +67,14 @@ public class MessageSocketServer {
     //接受新的连接，并判断权限是否足够
     @OnOpen
     public void onOpen(Session session,@PathParam("token") String token) throws IOException {
-        redisService=SpringUtil.getBean(RedisService.class);
         this.session=session;
         Integer id=JwtUtils.getId(token);
+        UserService userService= SpringUtil.getBean(UserServiceImpl.class);
+        RedisService redisService = SpringUtil.getBean(RedisServiceImpl.class);
+        MeetingParticipantService meetingParticipantService = SpringUtil.getBean(MeetingParticipantServiceImpl.class);
         if (id!=null){
             this.id=id;
+            userInfo = userService.getUserInfo(id);
             webSocketMap.put(id,this);//有新的连接，加入map中
             //判断又没有该用户的信息，如果有就发送
             List<String> list = null;
@@ -132,7 +118,7 @@ public class MessageSocketServer {
                     list.remove(i);
                 }
             }
-            System.out.println("有新的连接 用户id为："+id);
+            System.out.println("有新的连接"+id);
         }else {
             session.close();
         }
@@ -141,13 +127,13 @@ public class MessageSocketServer {
     @OnClose
     public void onClose() throws IOException {
         webSocketMap.remove(this.id);//连接断开，移除session
-        System.out.println("一个连接断开 用户id为："+this.id);
+        this.session.close();
+        System.out.println("一个连接断开"+this.id);
     }
 
     //接受来自客户端的消息，服务器起转发作用
     @OnMessage
     public void onMessage(String message) throws IOException {
-        System.out.println("服务端到接受消息：     "+message);
         UserService userService= SpringUtil.getBean(UserServiceImpl.class);
         RedisService redisService = SpringUtil.getBean(RedisServiceImpl.class);
         ObjectMapper objectMapper=new ObjectMapper();
@@ -155,14 +141,10 @@ public class MessageSocketServer {
 
         try {
             m=objectMapper.readValue(message,Message.class);
-            m.setSentId(id);
-            System.out.println("消息解析成功");
+            m.getReciveId();
         }catch (Exception e){
-            System.out.println("消息解析失败");
             return;
         }
-
-        System.out.println("该消息的类型:"+m.getType());
 
         if (m.getType().equals(Message.PERSON)){//个人对个人
             webSocketMap.get(m.getReciveId()).session.getAsyncRemote().sendText(m.toString());
@@ -174,9 +156,6 @@ public class MessageSocketServer {
             Set<String> set=redisService.sget(m.getReciveId().toString());
             List<Integer> list=new LinkedList<>();
             for (String s:set){
-                if (s.equals(userInfo.getId().toString())){
-                    continue;
-                }
                 list.add(Integer.parseInt(s));
             }
             Integer[] idArray= (Integer[]) list.toArray();
@@ -191,8 +170,12 @@ public class MessageSocketServer {
             }
             Integer[] integers=userService.getAllUserByDeparment(userInfo.getOid(),userInfo.getDid());
             sentAll(integers,message);//发送
+            if(m.getExpire() != 0){
+                redisService.sadd(m.getType() + userInfo.getDid(),m.getContent());
+                redisService.expire(m.getType() + userInfo.getDid(),m.getExpire() * 3600);
+            }
         }
-        System.out.println("发送了消息 "+m.getContent());
+        System.out.println("发送了消息"+m.toString());
     }
 
     //发送消息
@@ -200,36 +183,12 @@ public class MessageSocketServer {
         this.session.getBasicRemote().sendText(message);
     }
 
-/**
- * 定义一条消息
- */
-@Setter
-@Getter
-@AllArgsConstructor
-class Message{
-    public Message() {
+    private List removeDuplicate(List list) {
+        HashSet h = new HashSet(list);
+        list.clear();
+        list.addAll(h);
+        return list;
     }
-    public static final String MEETING="meeting";
-    public static final String DEPARTMENT="department";
-    public static final String PERSON="person";
-    private String type;//种类
 
-    private Integer sentId;//发送者id
-
-    private Integer reciveId;//接受者id
-
-    public String content;//内容
-
-    public long time;//发送时间
-
-    public String toString(){
-        ObjectMapper objectMapper=new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(this);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return "{}";
-    }
 }
 

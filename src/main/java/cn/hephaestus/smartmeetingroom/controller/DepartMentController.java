@@ -7,13 +7,19 @@ import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.DepartmentService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
+import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Null;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 部门管理
@@ -27,16 +33,25 @@ public class DepartMentController {
     @Autowired
     UserService userService;
 
+    Integer oid,did;
+    User user=null;
+
+    @ModelAttribute
+    public void comment(HttpServletRequest request){
+        user = (User)request.getAttribute("user");
+        UserInfo userInfo=userService.getUserInfo(user.getId());
+        oid=userInfo.getOid();
+        did=userInfo.getDid();
+    }
+
     @RequestMapping("/getDepartments")
     public RetJson getDepartmentsByOid(HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
-        Integer oid=userService.getUserInfo(user.getId()).getOid();
         return RetJson.succcess("Departments",departmentService.getDepartmentList(oid));
     }
 
     @RequestMapping("/getDepartment")
     public RetJson getDepartment(Integer did,HttpServletRequest request){
-        Department department=departmentService.getDepartment(did);
+        Department department=departmentService.getDepartment(oid,did);
         if (department==null){
             return RetJson.fail(-1,"没有这个部门");
         }
@@ -45,11 +60,9 @@ public class DepartMentController {
 
     @RequestMapping("/deleteDepartment")
     public RetJson deleteDepartment(Integer did,HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
         if(user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限！");
         }
-        Integer oid=userService.getUserInfo(user.getId()).getOid();
         try{
             if(departmentService.deleteDepartment(did,oid)){
                 return RetJson.succcess(null);
@@ -62,10 +75,13 @@ public class DepartMentController {
 
     @RequestMapping("/insertDepartment")
     public RetJson insertDepartment(Department department,HttpServletRequest request){
-        if (ValidatedUtil.validate(department)){
+        if (!ValidatedUtil.validate(department)){
             return RetJson.fail(-1,"参数错误");
         }
-        User user = (User)request.getAttribute("user");
+
+        if (department.getAdmin()!=null){
+            departmentService.addAdmin(oid,did,department.getAdmin());
+        }
 
         if(user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限！");
@@ -77,17 +93,46 @@ public class DepartMentController {
     }
 
 
+    @RequestMapping("/uploadDepartmentImage")
+    public RetJson uploadDepartmentImage(Integer did,@RequestParam("photo") MultipartFile multipartFile,HttpServletRequest request){
+        if (multipartFile.getSize()>MAX_SIZE){
+            return RetJson.fail(-1,"图片大小不能超过5m");
+        }
+        User user = (User)request.getAttribute("user");
+        Integer oid=userService.getUserInfo(user.getId()).getOid();
+        boolean b=departmentService.uploadDepartmentImage(oid,did,multipartFile);
+        if (!b){
+            return RetJson.fail(-1,"上传失败");
+        }
+        return RetJson.succcess(null);
+    }
+
     @RequestMapping("/alterDepartment")
     public RetJson alterDepartment(Department department,HttpServletRequest request){
         if (!ValidatedUtil.validate(department)){
             return RetJson.fail(-1,"参数错误");
         }
-        User user = (User)request.getAttribute("user");
-        Integer oid=userService.getUserInfo(user.getId()).getOid();
+
+
+        if (department.getAdmin()!=null){
+            departmentService.addAdmin(oid,did,department.getAdmin());
+        }
+
         department.setOid(oid);
         if (!departmentService.alterDepartment(department)){
             return RetJson.fail(-1,"修改失败!");
         }
         return RetJson.succcess(null);
     }
+
+    @RequestMapping("/getAllUserInfoByDid")
+    public RetJson getAllUserByDid(@RequestParam("did")Integer did,HttpServletRequest request){
+        List<UserInfo> list=userService.getUserInfoListByDid(oid,did);
+        Map<String,Object> map=new HashMap<>();
+        Department department=departmentService.getDepartment(oid,did);
+        map.put("list",list);
+        map.put("admin",department.getAdmin());
+        return RetJson.succcess(map);
+    }
+
 }
