@@ -82,7 +82,7 @@ public class DepartMentController {
         if (department.getAdmin()!=null){
             departmentService.addAdmin(oid,did,department.getAdmin());
         }
-
+        department.setOid(oid);
         if(user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限！");
         }
