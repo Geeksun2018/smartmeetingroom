@@ -15,4 +15,7 @@ public interface UserMapper {
     @Insert({"insert into user(username,password,salt,role) values(#{username},#{password},#{salt},#{role})"})
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public void register(User user);
+
+    @Update("update user set role=#{role} where id=#{id} ")
+    public User alterRole(@Param("id") Integer id,@Param("role") Integer role);
 }

@@ -1,15 +1,32 @@
 package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.mapper.DepartmentMapper;
+import cn.hephaestus.smartmeetingroom.mapper.UserInfoMapper;
+import cn.hephaestus.smartmeetingroom.mapper.UserMapper;
 import cn.hephaestus.smartmeetingroom.model.Department;
+import cn.hephaestus.smartmeetingroom.model.User;
+import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.DepartmentService;
+import cn.hephaestus.smartmeetingroom.utils.COSUtils;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.jws.soap.SOAPBinding;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
     @Autowired
     DepartmentMapper departmentMapper;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    UserInfoMapper userInfoMapper;
 
     @Override
     public boolean addDepartment(Department department) {
@@ -35,10 +52,5 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Department[] getDepartmentList(Integer oid) {
         return departmentMapper.getDepartmentList(oid);
-    }
-
-    @Override
-    public Integer[] getDepartmentStaff(Integer did){
-        return departmentMapper.getDepartmentStaff(did);
     }
 }
