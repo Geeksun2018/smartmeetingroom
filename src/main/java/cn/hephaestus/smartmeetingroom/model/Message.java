@@ -17,6 +17,7 @@ public class Message{
     public static final String MEETING="meeting";
     public static final String DEPARTMENT="department";
     public static final String PERSON="person";
+    public static final String NEWS="news";
     private String type;//种类
 
     private Integer sentId;//发送者id
@@ -28,6 +29,8 @@ public class Message{
     public long time;//发送时间
 
     public long expire;//持续时间
+
+    public String informType;//标识通知的类型
 
     public String toString(){
         ObjectMapper objectMapper=new ObjectMapper();

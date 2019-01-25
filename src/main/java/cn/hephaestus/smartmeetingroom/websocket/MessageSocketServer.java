@@ -38,8 +38,10 @@ public class MessageSocketServer {
         Set<Integer> set=webSocketMap.keySet();
         MessageSocketServer messageSocketServer=null;
         for (Integer it:set){
-            messageSocketServer=webSocketMap.get(it);
-            messageSocketServer.session.getAsyncRemote().sendText(message);
+            if(it != null){
+                messageSocketServer=webSocketMap.get(it);
+                messageSocketServer.session.getAsyncRemote().sendText(message);
+            }
         }
     }
 
@@ -48,12 +50,16 @@ public class MessageSocketServer {
         Session session=null;
         MessageSocketServer messageSocketServer=null;
         for (int i=0;i<idArr.length;i++){
+            if(idArr[i] == null){
+                continue;
+            }
             messageSocketServer=webSocketMap.get(idArr[i]);
             if (messageSocketServer==null){
                 //如果当前用户不在线，则放在缓存列表中。。。。。。
                 List<String> list=waitToSent.get(idArr[i]);
                 if (list==null){
                     waitToSent.put(idArr[i],new LinkedList<>());
+                    waitToSent.get(idArr[i]).add(message);
                 }else {
                     list.add(message);
                 }
@@ -81,7 +87,7 @@ public class MessageSocketServer {
             if(waitToSent.get(id) != null){
                 list = waitToSent.get(id);//获取信息
             }else{
-                list = new ArrayList<>();
+                list = new LinkedList<>();
             }
             Integer did = userInfo.getDid();
             //查询所有私发给该用户的信息kind=person
@@ -116,6 +122,7 @@ public class MessageSocketServer {
                         session.getAsyncRemote().sendText(message);
                     }
                     list.remove(i);
+                    i--;
                 }
             }
             System.out.println("有新的连接"+id);
@@ -146,13 +153,13 @@ public class MessageSocketServer {
             return;
         }
 
-        if (m.getType().equals(Message.PERSON)){//个人对个人
-            webSocketMap.get(m.getReciveId()).session.getAsyncRemote().sendText(m.toString());
+        if (m.getType().equals(Message.PERSON)||m.getInformType().equals(Message.PERSON)){//个人对个人
+            sendMessage(m.getReciveId(),m.toString());
             if(m.getExpire() != 0){
-                redisService.sadd(m.getType() + m.getReciveId(),m.getContent());
-                redisService.expire(m.getType() + m.getReciveId(),m.getExpire() * 3600);
+                redisService.sadd(m.getInformType() + m.getReciveId(),message);
+                redisService.expire(m.getInformType() + m.getReciveId(),m.getExpire() * 3600);
             }
-        }else if (m.getType().equals(Message.MEETING)){
+        }else if (m.getType().equals(Message.MEETING)||m.getInformType().equals(Message.MEETING)){
             Set<String> set=redisService.sget(m.getReciveId().toString());
             List<Integer> list=new LinkedList<>();
             for (String s:set){
@@ -161,18 +168,23 @@ public class MessageSocketServer {
             Integer[] idArray= (Integer[]) list.toArray();
             sentAll(idArray,message);
             if(m.getExpire() != 0){
-                redisService.sadd(m.getType() + m.getReciveId(),m.getContent());
-                redisService.expire(m.getType() + m.getReciveId(),m.getExpire() * 3600);
+                redisService.sadd(m.getInformType() + m.getReciveId(),message);
+                redisService.expire(m.getInformType() + m.getReciveId(),m.getExpire() * 3600);
             }
-        }else if (m.getType().equals(Message.DEPARTMENT)){//发送给整个部门
+        }else if (m.getType().equals(Message.DEPARTMENT)||m.getInformType().equals(Message.DEPARTMENT)){//发送给整个部门
             if (userInfo==null){
                 userInfo=userService.getUserInfo(id);
             }
             Integer[] integers=userService.getAllUserByDeparment(userInfo.getOid(),userInfo.getDid());
+            for(int i = 0;i < integers.length;i++){
+                if(integers[i].equals(id)){
+                    integers[i] = null;
+                }
+            }
             sentAll(integers,message);//发送
             if(m.getExpire() != 0){
-                redisService.sadd(m.getType() + userInfo.getDid(),m.getContent());
-                redisService.expire(m.getType() + userInfo.getDid(),m.getExpire() * 3600);
+                redisService.sadd(m.getInformType() + userInfo.getDid(),message);
+                redisService.expire(m.getInformType() + userInfo.getDid(),m.getExpire() * 3600);
             }
         }
         System.out.println("发送了消息"+m.toString());
@@ -180,7 +192,16 @@ public class MessageSocketServer {
 
     //发送消息
     public void sendMessage(Integer id,String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+        MessageSocketServer messageSocketServer = webSocketMap.get(id);
+        if(messageSocketServer==null){
+            List<String> list = waitToSent.get(id);
+            if(list == null){
+                waitToSent.put(id,new LinkedList<>());
+                waitToSent.get(id).add(message);
+            }
+        }else{
+            messageSocketServer.session.getAsyncRemote().sendText(message);
+        }
     }
 
     private List removeDuplicate(List list) {
