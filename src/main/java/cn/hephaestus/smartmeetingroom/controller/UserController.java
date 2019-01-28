@@ -227,7 +227,7 @@ public class UserController {
     }
 
     @RequestMapping("/getMeetings")
-    public RetJson getUserMeetinds(HttpServletRequest request){
+    public RetJson getUserMeetings(HttpServletRequest request){
         User user = (User)request.getAttribute("user");
         UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         Integer uid = user.getId();
