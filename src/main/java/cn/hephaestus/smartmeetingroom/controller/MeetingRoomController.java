@@ -10,6 +10,7 @@ import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,11 +41,21 @@ public class MeetingRoomController {
     MeetingParticipantService meetingParticipantService;
     @Autowired
     RedisService redisService;
+    User user=null;
+    UserInfo userInfo=null;
+
+
+    @ModelAttribute
+    public void comment(HttpServletRequest request){
+        if (user!=null&&userInfo!=null){
+            return;
+        }
+        user=(User)request.getAttribute("user");
+        userInfo = (UserInfo)request.getAttribute("userInfo");
+    }
     //1.添加会议室
     @RequestMapping("/addMeetingRoom")
-    public RetJson addMeetingRoom(MeetingRoom meetingRoom, HttpServletRequest request){
-        //获取当前用户
-        User user=(User)request.getAttribute("user");
+    public RetJson addMeetingRoom(MeetingRoom meetingRoom){
         //判断当前用户权限
         if (user.getRole()==0){
             return RetJson.fail(-1,"无权限的操作");
@@ -62,8 +73,7 @@ public class MeetingRoomController {
     }
     //2.修改会议室信息
     @RequestMapping("alterMeetingRoom")
-    public RetJson alterMeetingRoom(MeetingRoom meetingRoom,HttpServletRequest request){
-        User user=(User)request.getAttribute("user");
+    public RetJson alterMeetingRoom(MeetingRoom meetingRoom){
         if (user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限");
         }
@@ -78,8 +88,7 @@ public class MeetingRoomController {
     }
     //3.删除会议室
     @RequestMapping("/deleteMeetingRoom")
-    public RetJson deleteMeetingRoom(Integer oid,Integer roomId,HttpServletRequest request){
-        User user=(User)request.getAttribute("user");
+    public RetJson deleteMeetingRoom(Integer oid,Integer roomId){
         if (user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限！");
         }
@@ -90,9 +99,7 @@ public class MeetingRoomController {
     }
     //4.获取会议室
     @RequestMapping("/getMeetingRoom")
-    public RetJson getMeetingRoomWithRoomId(Integer roomId,HttpServletRequest request){
-        User user=(User)request.getAttribute("user");
-
+    public RetJson getMeetingRoomWithRoomId(Integer roomId){
         MeetingRoom meetingRoom = meetingRoomService.getMeetingRoomWithRoomId(roomId);
         if (meetingRoom==null){
             return RetJson.fail(-1,"找不到该会议室");
@@ -102,17 +109,50 @@ public class MeetingRoomController {
 
     //5.获取所有会议室
     @RequestMapping("/getMeetingRoomList")
-    public RetJson getMeetingRoomList(Integer oid,HttpServletRequest request) {
-        User user=(User)request.getAttribute("user");
+    public RetJson getMeetingRoomList(Integer oid) {
         MeetingRoom[] meetingRooms=meetingRoomService.getMeetingRoomList(oid);
         return RetJson.succcess("meetingRooms",meetingRooms);
     }
 
+    //6.获取所有可用的会议室
+    @RequestMapping("/getAllAvailableMeetingRoom")
+    public RetJson getAllAvailableMeetingRoom(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date endTime,Integer num){
+        Integer oid=userInfo.getOid();
+        MeetingRoom[] meetingRooms=meetingRoomService.getAllUsableMeetingRooms(oid,startTime,endTime,num);
+        return RetJson.succcess("meetingRooms",meetingRooms);
+    }
+
+    //7.根据条件获取用户列表
+    @RequestMapping("/getIdleUser")
+    public RetJson getIdleUser(Integer did,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date endTime){
+        Integer oid=userInfo.getOid();
+        List<UserInfo> list=null;
+        //按照部门查出所有用户
+        if (did==0){
+            list=userService.getUserinfoListByOid(oid);
+        }else{
+            list=userService.getUserInfoListByDid(oid,did);
+        }
+        //查出当前不可用的用户
+        Set<Integer> set=meetingRoomService.getAllConficUser(oid,startTime,endTime);
+        for (UserInfo userInfo:list){
+            if (!set.contains(userInfo.getId())){
+                userInfo.setIdle(true);
+            }else {
+                userInfo.setIdle(false);
+            }
+        }
+        return RetJson.succcess("userList",list);
+    }
+
+
+    //7.预定会议室
     @RequestMapping("/reserveRoom")
-    public RetJson reserveMeetingRoom(@Valid ReserveInfo reserveInfo, HttpServletRequest request){
-        User user=(User) request.getAttribute("user");
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
+    public RetJson reserveMeetingRoom(@Valid ReserveInfo reserveInfo){
         Integer oid = userInfo.getOid();
+        reserveInfo.setOid(oid);
+        reserveInfo.setUid(user.getId());
+
         if(user.getId() != reserveInfo.getUid()){
             return RetJson.fail(-1,"操作非法！");
         }
@@ -121,34 +161,38 @@ public class MeetingRoomController {
             return RetJson.fail(-1,"你没有预定会议室的权限");
         }
 
-        //判断参会人员是否合法
+        //判断参会人员是否合法,存在且有空闲时间
+        Set<Integer> set=meetingRoomService.getAllConficUser(oid,reserveInfo.getStartTime(),reserveInfo.getEndTime());
         for(Integer participant:reserveInfo.getParticipants()){
             if(userService.getUserByUserId(participant) == null){
                 return RetJson.fail(-1,"参与者暂未注册！");
             }
+            if (set.contains(participant)){
+                return RetJson.fail(-1,"用户"+participant+"忙碌");
+            }
         }
-
         //看该会议室是否存在
         MeetingRoom room=meetingRoomService.getMeetingRoomWithRoomId(reserveInfo.getRid());
-
         //预定会议室
         if(room!=null){
             //与该时间段有交集的reserveInfo
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
             ReserveInfo[] reserveInfos = reserveInfoService.queryIsAvailable(reserveInfo.getRid(),sdf.format(reserveInfo.getStartTime()),sdf.format(reserveInfo.getEndTime()));
             if(reserveInfos.length == 0){
+                //会议室有效
                 System.out.println(reserveInfo.getStartTime().toString());
                 reserveInfoService.addReserveInfo(reserveInfo);
                 //插入后直接映射到实体类了!!!
                 Integer reserveInfoId = reserveInfo.getReserveId();
                 meetingParticipantService.addParticipants(oid,reserveInfoId,reserveInfo.getParticipants());
+                //预定成功，发送消息给所有参会用户
                 return RetJson.succcess("meetingId",reserveInfoId);
             }
             return RetJson.fail(-1,"会议室已被占用！");
         }
-        return RetJson.fail(-1,"只能预定自己公司的会议室！");
+        return RetJson.fail(-1,"会议室不存在！");
     }
+
     @RequestMapping("/roomIsAvailable")
     public RetJson checkRoomIsAvailable(Integer roomId, Integer oid, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Future(message = "时间必须在当前时间之前")
             Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Future(message = "时间必须在当前时间之前") Date endTime, HttpServletRequest request){
@@ -171,8 +215,7 @@ public class MeetingRoomController {
 
     @RequestMapping("/checkAllRooms")
     public RetJson checkAllOrganizationMeetingRooms(Integer oid,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Future(message = "时间必须在当前时间之前")
-            Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Future(message = "时间必须在当前时间之前") Date endTime,HttpServletRequest request){
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
+            Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Future(message = "时间必须在当前时间之前") Date endTime){
         if(oid != userInfo.getOid()){
             return RetJson.fail(-1,"非法操作！");
         }
@@ -192,10 +235,9 @@ public class MeetingRoomController {
         return RetJson.succcess("occupiedRoomId",roomSet);
     }
 
+    //取消预定会议室
     @RequestMapping("/cancelReservation")
-    public RetJson cancelReservationByMid(Integer mid,HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
+    public RetJson cancelReservationByMid(Integer mid){
         if(user.getRole() == 0){
             RetJson.fail(-1,"您的权限不够，取消失败！");
         }
@@ -205,13 +247,12 @@ public class MeetingRoomController {
         return RetJson.fail(-1,"取消失败！");
     }
 
+    //更新预定信息
     @RequestMapping("/updateReservation")
-    public RetJson updateReservation(@Valid ReserveInfo reserveInfo,HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
+    public RetJson updateReservation(@Valid ReserveInfo reserveInfo){
         if(user.getId() != reserveInfo.getUid()){
             return RetJson.fail(-1,"操作非法！");
         }
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         if(user.getRole() == 0){
             RetJson.fail(-1,"您的权限不够，预定失败！");
         }

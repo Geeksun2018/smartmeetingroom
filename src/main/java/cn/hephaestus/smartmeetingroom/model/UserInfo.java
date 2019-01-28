@@ -33,4 +33,6 @@ public class UserInfo {
     private String name;
 
     private String nickName;
+
+    private boolean isIdle;
 }

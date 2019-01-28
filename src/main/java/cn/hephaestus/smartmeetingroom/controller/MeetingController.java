@@ -9,6 +9,7 @@ import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.ReserveInfoService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,16 +27,21 @@ public class MeetingController {
     MeetingParticipantService meetingParticipantService;
     @Autowired
     RedisService redisService;
+    User user=null;
+    UserInfo userInfo=null;
+    @ModelAttribute
+    public void comment(HttpServletRequest request){
+        user = (User)request.getAttribute("user");
+        userInfo = (UserInfo)request.getAttribute("userInfo");
+    }
 
     @RequestMapping("/updateParticipants")
     public RetJson updateMeetingParticipants(Integer reserveId, Integer[] participants, HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         Integer oid = userInfo.getOid();
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有预定会议室的权限");
         }
-        if(reserveInfoService.getReserveInfoByReserveId(reserveId) == null){
+        if(reserveInfoService.getReserveInfoByReserveId(oid,reserveId) == null){
             return RetJson.fail(-1,"未查询到预定信息！");
         }
         for(Integer participant:participants){
@@ -50,8 +56,6 @@ public class MeetingController {
 
     @RequestMapping("/deleteParticipant")
     public RetJson deleteMeetingParticipant(Integer reserveId,Integer participant,HttpServletRequest request){
-        User user = (User)request.getAttribute("user");
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         Integer oid = userInfo.getOid();
         if(userService.getUserByUserId(participant) == null){
             return RetJson.fail(-1,"参与者暂未注册！");
@@ -67,13 +71,11 @@ public class MeetingController {
 
     @RequestMapping("/addParticipant")
     public RetJson addMeetingParticipant(Integer reserveId,Integer participant, HttpServletRequest request){
-        User user=(User) request.getAttribute("user");
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         Integer oid = userInfo.getOid();
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有增加参与者的的权限");
         }
-        if(reserveInfoService.getReserveInfoByReserveId(reserveId) == null){
+        if(reserveInfoService.getReserveInfoByReserveId(oid,reserveId) == null){
             return RetJson.fail(-1,"预定信息不存在！");
         }
         if(userService.getUserByUserId(participant) == null){
@@ -85,7 +87,6 @@ public class MeetingController {
 
     @RequestMapping("/getParticipants")
     public RetJson addMeetingParticipant(Integer reserveId, HttpServletRequest request){
-        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         Integer oid = userInfo.getOid();
         Set set = redisService.sget(oid + "cm" + reserveId);
         return RetJson.succcess("participants",set);
@@ -93,7 +94,8 @@ public class MeetingController {
 
     @RequestMapping("/getMeetingInfo")
     public RetJson getMeetingInfoByMid(Integer mid){
-        ReserveInfo reserveInfo = reserveInfoService.getReserveInfoByReserveId(mid);
+        Integer oid = userInfo.getOid();
+        ReserveInfo reserveInfo = reserveInfoService.getReserveInfoByReserveId(oid,mid);
         return RetJson.succcess("reserveInfo",reserveInfo);
     }
 }

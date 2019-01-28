@@ -35,6 +35,8 @@ public class ReserveInfo {
     private Integer[] participants;
     //会议标题
     private String meetingTopic;
+
+    private Integer oid;//属于哪个组织的会议
     //会议状态
     private int flag;
 

@@ -12,7 +12,7 @@ public interface ReserveInfoService {
 
     public boolean updateReserveInfo(ReserveInfo reserveInfo);
 
-    public ReserveInfo getReserveInfoByReserveId(Integer reserveId);
+    public ReserveInfo getReserveInfoByReserveId(Integer oid,Integer reserveId);
 
     public ReserveInfo[] getReserveInfoByRoomId(Integer rid, Date date);
 
