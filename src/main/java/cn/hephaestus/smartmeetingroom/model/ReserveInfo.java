@@ -30,12 +30,16 @@ public class ReserveInfo {
     //房间id
     private Integer rid;
     //预定者
-    private Integer uid;
+    private Integer reserveUid;
     //参会者id
     private Integer[] participants;
     //会议标题
-    private String meetingTopic;
+    private String topic;
     //会议状态
     private int flag;
+    //预定的公司
+    private Integer reserveOid;
+    //预定的部门
+    private Integer reserveDid;
 
 }

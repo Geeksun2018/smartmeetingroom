@@ -113,7 +113,7 @@ public class MeetingRoomController {
         User user=(User) request.getAttribute("user");
         UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
         Integer oid = userInfo.getOid();
-        if(user.getId() != reserveInfo.getUid()){
+        if(user.getId() != reserveInfo.getReserveUid()){
             return RetJson.fail(-1,"操作非法！");
         }
         //判断该用户是否拥有预定会议室的权限
@@ -208,7 +208,7 @@ public class MeetingRoomController {
     @RequestMapping("/updateReservation")
     public RetJson updateReservation(@Valid ReserveInfo reserveInfo,HttpServletRequest request){
         User user = (User)request.getAttribute("user");
-        if(user.getId() != reserveInfo.getUid()){
+        if(user.getId() != reserveInfo.getReserveUid()){
             return RetJson.fail(-1,"操作非法！");
         }
         UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");

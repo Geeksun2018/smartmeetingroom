@@ -4,15 +4,17 @@ import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
-import cn.hephaestus.smartmeetingroom.service.MeetingParticipantService;
-import cn.hephaestus.smartmeetingroom.service.RedisService;
-import cn.hephaestus.smartmeetingroom.service.ReserveInfoService;
-import cn.hephaestus.smartmeetingroom.service.UserService;
+import cn.hephaestus.smartmeetingroom.service.*;
+import cn.hephaestus.smartmeetingroom.vo.ReserveInfoViewObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -26,6 +28,8 @@ public class MeetingController {
     MeetingParticipantService meetingParticipantService;
     @Autowired
     RedisService redisService;
+    @Autowired
+    MeetingRoomService meetingRoomService;
 
     @RequestMapping("/updateParticipants")
     public RetJson updateMeetingParticipants(Integer reserveId, Integer[] participants, HttpServletRequest request){
@@ -95,5 +99,16 @@ public class MeetingController {
     public RetJson getMeetingInfoByMid(Integer mid){
         ReserveInfo reserveInfo = reserveInfoService.getReserveInfoByReserveId(mid);
         return RetJson.succcess("reserveInfo",reserveInfo);
+    }
+
+    @RequestMapping("/getMeetingInfoByCondition")
+    public RetJson getMeetingInfoByCondition(@Validated @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid, HttpServletRequest request){
+        User user = (User)request.getAttribute("user");
+        UserInfo userInfo = (UserInfo)request.getAttribute("userInfo");
+        if(userInfo.getOid() != oid){
+            RetJson.fail(-1,"非法操作！");
+        }
+        List<ReserveInfoViewObject> list = reserveInfoService.getReserveInfoViewObjectByCondition(date,rid,did);
+        return RetJson.succcess("list",list);
     }
 }

@@ -1,13 +1,18 @@
 package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
+import cn.hephaestus.smartmeetingroom.mapper.MeetingParticipantMapper;
+import cn.hephaestus.smartmeetingroom.mapper.MeetingRoomMapper;
 import cn.hephaestus.smartmeetingroom.mapper.ReserveTableMapper;
 import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
 import cn.hephaestus.smartmeetingroom.service.ReserveInfoService;
+import cn.hephaestus.smartmeetingroom.vo.ReserveInfoViewObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ReserveInfoServiceImpl implements ReserveInfoService {
@@ -16,6 +21,10 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     private ReserveTableMapper reserveTableMapper;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private MeetingRoomMapper meetingRoomMapper;
+    @Autowired
+    private MeetingParticipantMapper meetingParticipantMapper;
 
     @Override
     public boolean addReserveInfo(ReserveInfo reserveInfo) {
@@ -54,5 +63,19 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     @Override
     public Integer queryIsAvailableByReserveId(Integer reserveId, String beginTime, String endTime) {
         return reserveTableMapper.queryIsAvailableByReserveId(reserveId,beginTime,endTime);
+    }
+
+    @Override
+    public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did) {
+        ReserveInfo[] reserveInfos = reserveTableMapper.getReserveInfoByCondition(date,rid,did);
+        List<ReserveInfoViewObject> list = new ArrayList<>();
+        for(ReserveInfo reserveInfo:reserveInfos){
+            String roomName = meetingRoomMapper.getMeetingRoomWithRoomId(reserveInfo.getReserveId()).getRoomName();
+            Integer[] participants = meetingParticipantMapper.getParticipants(reserveInfo.getReserveId());
+            list.add(new ReserveInfoViewObject(roomName,reserveInfo.getTopic(),reserveInfo.getStartTime(),
+                    reserveInfo.getEndTime(),participants,reserveInfo.getFlag(),reserveInfo.getReserveUid(),reserveInfo.getReserveOid(),
+                    reserveInfo.getReserveDid()));
+        }
+        return list;
     }
 }
