@@ -33,7 +33,7 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
 
     @Override
     public boolean deleteReserveInfo(Integer oid,Integer reserveId) {
-        if(reserveTableMapper.deleteReserveInfo(reserveId)){
+        if(reserveTableMapper.deleteReserveInfo(reserveId,oid)){
             redisService.del(oid + "cm" + reserveId);
             return true;
         }
@@ -46,8 +46,8 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     }
 
     @Override
-    public ReserveInfo getReserveInfoByReserveId(Integer reserveId) {
-        return reserveTableMapper.getReserveInfoByReserveId(reserveId);
+    public ReserveInfo getReserveInfoByReserveId(Integer oid,Integer reserveId) {
+        return reserveTableMapper.getReserveInfoByReserveId(oid,reserveId);
     }
 
     @Override
