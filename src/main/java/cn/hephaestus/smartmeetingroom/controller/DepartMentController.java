@@ -124,7 +124,7 @@ public class DepartMentController {
     }
 
     @RequestMapping("/getAllUserInfoByDid")
-    public RetJson getAllUserByDid(@RequestParam("did")Integer did,HttpServletRequest request){
+    public RetJson getAllUserByDid(@RequestParam("did")Integer did){
         List<UserInfo> list=userService.getUserInfoListByDid(oid,did);
         Map<String,Object> map=new HashMap<>();
         Department department=departmentService.getDepartment(oid,did);

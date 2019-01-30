@@ -152,6 +152,7 @@ public class MeetingRoomController {
         Integer oid = userInfo.getOid();
         reserveInfo.setOid(oid);
         reserveInfo.setUid(user.getId());
+        reserveInfo.setDid(userInfo.getDid());
 
         if(user.getId() != reserveInfo.getUid()){
             return RetJson.fail(-1,"操作非法！");

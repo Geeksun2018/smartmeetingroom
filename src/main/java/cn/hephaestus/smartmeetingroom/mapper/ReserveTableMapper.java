@@ -8,7 +8,7 @@ import java.util.Date;
 @Mapper
 public interface ReserveTableMapper {
 
-    @Insert({"insert into reserve_table(start_time,end_time,rid,topic,reserve_uid,reserve_oid) values(#{startTime},#{endTime},#{rid},#{meetingTopic},#{uid},#{oid})"})
+    @Insert({"insert into reserve_table(start_time,end_time,rid,topic,reserve_uid,reserve_oid,reserve_did) values(#{startTime},#{endTime},#{rid},#{meetingTopic},#{uid},#{oid},#{did})"})
     @Options(useGeneratedKeys = true,keyProperty = "reserveId",keyColumn = "reserve_id")
     public boolean addReserveInfo(ReserveInfo reserveInfo);
 

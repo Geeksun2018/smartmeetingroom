@@ -31,6 +31,8 @@ public class ReserveInfo {
     private Integer rid;
     //预定者
     private Integer uid;
+    //预定者部门
+    private Integer did;
     //参会者id
     private Integer[] participants;
     //会议标题

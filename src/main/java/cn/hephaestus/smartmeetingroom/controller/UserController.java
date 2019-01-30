@@ -202,8 +202,8 @@ public class UserController {
         Base64.Decoder decoder = Base64.getDecoder();
         //通过解密的算法，将encryptedString解密成bytes
         byte[] bytes = decoder.decode(encryptedString);
-        //在此处检测bytes数组的长度是否为1023byte，sdk中规定了字节数组的大小
-        if(bytes.length != 1023){
+        //在此处检测bytes数组的长度是否为1032byte，sdk中规定了字节数组的大小
+        if(bytes.length != 1032){
             return RetJson.fail(-1,"参数格式不正确！");
         }
         UserFaceInfo userFaceInfo = new UserFaceInfo();
