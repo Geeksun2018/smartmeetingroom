@@ -26,7 +26,6 @@ import java.util.*;
 @RestController
 @Validated
 public class MeetingRoomController {
-
     @Autowired
     MeetingRoomService meetingRoomService;
     @Autowired

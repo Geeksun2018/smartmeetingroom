@@ -3,22 +3,25 @@ package cn.hephaestus.smartmeetingroom.controller;
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.*;
 import cn.hephaestus.smartmeetingroom.service.*;
+import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 import com.arcsoft.face.FaceFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.InputStream;
+import java.util.*;
 
 @RestController
 public class AndroidThingsController {
 
+    private final static int MAX_SIZE=1024*1024*5;
     @Autowired
     MeetingRoomService meetingRoomService;
     @Autowired
@@ -32,6 +35,15 @@ public class AndroidThingsController {
 
     @Autowired
     FaceInfoService faceInfoService;
+
+    private User user=null;
+    private UserInfo userInfo=null;
+
+    @ModelAttribute
+    private void comment(HttpServletRequest request){
+        user= (User) request.getAttribute("user");
+        userInfo=userService.getUserInfo(user.getId());
+    }
 
     //获取当前所有的会议 有很大的安全隐患，有可能mac地址泄密!!!!!!!!
     @RequestMapping("/getAllMeeting")
@@ -47,12 +59,25 @@ public class AndroidThingsController {
         return RetJson.succcess("reserveInfos",reserveInfos);
     }
 
+    @RequestMapping("/uploadMeetingroomImage")
+    public RetJson uploadMeetingroomImage(@RequestParam("image") MultipartFile multipartFile){
+        InputStream inputStream=null;
+        if (multipartFile.getSize()>MAX_SIZE){
+            return RetJson.fail(-1,"图片太大");
+        }else {
+            try {
+                inputStream=multipartFile.getInputStream();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        String path=COSUtils.addFile("meetingroom/"+ UUID.randomUUID() +"_meetingroom",inputStream);
+        return RetJson.succcess("path",path);
+    }
     //激活会议室
     @RequestMapping("/activationMeetingRoom")
-    public RetJson activationMeetingRoom(MeetingRoom meetingRoom, HttpServletRequest request){
+    public RetJson activationMeetingRoom(MeetingRoom meetingRoom){
         //判断会议室是否已经激活成功
-        User user= (User) request.getAttribute("user");
-        UserInfo userInfo=userService.getUserInfo(user.getId());
         meetingRoom.setOid(userInfo.getOid());
         if (meetingRoomService.addMeetingRoom(meetingRoom)){
             return RetJson.succcess(null);
@@ -62,12 +87,12 @@ public class AndroidThingsController {
 
 
     @RequestMapping("/faceOpen")
-    public RetJson faceOpen(String encryptedString,String macAddress, HttpServletRequest request){
+    public RetJson faceOpen(String encryptedString,String macAddress){
         //测试期间
         if (encryptedString!=null){
             return RetJson.succcess(null);
         }
-        UserInfo userInfo1 = (UserInfo) request.getAttribute("userInfo");
+
         FaceFeature targetFaceFeature = new FaceFeature();
         FaceFeature sourceFaceFeature = new FaceFeature();
 
@@ -97,7 +122,7 @@ public class AndroidThingsController {
         }
 
         //找到参加该会的人
-        Integer[] uids=meetingParticipantService.getParticipants(userInfo1.getOid(),reserve.getReserveId());
+        Integer[] uids=meetingParticipantService.getParticipants(userInfo.getOid(),reserve.getReserveId());
 
         List<UserInfo> list=new LinkedList<>();
         UserInfo userInfo=new UserInfo();
