@@ -227,4 +227,20 @@ public class MeetingRoomController {
         }
         return RetJson.fail(-1,"操作失败!");
     }
+
+    @RequestMapping("/getProperTime")
+    public RetJson getProperMeetingTime(Integer[] participants,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date[] dates,double duration){
+        Set<Integer> set = new HashSet<>();
+        for(int participant:participants){
+            if(userService.getUserByUserId(participant) == null){
+                return RetJson.fail(-1,"参会人员尚未注册！");
+            }
+            set.add(participant);
+        }
+        if((int)(duration * 10) % 5 != 0){
+            return RetJson.fail(-1,"参数错误！");
+        }
+        ReserveInfo reserveInfo = meetingRoomService.getProperMeetingTime(set,dates,duration,userInfo.getOid());
+        return RetJson.succcess("reserveInfo",reserveInfo)                         ;
+    }
 }

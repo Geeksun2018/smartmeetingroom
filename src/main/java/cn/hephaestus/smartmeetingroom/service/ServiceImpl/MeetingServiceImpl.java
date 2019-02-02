@@ -3,6 +3,7 @@ package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 import cn.hephaestus.smartmeetingroom.mapper.MeetingRoomMapper;
 import cn.hephaestus.smartmeetingroom.mapper.ReserveTableMapper;
 import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
+import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 import cn.hephaestus.smartmeetingroom.service.MeetingParticipantService;
 import cn.hephaestus.smartmeetingroom.service.MeetingRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class MeetingServiceImpl implements MeetingRoomService {
 
     @Autowired
     private MeetingParticipantService meetingParticipantService;
+
+    private Calendar calendar = Calendar.getInstance();
 
     @Override
     public boolean addMeetingRoom(MeetingRoom meetingRoom) {
@@ -100,5 +103,120 @@ public class MeetingServiceImpl implements MeetingRoomService {
     @Override
     public MeetingRoom getMeetingRoomWithMacAddress(String macAddress) {
         return meetingRoomMapper.getMeetingRoomWithMacAddress(macAddress);
+    }
+
+    @Override
+    public ReserveInfo getProperMeetingTime(Set<Integer> participants, Date[] dates, double duration,Integer oid) {
+        Integer[] temp=null;
+        for(Date date:dates){
+            List<Integer> list = new ArrayList<>();
+            Integer[] rids = null;
+            MeetingRoom[] rooms = meetingRoomMapper.getMeetingRoomList(oid);
+            //每个房间都判断一遍
+            for(int k = 0;k < rooms.length;k++){
+                if(rooms[k].getCapacity() <participants.size()){
+                    continue;
+                }
+                rids = reserveTableMapper.queryAllUnUsableReserveByDay(oid,date);
+                //把所有成员参加的会议和这个会议室的会议都加进集合
+                ReserveInfo tempInfo = null;
+                for (Integer rid:rids){
+                    temp=meetingParticipantService.getParticipants(oid,rid);
+                    tempInfo = reserveTableMapper.getReserveInfoByReserveId(oid,rid);
+                    //取出所有在该房间开会的会议
+                    if(tempInfo.getRid() == rooms[k].getRoomId()){
+                        list.add(rid);
+                        continue;
+                    }
+                    //取出所有成员的会议
+                    for (int i=0;i<temp.length;i++){
+                        if(participants.contains(temp[i])){
+                            list.add(rid);
+                            break;
+                        }
+                    }
+                }
+                //工作时间为 早上8点到中午12点 下午两点到10点
+                //每个点是否为1 代表前半个小时是否被占用
+                Integer[] time = new Integer[29];
+                for(int i = 0;i < time.length;i++){
+                    time[i] = 0;
+                }
+                ReserveInfo reserveInfo = null;
+                Date startTime = null;
+                Date endTime = null;
+                for(int i = 0;i < list.size();i++){
+                    reserveInfo = reserveTableMapper.getReserveInfoByReserveId(oid,list.get(i));
+                    startTime = reserveInfo.getStartTime();
+                    endTime = reserveInfo.getEndTime();
+                    signTime(time,startTime,endTime);
+                }
+                int end = 0;
+                //从第一个点开始判断，直到最后一个点
+                //1代表八点到八点半，24代表九点半到十点
+                for(int i = 1;i <= 24;i++) {
+                    int flag = 0;
+                    end = (int)(i + duration * 60 / 30);
+                    if (end > 24) {
+                        break;
+                    }
+                    for (int j = i; j < end; j++) {
+                        if (time[j] == 1) {
+                            flag = 1;
+                            break;
+                        }
+                    }
+                    if (flag == 0) {
+                        startTime = getDate(date, i);
+                        endTime = getDate(date, end);
+                        ReserveInfo tempReserveInfo = new ReserveInfo();
+                        tempReserveInfo.setStartTime(startTime);
+                        tempReserveInfo.setEndTime(endTime);
+                        tempReserveInfo.setRid(rooms[k].getRoomId());
+                        return tempReserveInfo;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void signTime(Integer[] time,Date startTime,Date endTime){
+
+        int start = getTimeIndex(startTime);
+        int end = getTimeIndex(endTime);
+        for(int i = start + 1;i <= end;i++){
+            time[i] = 1;
+        }
+    }
+
+    private int getTimeIndex(Date date){
+        calendar.setTime(date);
+        int index = 0;
+        if(calendar.get(Calendar.HOUR_OF_DAY) <= 12){
+            index += (((calendar.get(Calendar.HOUR_OF_DAY) - 8) * 2));
+        }else{
+            index += (((calendar.get(Calendar.HOUR_OF_DAY) - 10) * 2));
+        }
+        if(calendar.get(Calendar.MINUTE) == 30){
+            index += 1;
+        }
+        return index;
+    }
+
+    public Date getDate(Date date,Integer index){
+        calendar.setTime(date);
+        index -= 1;
+        Integer hour = index * 30 / 60;
+        Integer minute = index * 30 % 60;
+        if(index <= 8){
+            calendar.set(Calendar.HOUR_OF_DAY,hour + 8);
+            calendar.set(Calendar.MINUTE,minute);
+        }else{
+            calendar.set(Calendar.HOUR_OF_DAY,hour + 10);
+            calendar.set(Calendar.MINUTE,minute);
+        }
+
+        return calendar.getTime();
     }
 }

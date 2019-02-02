@@ -64,4 +64,6 @@ public interface ReserveTableMapper {
     @Select("select reserve_id from reserve_table where reserve_oid=#{oid} and ( (#{startTime}>=start_time and #{startTime}<=end_time) or (#{endTime}>=start_time and #{endTime}<=end_time) )")
     public Integer[] queryAllUnUsableReserve(@Param("oid")Integer oid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
 
+    @Select("select reserve_id from reserve_table where reserve_oid=#{oid} and to_days(start_time)=to_days(#{date})")
+    public Integer[] queryAllUnUsableReserveByDay(@Param("oid")Integer oid,@Param("date")Date date);
 }

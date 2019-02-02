@@ -1,6 +1,7 @@
 package cn.hephaestus.smartmeetingroom.service;
 
 import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
+import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 
 import java.util.Date;
 import java.util.Set;
@@ -25,4 +26,5 @@ public interface MeetingRoomService {
 
     public MeetingRoom getMeetingRoomWithMacAddress(String macAddress);
 
+    public ReserveInfo getProperMeetingTime(Set<Integer> participants, Date[] dates, double duration,Integer oid);
 }
