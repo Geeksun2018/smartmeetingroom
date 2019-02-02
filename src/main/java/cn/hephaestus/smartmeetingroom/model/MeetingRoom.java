@@ -20,6 +20,8 @@ public class MeetingRoom {
 
     private int capacity;
 
+    private String image;
+
     private String address;
     //mac地址,使用md5加密
     private String macAddress;

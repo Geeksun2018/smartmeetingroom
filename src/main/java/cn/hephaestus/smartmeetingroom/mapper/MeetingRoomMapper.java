@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface MeetingRoomMapper {
 
-    @Insert({"insert into meeting_room(room_name,capacity,address,oid,available) values(#{roomName},#{capacity},#{address},#{oid},#{available})"})
+    @Insert({"insert into meeting_room(room_name,capacity,address,oid,available,image) values(#{roomName},#{capacity},#{address},#{oid},#{available},#{image})"})
     @Options(useGeneratedKeys = true,keyProperty = "roomId",keyColumn = "room_id")
     public int addMeetingRoom(MeetingRoom meetingRoom);
 
