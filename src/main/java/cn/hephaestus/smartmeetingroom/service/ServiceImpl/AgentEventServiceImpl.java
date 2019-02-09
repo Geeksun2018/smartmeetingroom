@@ -20,8 +20,6 @@ public class AgentEventServiceImpl implements AgentEventService {
         return agentEventMapper.deleteAgentEvent(uid,id);
     }
 
-
-
     @Override
     public AgentEvent[] getAllAgentEvent(int uid) {
         return agentEventMapper.getAllAgentEvents(uid);

@@ -43,12 +43,12 @@ public class DepartMentController {
     }
 
     @RequestMapping("/getDepartments")
-    public RetJson getDepartmentsByOid(HttpServletRequest request){
+    public RetJson getDepartmentsByOid(){
         return RetJson.succcess("Departments",departmentService.getDepartmentList(oid));
     }
 
     @RequestMapping("/getDepartment")
-    public RetJson getDepartment(Integer did,HttpServletRequest request){
+    public RetJson getDepartment(Integer did){
         Department department=departmentService.getDepartment(oid,did);
         if (department==null){
             return RetJson.fail(-1,"没有这个部门");
@@ -57,7 +57,7 @@ public class DepartMentController {
     }
 
     @RequestMapping("/deleteDepartment")
-    public RetJson deleteDepartment(Integer did,HttpServletRequest request){
+    public RetJson deleteDepartment(Integer did){
         if(user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限！");
         }
@@ -72,7 +72,7 @@ public class DepartMentController {
     }
 
     @RequestMapping("/insertDepartment")
-    public RetJson insertDepartment(Department department,HttpServletRequest request){
+    public RetJson insertDepartment(Department department){
         if (!ValidatedUtil.validate(department)){
             return RetJson.fail(-1,"参数错误");
         }
@@ -92,11 +92,10 @@ public class DepartMentController {
 
 
     @RequestMapping("/uploadDepartmentImage")
-    public RetJson uploadDepartmentImage(Integer did,@RequestParam("photo") MultipartFile multipartFile,HttpServletRequest request){
+    public RetJson uploadDepartmentImage(Integer did,@RequestParam("photo") MultipartFile multipartFile){
         if (multipartFile.getSize()>MAX_SIZE){
             return RetJson.fail(-1,"图片大小不能超过5m");
         }
-        User user = (User)request.getAttribute("user");
         Integer oid=userService.getUserInfo(user.getId()).getOid();
         boolean b=departmentService.uploadDepartmentImage(oid,did,multipartFile);
         if (!b){
@@ -106,7 +105,7 @@ public class DepartMentController {
     }
 
     @RequestMapping("/alterDepartment")
-    public RetJson alterDepartment(Department department,HttpServletRequest request){
+    public RetJson alterDepartment(Department department){
         if (!ValidatedUtil.validate(department)){
             return RetJson.fail(-1,"参数错误");
         }

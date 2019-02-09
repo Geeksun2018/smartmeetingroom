@@ -5,22 +5,23 @@ import cn.hephaestus.smartmeetingroom.model.OrganizationInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 /**
  * 用来管理一个企业或者学校机构账号，通过该控制器注册的账号权限均为root
  */
+@Validated
 @RestController
 public class OrganizationController {
     @Autowired
     OrganizationService organizationService;
     //企业修改信息
     @RequestMapping("/alterorganization")
-    public RetJson alterOrganization(@Valid OrganizationInfo organizationInfo, HttpServletRequest request){
+    public RetJson alterOrganization(OrganizationInfo organizationInfo, HttpServletRequest request){
         User user = (User)request.getAttribute("user");
         if(user.getRole() == 0){
             return RetJson.fail(-1,"您的权限不够！");

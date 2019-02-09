@@ -47,7 +47,6 @@ public class MessageSocketServer {
 
     //发送给指定的用户集合
     public static void sentAll(Integer[] idArr,String message){
-        Session session=null;
         MessageSocketServer messageSocketServer=null;
         for (int i=0;i<idArr.length;i++){
             if(idArr[i] == null){

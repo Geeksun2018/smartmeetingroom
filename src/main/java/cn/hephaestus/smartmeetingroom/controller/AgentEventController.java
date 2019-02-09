@@ -4,19 +4,22 @@ import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.AgentEvent;
 import cn.hephaestus.smartmeetingroom.service.AgentEventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Validated
 @RestController
 public class AgentEventController {
 
     @Autowired
     AgentEventService agentEventService;
 
+
     @RequestMapping("/addAgentEvent")
-    public RetJson addAgentTime(AgentEvent agentEvent, HttpServletRequest request){
+    public RetJson addAgentTime( AgentEvent agentEvent, HttpServletRequest request){
         Integer uid= (Integer) request.getAttribute("id");
         agentEvent.setUid(uid);
 

@@ -7,17 +7,18 @@ import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 import com.arcsoft.face.FaceFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.*;
 
+@Validated
 @RestController
 public class AndroidThingsController {
 
@@ -59,8 +60,8 @@ public class AndroidThingsController {
         return RetJson.succcess("reserveInfos",reserveInfos);
     }
 
-    @RequestMapping("/uploadMeetingroomImage")
-    public RetJson uploadMeetingroomImage(@RequestParam("image") MultipartFile multipartFile){
+    @RequestMapping("/uploadMeetingRoomImage")
+    public RetJson uploadMeetingRoomImage(@RequestParam("image") MultipartFile multipartFile){
         InputStream inputStream=null;
         if (multipartFile.getSize()>MAX_SIZE){
             return RetJson.fail(-1,"图片太大");
@@ -76,7 +77,7 @@ public class AndroidThingsController {
     }
     //激活会议室
     @RequestMapping("/activationMeetingRoom")
-    public RetJson activationMeetingRoom(MeetingRoom meetingRoom){
+    public RetJson activationMeetingRoom( MeetingRoom meetingRoom){
         //判断会议室是否已经激活成功
         meetingRoom.setOid(userInfo.getOid());
         if (meetingRoomService.addMeetingRoom(meetingRoom)){

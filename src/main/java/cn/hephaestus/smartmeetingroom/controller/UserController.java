@@ -18,6 +18,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,7 @@ import java.util.*;
  * @author zeng
  * 与用户操作有关的控制器,如登入注册等
  */
+@Validated
 @RestController
 public class UserController {
     @Autowired

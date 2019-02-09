@@ -5,11 +5,13 @@ import cn.hephaestus.smartmeetingroom.model.Article;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Validated
 @RestController
 public class ArticleController {
 
@@ -60,7 +62,7 @@ public class ArticleController {
     }
 
     @RequestMapping("/getArticle")
-    public RetJson getArticleById(Integer articleId, HttpServletRequest request){
+    public RetJson getArticleById(Integer articleId){
         Article article = articleService.getArticle(articleId);
         return RetJson.succcess("Article",article);
     }

@@ -7,10 +7,16 @@ import lombok.Setter;
 @Setter
 public class CarouselMap {
     private int id;
-    private int oid;//所属于组织
-    private String imagePath;//图片路径
-    private String link;//链接地址
+    //所属于组织
+    private int oid;
+    //图片路径
+    private String imagePath;
+    //链接地址
+    private String link;
+
     private String title;
-    private String startTime;//开始展示时间
-    private String endTime;//结束展示时间
+    //开始展示时间
+    private String startTime;
+    //结束展示时间
+    private String endTime;
 }

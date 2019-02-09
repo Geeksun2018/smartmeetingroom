@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.util.Date;
 
 @Getter
@@ -19,7 +20,7 @@ public class Article {
     String content;
 
     Integer userId;
-
+    @Past
     Date creatTime;
     //1.2.3.4.5.6.11.12点赞的用户id 用'.'分割
     String likeList;

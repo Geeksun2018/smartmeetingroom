@@ -7,12 +7,13 @@ import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.service.ArticleService;
 import cn.hephaestus.smartmeetingroom.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
+@Validated
 @RestController
 public class CommentController {
 
@@ -21,7 +22,7 @@ public class CommentController {
     @Autowired
     ArticleService articleService;
     @RequestMapping("/addComment")
-    public RetJson addComment(@Valid Comment comment, HttpServletRequest request){
+    public RetJson addComment(Comment comment, HttpServletRequest request){
         User user = (User)request.getAttribute("user");
         comment.setUid(user.getId());
         if(commentService.insertComment(comment)){
@@ -46,7 +47,7 @@ public class CommentController {
     }
 
     @RequestMapping("/getComments")
-    public RetJson updateComment(Integer articleId, HttpServletRequest request){
+    public RetJson updateComment(Integer articleId){
         Comment[] comments = commentService.getComments(articleId);
         return RetJson.succcess("comments",comments);
     }

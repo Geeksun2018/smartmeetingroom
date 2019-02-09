@@ -3,15 +3,16 @@ package cn.hephaestus.smartmeetingroom.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Getter
 @Setter
 @ToString
-//@NoArgsConstructor
 public class MeetingRoom {
-
+    @NotNull
     private int roomId;
 
     private int oid;//组织id
@@ -24,6 +25,8 @@ public class MeetingRoom {
 
     private String address;
     //mac地址,使用md5加密
+    @NotNull
+    @Length(min = 32,max = 32)
     private String macAddress;
     //true表示可用，false表示不可用
     private boolean available;

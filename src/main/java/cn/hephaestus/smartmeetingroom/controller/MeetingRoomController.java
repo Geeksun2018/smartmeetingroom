@@ -39,6 +39,8 @@ public class MeetingRoomController {
     @Autowired
     MeetingParticipantService meetingParticipantService;
     @Autowired
+    NewsService newsService;
+    @Autowired
     RedisService redisService;
     User user=null;
     UserInfo userInfo=null;
@@ -151,6 +153,7 @@ public class MeetingRoomController {
                 Integer reserveInfoId = reserveInfo.getReserveId();
                 meetingParticipantService.addParticipants(oid,reserveInfoId,reserveInfo.getParticipants());
                 //预定成功，发送消息给所有参会用户
+                newsService.sendNews("您有一个会议，请注意查看会议具体情况。",reserveInfo.getParticipants());
                 return RetJson.succcess("meetingId",reserveInfoId);
             }
             return RetJson.fail(-1,"会议室已被占用！");
