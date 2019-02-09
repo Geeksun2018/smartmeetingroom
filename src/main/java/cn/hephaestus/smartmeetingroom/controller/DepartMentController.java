@@ -8,6 +8,7 @@ import cn.hephaestus.smartmeetingroom.service.DepartmentService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ import java.util.Map;
 /**
  * 部门管理
  */
+@Validated
 @RestController
 public class DepartMentController {
 

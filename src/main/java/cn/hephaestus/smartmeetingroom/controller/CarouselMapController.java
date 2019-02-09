@@ -8,6 +8,7 @@ import cn.hephaestus.smartmeetingroom.service.CarouselMapService;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import java.io.InputStream;
  * 轮播图的管理
  */
 
+@Validated
 @RestController
 public class CarouselMapController {
     @Autowired
