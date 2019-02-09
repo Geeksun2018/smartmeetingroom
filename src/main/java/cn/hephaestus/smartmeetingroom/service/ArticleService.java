@@ -8,20 +8,22 @@ public interface ArticleService {
 
     public boolean insertArticle(Article article);
 
-    public boolean updateArticle(Article article);
+    public Article getArticle(Integer articleId,Integer oid);
 
-    public boolean deleteArticleByArticleId(Integer articleId);
+    public boolean deleteArticleByArticleId(Integer articleId,Integer uid);
 
-    public Article getArticle(Integer articleId);
 
-    //获取与该用户相同部门的人的动态
-    public List<Article> getDepartmentArticle(Integer uid);
+    public List<Integer>  getLikeList(Integer articleId,Integer oid);
 
-    public List<Integer>  getLikeList(Integer articleId);
+    public boolean deleteLikeById(Integer uid,Integer articleId,Integer oid);
 
-    public boolean deleteLikeById(Integer uid,Integer articleId);
+    public void like(Integer uid,Integer articleId,Integer oid);
 
-    public void like(Integer uid,Integer articleId);
+    public boolean isLiked(Integer uid, Integer articleId,Integer oid);
 
-    public boolean isLiked(Integer uid, Integer articleId);
+    public List<Article> getNewArticle(Integer articleId,Integer oid);
+
+    public List<Article> getInitArticle(Integer oid);
+
+    List<Article> getLastArticle(Integer articleId,Integer oid);
 }

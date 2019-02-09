@@ -61,7 +61,7 @@ public class MeetingController {
     }
 
     @RequestMapping("/deleteParticipant")
-    public RetJson deleteMeetingParticipant(Integer reserveId,Integer participant){
+    public RetJson deleteMeetingParticipant(Integer reserveId,Integer participant,HttpServletRequest request){
         Integer oid = userInfo.getOid();
         if(userService.getUserByUserId(participant) == null){
             return RetJson.fail(-1,"参与者暂未注册！");
@@ -76,7 +76,7 @@ public class MeetingController {
     }
 
     @RequestMapping("/addParticipant")
-    public RetJson addMeetingParticipant(Integer reserveId,Integer participant){
+    public RetJson addMeetingParticipant(Integer reserveId,Integer participant, HttpServletRequest request){
         Integer oid = userInfo.getOid();
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有增加参与者的的权限");
@@ -92,7 +92,7 @@ public class MeetingController {
     }
 
     @RequestMapping("/getParticipants")
-    public RetJson addMeetingParticipant(Integer reserveId){
+    public RetJson addMeetingParticipant(Integer reserveId, HttpServletRequest request){
         Integer oid = userInfo.getOid();
         Set set = redisService.sget(oid + "cm" + reserveId);
         return RetJson.succcess("participants",set);
@@ -107,11 +107,8 @@ public class MeetingController {
 
 
     @RequestMapping("/getMeetingInfoByCondition")
-    public RetJson getMeetingInfoByCondition(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid, HttpServletRequest request){
-        if(userInfo.getOid() != oid){
-            RetJson.fail(-1,"非法操作！");
-        }
-        List<ReserveInfoViewObject> list = reserveInfoService.getReserveInfoViewObjectByCondition(date,rid,did);
+    public RetJson getMeetingInfoByCondition(@Validated @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid){
+        List<ReserveInfoViewObject> list = reserveInfoService.getReserveInfoViewObjectByCondition(date,rid,did,userInfo.getOid());
         return RetJson.succcess("list",list);
     }
 }

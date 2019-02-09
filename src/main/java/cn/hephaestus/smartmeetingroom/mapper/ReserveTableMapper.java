@@ -8,7 +8,7 @@ import java.util.Date;
 @Mapper
 public interface ReserveTableMapper {
 
-    @Insert({"insert into reserve_table(start_time,end_time,rid,topic) values(#{startTime},#{endTime},#{rid},#{topic})"})
+    @Insert({"insert into reserve_table(start_time,end_time,rid,topic,reserve_uid,reserve_oid,reserve_did) values(#{startTime},#{endTime},#{rid},#{topic},#{reserveUid},#{reserveOid},#{reserveDid})"})
     @Options(useGeneratedKeys = true,keyProperty = "reserveId",keyColumn = "reserve_id")
     public boolean addReserveInfo(ReserveInfo reserveInfo);
 
@@ -50,9 +50,10 @@ public interface ReserveTableMapper {
             "<when test='did!=null'>",
             "AND reserve_did = #{did}",
             "</when>",
+            "And reserve_oid=#{oid}",
             "</script>"})
     @ResultMap(value = "reserveInfoMap")
-    public ReserveInfo[] getReserveInfoByCondition(@Param("date")Date date,@Param("rid")Integer rid,@Param("did")Integer did);
+    public ReserveInfo[] getReserveInfoByCondition(@Param("date")Date date,@Param("rid")Integer rid,@Param("did")Integer did,@Param("oid")Integer oid);
 
     @Select("select rid from reserve_table where ((#{beginTime} between start_time and end_time)or " +
             "(#{endTime} between start_time and end_time)) and reserve_id = #{reserveId}")

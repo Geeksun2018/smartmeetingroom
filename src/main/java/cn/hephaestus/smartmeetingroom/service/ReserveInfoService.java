@@ -22,5 +22,5 @@ public interface ReserveInfoService {
 
     public Integer queryIsAvailableByReserveId(Integer reserveId,String beginTime,String endTime);
 
-    public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did);
+    public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did,Integer oid);
 }
