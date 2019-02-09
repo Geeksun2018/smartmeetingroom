@@ -20,7 +20,13 @@ public class Article {
 
     Integer userId;
 
+    Integer oid;
+
     Date creatTime;
     //1.2.3.4.5.6.11.12点赞的用户id 用'.'分割
     String likeList;
+
+    Integer commentCount;
+
+    Integer readCount;
 }

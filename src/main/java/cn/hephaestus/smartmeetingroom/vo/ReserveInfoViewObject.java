@@ -26,6 +26,4 @@ public class ReserveInfoViewObject {
     private Integer reserveUid;
     //预定的部门
     private Integer reserveDid;
-    //预定的公司
-    private Integer reserveOid;
 }

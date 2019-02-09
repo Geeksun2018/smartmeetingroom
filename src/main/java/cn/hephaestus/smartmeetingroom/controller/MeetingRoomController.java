@@ -45,7 +45,18 @@ public class MeetingRoomController {
 
 
     @ModelAttribute
-    public void comment(HttpServletRequest request){
+    public void comment(HttpServletRequest request,ReserveInfo reserveInfo){
+        //前端直接传数组遇到了麻烦
+        if (reserveInfo!=null){
+            String[] strings=reserveInfo.getParticipantStr().split("\\ ");
+            List<Integer> list=new LinkedList<>();
+            for (String s:strings){
+                list.add(Integer.parseInt(s));
+            }
+            Integer[] integers=new Integer[list.size()];
+            list.toArray(integers);
+            reserveInfo.setParticipants(integers);
+        }
         if (user!=null&&userInfo!=null){
             return;
         }
@@ -117,15 +128,17 @@ public class MeetingRoomController {
     @RequestMapping("/reserveRoom")
     public RetJson reserveMeetingRoom(@Valid ReserveInfo reserveInfo){
         Integer oid = userInfo.getOid();
-        if(user.getId() != reserveInfo.getReserveUid()){
-            return RetJson.fail(-1,"操作非法！");
-        }
+        reserveInfo.setReserveUid(user.getId());
+        reserveInfo.setReserveOid(oid);
+        reserveInfo.setReserveDid(userInfo.getDid());
+
         //判断该用户是否拥有预定会议室的权限
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有预定会议室的权限");
         }
         //判断参会人员是否合法,存在且有空闲时间
         Set<Integer> set=meetingRoomService.getAllConficUser(oid,reserveInfo.getStartTime(),reserveInfo.getEndTime());
+
         for(Integer participant:reserveInfo.getParticipants()){
             if(userService.getUserByUserId(participant) == null){
                 return RetJson.fail(-1,"参与者暂未注册！");

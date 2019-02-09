@@ -32,6 +32,7 @@ public class ReserveInfo {
     //预定者
     private Integer reserveUid;
     //参会者id
+    private String participantStr;
     private Integer[] participants;
     //会议标题
     private String topic;

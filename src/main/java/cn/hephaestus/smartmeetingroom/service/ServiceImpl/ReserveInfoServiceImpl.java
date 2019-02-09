@@ -66,14 +66,14 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     }
 
     @Override
-    public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did) {
-        ReserveInfo[] reserveInfos = reserveTableMapper.getReserveInfoByCondition(date,rid,did);
+    public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did,Integer oid) {
+        ReserveInfo[] reserveInfos = reserveTableMapper.getReserveInfoByCondition(date,rid,did,oid);
         List<ReserveInfoViewObject> list = new ArrayList<>();
         for(ReserveInfo reserveInfo:reserveInfos){
             String roomName = meetingRoomMapper.getMeetingRoomWithRoomId(reserveInfo.getReserveId()).getRoomName();
             Integer[] participants = meetingParticipantMapper.getParticipants(reserveInfo.getReserveId());
             list.add(new ReserveInfoViewObject(roomName,reserveInfo.getTopic(),reserveInfo.getStartTime(),
-                    reserveInfo.getEndTime(),participants,reserveInfo.getFlag(),reserveInfo.getReserveUid(),reserveInfo.getReserveOid(),
+                    reserveInfo.getEndTime(),participants,reserveInfo.getFlag(),reserveInfo.getReserveUid(),
                     reserveInfo.getReserveDid()));
         }
         return list;

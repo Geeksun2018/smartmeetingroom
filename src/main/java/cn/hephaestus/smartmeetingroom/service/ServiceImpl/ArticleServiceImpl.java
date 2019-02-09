@@ -6,6 +6,7 @@ import cn.hephaestus.smartmeetingroom.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,32 +20,28 @@ public class ArticleServiceImpl implements ArticleService {
         return articleMapper.insertArticle(article);
     }
 
+
     @Override
-    public boolean updateArticle(Article article) {
-        return articleMapper.updateArticle(article);
+    public boolean deleteArticleByArticleId(Integer articleId,Integer uid) {
+        return articleMapper.deleteArticleByArticleId(articleId,uid);
     }
 
     @Override
-    public boolean deleteArticleByArticleId(Integer articleId) {
-        return articleMapper.deleteArticleByArticleId(articleId);
+    public Article getArticle(Integer articleId,Integer oid) {
+        return articleMapper.getArticleById(articleId,oid);
     }
 
-    @Override
-    public Article getArticle(Integer articleId) {
-        return articleMapper.getArticle(articleId);
-    }
 
     @Override
-    public List<Article> getDepartmentArticle(Integer uid) {
-
-        return null;
-    }
-
-    @Override
-    public List<Integer> getLikeList(Integer articleId) {
+    public List<Integer> getLikeList(Integer articleId,Integer oid) {
         List<Integer> userIdList = new LinkedList<>();
-        String[] userIdStrings = articleMapper.getLikeList(articleId).split("\\.");
-        if (userIdStrings[0].equals("")||userIdStrings==null||userIdStrings.length==0){
+
+        String list=articleMapper.getLikeList(articleId,oid);
+        if (list==null){
+            return null;
+        }
+        String[] userIdStrings = list.split("\\.");
+        if (userIdStrings==null||userIdStrings[0].equals("")||userIdStrings.length==0){
             return null;
         }
         for(int i = 0;i < userIdStrings.length;i++){
@@ -54,9 +51,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public boolean deleteLikeById(Integer uid,Integer articleId) {
+    public boolean deleteLikeById(Integer uid, Integer articleId, Integer oid) {
         List<Integer> userIdList = new ArrayList<>();
-        String[] userIdStrings = articleMapper.getLikeList(articleId).split("\\.");
+        String[] userIdStrings = articleMapper.getLikeList(articleId,oid).split("\\.");
         for(int i = 0;i < userIdStrings.length;i++){
             Integer userId = Integer.parseInt(userIdStrings[i]);
             if(userId != uid){
@@ -73,8 +70,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void like(Integer uid, Integer articleId) {
-        String likeList = articleMapper.getLikeList(articleId);
+    public void like(Integer uid, Integer articleId,Integer oid) {
+        String likeList = articleMapper.getLikeList(articleId,oid);
         if(likeList==null||likeList.endsWith("")){
             likeList = uid.toString();
             articleMapper.updateLikeList(articleId,likeList);
@@ -86,11 +83,27 @@ public class ArticleServiceImpl implements ArticleService {
         articleMapper.updateLikeList(articleId,b.toString());
     }
 
-    public boolean isLiked(Integer uid, Integer articleId){
-        List<Integer> list=getLikeList(articleId);
+    public boolean isLiked(Integer uid, Integer articleId,Integer oid){
+        List<Integer> list=getLikeList(articleId,oid);
         if (list==null){
             return false;
         }
-        return getLikeList(articleId).contains(uid);
+        return getLikeList(articleId,oid).contains(uid);
+    }
+
+    @Override
+    public List<Article> getNewArticle(Integer articleId, Integer oid) {
+        return articleMapper.getNewArticle(articleId,oid);
+
+    }
+
+    @Override
+    public List<Article> getInitArticle(Integer oid) {
+        return articleMapper.getInitArticle(oid);
+    }
+
+    @Override
+    public List<Article> getLastArticle(Integer articleId, Integer oid){
+        return articleMapper.getLastArticle(articleId,oid);
     }
 }
