@@ -43,7 +43,7 @@ public class AndroidThingsController {
     @ModelAttribute
     private void comment(HttpServletRequest request){
         user= (User) request.getAttribute("user");
-        userInfo=userService.getUserInfo(user.getId());
+        userInfo=(UserInfo)request.getAttribute("userInfo");
     }
 
     //获取当前所有的会议 有很大的安全隐患，有可能mac地址泄密!!!!!!!!
@@ -60,6 +60,11 @@ public class AndroidThingsController {
         return RetJson.succcess("reserveInfos",reserveInfos);
     }
 
+    /**
+     * 上传会议室图片
+     * @param multipartFile
+     * @return
+     */
     @RequestMapping("/uploadMeetingRoomImage")
     public RetJson uploadMeetingRoomImage(@RequestParam("image") MultipartFile multipartFile){
         InputStream inputStream=null;
@@ -75,6 +80,7 @@ public class AndroidThingsController {
         String path=COSUtils.addFile("meetingroom/"+ UUID.randomUUID() +"_meetingroom",inputStream);
         return RetJson.succcess("path",path);
     }
+
     //激活会议室
     @RequestMapping("/activationMeetingRoom")
     public RetJson activationMeetingRoom( MeetingRoom meetingRoom){

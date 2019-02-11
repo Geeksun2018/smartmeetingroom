@@ -10,7 +10,7 @@ public interface MeetingRoomMapper {
     @Options(useGeneratedKeys = true,keyProperty = "roomId",keyColumn = "room_id")
     public int addMeetingRoom(MeetingRoom meetingRoom);
 
-    @Update("update meeting_room set room_name=#{roomName},capacity=#{capacity},address=#{address},available=#{available} where room_id=#{roomId}")
+    @Update("update meeting_room set room_name=#{roomName},capacity=#{capacity},address=#{address},available=#{available},image=#{image} where room_id=#{roomId}")
     public void alterMeetingRoom(MeetingRoom meetingRoom);
 
     @Delete("delete from meeting_room where room_id=#{roomId} and oid=#{oid}")
