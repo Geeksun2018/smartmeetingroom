@@ -42,6 +42,8 @@ public class MeetingRoomController {
     NewsService newsService;
     @Autowired
     RedisService redisService;
+    @Autowired
+    DepartmentService departmentService;
     User user=null;
     UserInfo userInfo=null;
 
@@ -49,7 +51,9 @@ public class MeetingRoomController {
     @ModelAttribute
     public void comment(HttpServletRequest request,ReserveInfo reserveInfo){
         //前端直接传数组遇到了麻烦
-        if (reserveInfo!=null){
+        //此处不能直接判断是否为null，因为一定不为null
+//        if (reserveInfo!=null){
+        if (reserveInfo.getParticipantStr()!=null){
             String[] strings=reserveInfo.getParticipantStr().split("\\ ");
             List<Integer> list=new LinkedList<>();
             for (String s:strings){
@@ -135,7 +139,7 @@ public class MeetingRoomController {
         reserveInfo.setReserveDid(userInfo.getDid());
 
         //判断该用户是否拥有预定会议室的权限
-        if (user.getRole()==0){
+        if (user.getRole()==0&&user.getReserveJurisdiction()==0){
             return RetJson.fail(-1,"你没有预定会议室的权限");
         }
         //判断参会人员是否合法,存在且有空闲时间
@@ -257,5 +261,43 @@ public class MeetingRoomController {
         }
         ReserveInfo reserveInfo = meetingRoomService.getProperMeetingTime(set,dates,duration,userInfo.getOid());
         return RetJson.succcess("reserveInfo",reserveInfo)                         ;
+    }
+
+    @RequestMapping("/givePower")
+    public RetJson giveReservePower(Integer uid){
+        if(user.getRole() == 0){
+            return RetJson.fail(-1,"权限不够！");
+        }
+        User user = userService.getUserByUserId(uid);
+        if(user == null){
+            return RetJson.fail(-2,"该用户不存在");
+        }
+        //Jurisdiction 0表示没有权限，1代表有权限
+        userService.alterReserveJurisdiction(1,uid);
+        return RetJson.succcess(null);
+    }
+
+    @RequestMapping("/cancelPower")
+    public RetJson cancelReservePower(Integer uid){
+        User user = userService.getUserByUserId(uid);
+        if(user == null){
+            return RetJson.fail(-2,"该用户不存在");
+        }
+        if(user.getRole() == 0){
+            return RetJson.fail(-1,"权限不够！");
+        }
+        //Jurisdiction 0表示没有权限，1代表有权限
+        userService.alterReserveJurisdiction(0,uid);
+        return RetJson.succcess(null);
+    }
+
+    @RequestMapping("/applyPower")
+    public RetJson applyReservePower(){
+        if(user.getRole() != 0){
+            return RetJson.fail(-1,"您已有权限！");
+        }
+        Set<Integer> adminSet = departmentService.getAdmin(userInfo.getOid(),userInfo.getDid());
+        newsService.sendNews(user.getId() + "号用户想拥有预定会议的权限，请您尽快处理！",adminSet.toArray(new Integer[adminSet.size()]));
+        return RetJson.succcess(null);
     }
 }

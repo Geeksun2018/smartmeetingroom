@@ -44,4 +44,8 @@ public interface UserService {
     public String getHeadPortrait(Integer uid);
 
     public Integer[] getAllUserByDeparment(int oid,int did);
+    //获取预定权限
+    public int getReserveJurisdiction(Integer id);
+    //修改预定权限
+    public boolean alterReserveJurisdiction(Integer jurisdiction,Integer id);
 }

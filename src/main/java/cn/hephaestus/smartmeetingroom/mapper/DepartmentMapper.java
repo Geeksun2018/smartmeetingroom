@@ -34,4 +34,7 @@ public interface DepartmentMapper {
 
     @Update("update department set admin=#{admin} where oid=#{oid} and department_id=#{did}")
     public Boolean setAdmin(@Param("oid")Integer oid,@Param("did")Integer did,@Param("admin")String admin);
+
+    @Select("select admin from department where department_id=#{did} and oid=#{oid}")
+    public String getAdmin(@Param("oid") Integer oid,@Param("did") Integer did);
 }
