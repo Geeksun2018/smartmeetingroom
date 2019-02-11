@@ -51,9 +51,8 @@ public class MeetingRoomController {
     @ModelAttribute
     public void comment(HttpServletRequest request,ReserveInfo reserveInfo){
         //前端直接传数组遇到了麻烦
-        //此处不能直接判断是否为null，因为一定不为null
-//        if (reserveInfo!=null){
-        if (reserveInfo.getParticipantStr()!=null){
+
+        if (reserveInfo.getRid()!=null){
             String[] strings=reserveInfo.getParticipantStr().split("\\ ");
             List<Integer> list=new LinkedList<>();
             for (String s:strings){
@@ -87,6 +86,7 @@ public class MeetingRoomController {
         }
         return RetJson.fail(-1,"当前用户没有权限！");
     }
+
     //2.修改会议室信息
     @RequestMapping("alterMeetingRoom")
     public RetJson alterMeetingRoom(MeetingRoom meetingRoom){
@@ -125,8 +125,8 @@ public class MeetingRoomController {
 
     //5.获取所有会议室
     @RequestMapping("/getMeetingRoomList")
-    public RetJson getMeetingRoomList(Integer oid,HttpServletRequest request) {
-        User user=(User)request.getAttribute("user");
+    public RetJson getMeetingRoomList() {
+        Integer oid=userInfo.getOid();
         MeetingRoom[] meetingRooms=meetingRoomService.getMeetingRoomList(oid);
         return RetJson.succcess("meetingRooms",meetingRooms);
     }
@@ -176,6 +176,29 @@ public class MeetingRoomController {
             return RetJson.fail(-1,"会议室已被占用！");
         }
         return RetJson.fail(-1,"会议室不存在！");
+    }
+
+    //7.根据条件获取用户列表
+    @RequestMapping("/getIdleUser")
+    public RetJson getIdleUser(Integer did,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date endTime){
+        Integer oid=userInfo.getOid();
+        List<UserInfo> list=null;
+        //按照部门查出所有用户
+        if (did==0){
+            list=userService.getUserinfoListByOid(oid);
+        }else{
+            list=userService.getUserInfoListByDid(oid,did);
+        }
+        //查出当前不可用的用户
+        Set<Integer> set=meetingRoomService.getAllConficUser(oid,startTime,endTime);
+        for (UserInfo userInfo:list){
+            if (!set.contains(userInfo.getId())){
+                userInfo.setIdle(true);
+            }else {
+                userInfo.setIdle(false);
+            }
+        }
+        return RetJson.succcess("userList",list);
     }
 
     @RequestMapping("/roomIsAvailable")
@@ -230,6 +253,7 @@ public class MeetingRoomController {
         }
         return RetJson.fail(-1,"取消失败！");
     }
+
 
     @RequestMapping("/updateReservation")
     public RetJson updateReservation(@Valid ReserveInfo reserveInfo){
