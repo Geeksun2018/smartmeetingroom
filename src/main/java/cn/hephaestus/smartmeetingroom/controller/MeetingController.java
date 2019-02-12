@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Validated
@@ -35,10 +36,14 @@ public class MeetingController {
 
     User user=null;
     UserInfo userInfo=null;
+    Integer oid = null;
+    Integer did = null;
     @ModelAttribute
     public void comment(HttpServletRequest request){
         user = (User)request.getAttribute("user");
         userInfo = (UserInfo)request.getAttribute("userInfo");
+        oid = userInfo.getOid();
+        did = userInfo.getDid();
     }
 
     @RequestMapping("/updateParticipants")
@@ -107,8 +112,45 @@ public class MeetingController {
 
 
     @RequestMapping("/getMeetingInfoByCondition")
-    public RetJson getMeetingInfoByCondition(@Validated @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid){
+    public RetJson getMeetingInfoByCondition(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid){
         List<ReserveInfoViewObject> list = reserveInfoService.getReserveInfoViewObjectByCondition(date,rid,did,userInfo.getOid());
         return RetJson.succcess("list",list);
+    }
+
+    @RequestMapping("/getMeetingCount")
+    public RetJson getCountOfDepartmentMeeting(Integer type,Integer year,Integer month){
+        if(type == null){
+            return RetJson.fail(-1,"参数错误！");
+        }
+        Integer count = 0;
+        //0表示按年查询
+        if(type == 0){
+            count = reserveInfoService.queryCountOfDepartmentMeetingByYear(oid,did,year);
+        }else{
+            count = reserveInfoService.queryCountOfDepartmentMeetingByMonth(oid,did,year,month);
+        }
+        return RetJson.succcess("count",count);
+    }
+
+    @RequestMapping("/getMeetingTimeCount")
+    public RetJson getCountOfDepartmentMeetingTime(Integer type,Integer year,Integer month){
+        if(type == null){
+            return RetJson.fail(-1,"参数错误！");
+        }
+        Integer count = 0;
+        //0表示按年查询
+        if(type == 0){
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByYear(oid,did,year);
+        }else{
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByMonth(oid,did,year,month);
+        }
+        return RetJson.succcess("count",count);
+    }
+
+    @RequestMapping("/getMeetingCountByDay")
+    public RetJson getCountOfMeeting(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+        Map<Date,Integer> map = null;
+        map = reserveInfoService.queryCountOfMeetingByDay(date);
+        return RetJson.succcess("count",map);
     }
 }

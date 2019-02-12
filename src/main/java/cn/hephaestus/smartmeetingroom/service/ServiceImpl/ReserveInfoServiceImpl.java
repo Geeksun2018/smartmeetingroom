@@ -10,9 +10,7 @@ import cn.hephaestus.smartmeetingroom.vo.ReserveInfoViewObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ReserveInfoServiceImpl implements ReserveInfoService {
@@ -77,5 +75,46 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
                     reserveInfo.getReserveDid()));
         }
         return list;
+    }
+
+    @Override
+    public Integer queryCountOfDepartmentMeetingByYear(Integer oid, Integer did, Integer year) {
+        return reserveTableMapper.queryCountOfDepartmentMeetingByYear(oid,did,year);
+    }
+
+    @Override
+    public Integer queryCountOfDepartmentMeetingByMonth(Integer oid, Integer did, Integer year, Integer month) {
+        return reserveTableMapper.queryCountOfDepartmentMeetingByMonth(oid,did,year,month);
+    }
+
+    @Override
+    public Integer queryCountOfDepartmentMeetingTimeByYear(Integer oid, Integer did, Integer year) {
+        return reserveTableMapper.queryCountOfDepartmentMeetingTimeByYear(oid,did,year);
+    }
+
+    @Override
+    public Integer queryCountOfDepartmentMeetingTimeByMonth(Integer oid, Integer did, Integer year, Integer month) {
+        return reserveTableMapper.queryCountOfDepartmentMeetingTimeByMonth(oid,did,year,month);
+    }
+
+    @Override
+    public Map<Date,Integer> queryCountOfMeetingByDay(Date date) {
+        Map<Date,Integer> map = new LinkedHashMap<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+            calendar.add(Calendar.DAY_OF_WEEK, -1);
+        }
+        for (int i = 0; i < 7; i++) {
+            date = calendar.getTime();
+            Integer count = reserveTableMapper.queryCountOfMeetingByDay(date);
+            if(count == null){
+                map.put(date,0);
+            }else{
+                map.put(date,count);
+            }
+            calendar.add(Calendar.DATE, 1);
+        }
+        return map;
     }
 }

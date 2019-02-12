@@ -67,4 +67,19 @@ public interface ReserveTableMapper {
 
     @Select("select reserve_id from reserve_table where reserve_oid=#{oid} and to_days(start_time)=to_days(#{date})")
     public Integer[] queryAllUnUsableReserveByDay(@Param("oid")Integer oid,@Param("date")Date date);
+
+    @Select("select count(reserve_id) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year}")
+    public Integer queryCountOfDepartmentMeetingByYear(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year);
+
+    @Select("select count(reserve_id) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year} and month(start_time)=#{month}")
+    public Integer queryCountOfDepartmentMeetingByMonth(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year,@Param("month")Integer month);
+
+    @Select("select sum(TIMESTAMPDIFF(MINUTE,start_time,end_time)) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year}")
+    public Integer queryCountOfDepartmentMeetingTimeByYear(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year);
+
+    @Select("select sum(TIMESTAMPDIFF(MINUTE,start_time,end_time)) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year} and month(start_time)=#{month}")
+    public Integer queryCountOfDepartmentMeetingTimeByMonth(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year,@Param("month")Integer month);
+
+    @Select("select count(reserve_id) from reserve_table where to_days(start_time)=to_days(#{date})")
+    public Integer queryCountOfMeetingByDay(@Param("date")Date date);
 }
