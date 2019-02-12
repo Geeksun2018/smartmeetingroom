@@ -11,7 +11,7 @@ public interface ReserveInfoService {
 
     public boolean addReserveInfo(ReserveInfo reserveInfo);
 
-    public boolean deleteReserveInfo(Integer oid,Integer reserveId);
+    public boolean deleteReserveInfo(Integer oid, Integer reserveId);
 
     public boolean updateReserveInfo(ReserveInfo reserveInfo);
 

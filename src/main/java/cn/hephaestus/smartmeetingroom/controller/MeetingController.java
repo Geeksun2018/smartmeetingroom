@@ -47,7 +47,7 @@ public class MeetingController {
     }
 
     @RequestMapping("/updateParticipants")
-    public RetJson updateMeetingParticipants(Integer reserveId, Integer[] participants, HttpServletRequest request){
+    public RetJson updateMeetingParticipants(Integer reserveId, Integer[] participants){
         Integer oid = userInfo.getOid();
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有预定会议室的权限");
@@ -66,7 +66,7 @@ public class MeetingController {
     }
 
     @RequestMapping("/deleteParticipant")
-    public RetJson deleteMeetingParticipant(Integer reserveId,Integer participant,HttpServletRequest request){
+    public RetJson deleteMeetingParticipant(Integer reserveId,Integer participant){
         Integer oid = userInfo.getOid();
         if(userService.getUserByUserId(participant) == null){
             return RetJson.fail(-1,"参与者暂未注册！");
@@ -81,7 +81,7 @@ public class MeetingController {
     }
 
     @RequestMapping("/addParticipant")
-    public RetJson addMeetingParticipant(Integer reserveId,Integer participant, HttpServletRequest request){
+    public RetJson addMeetingParticipant(Integer reserveId,Integer participant){
         Integer oid = userInfo.getOid();
         if (user.getRole()==0){
             return RetJson.fail(-1,"你没有增加参与者的的权限");

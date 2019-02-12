@@ -90,6 +90,7 @@ public class MeetingRoomController {
     //2.修改会议室信息
     @RequestMapping("alterMeetingRoom")
     public RetJson alterMeetingRoom(MeetingRoom meetingRoom){
+        System.out.println(meetingRoom);
         if (user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限");
         }
@@ -131,8 +132,17 @@ public class MeetingRoomController {
         return RetJson.succcess("meetingRooms",meetingRooms);
     }
 
+    //6.获取所有可用的会议室
+    @RequestMapping("/getAllAvailableMeetingRoom")
+    public RetJson getAllAvailableMeetingRoom(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date endTime,Integer num){
+        Integer oid=userInfo.getOid();
+        MeetingRoom[] meetingRooms=meetingRoomService.getAllUsableMeetingRooms(oid,startTime,endTime,num);
+        return RetJson.succcess("meetingRooms",meetingRooms);
+    }
+
     @RequestMapping("/reserveRoom")
     public RetJson reserveMeetingRoom(@Valid ReserveInfo reserveInfo){
+        System.out.println(reserveInfo);
         Integer oid = userInfo.getOid();
         reserveInfo.setReserveUid(user.getId());
         reserveInfo.setReserveOid(oid);
@@ -243,6 +253,7 @@ public class MeetingRoomController {
         return RetJson.succcess("occupiedRoomId",roomSet);
     }
 
+    //取消预定会议
     @RequestMapping("/cancelReservation")
     public RetJson cancelReservationByMid(Integer mid){
         if(user.getRole() == 0){
@@ -287,6 +298,8 @@ public class MeetingRoomController {
         return RetJson.succcess("reserveInfo",reserveInfo)                         ;
     }
 
+    //========================授权===========================
+    //赋予用户权限
     @RequestMapping("/givePower")
     public RetJson giveReservePower(Integer uid){
         if(user.getRole() == 0){
@@ -301,6 +314,7 @@ public class MeetingRoomController {
         return RetJson.succcess(null);
     }
 
+    //取消用户权限
     @RequestMapping("/cancelPower")
     public RetJson cancelReservePower(Integer uid){
         User user = userService.getUserByUserId(uid);
@@ -315,6 +329,7 @@ public class MeetingRoomController {
         return RetJson.succcess(null);
     }
 
+    //申请权限
     @RequestMapping("/applyPower")
     public RetJson applyReservePower(){
         if(user.getRole() != 0){

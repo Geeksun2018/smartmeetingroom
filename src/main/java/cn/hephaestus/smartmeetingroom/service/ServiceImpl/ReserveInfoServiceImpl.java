@@ -24,17 +24,20 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     @Autowired
     private MeetingParticipantMapper meetingParticipantMapper;
 
+
     @Override
     public boolean addReserveInfo(ReserveInfo reserveInfo) {
         return reserveTableMapper.addReserveInfo(reserveInfo);
     }
 
     @Override
-    public boolean deleteReserveInfo(Integer oid,Integer reserveId) {
-        if(reserveTableMapper.deleteReserveInfo(reserveId,oid)){
+    public boolean deleteReserveInfo(Integer oid, Integer reserveId) {
+        //先删除所有预定者,有bug,表的设计不合理（暂时不解决）
+       meetingParticipantMapper.deleteParticipants(reserveId);
+       if(reserveTableMapper.deleteReserveInfo(reserveId,oid)){
             redisService.del(oid + "cm" + reserveId);
             return true;
-        }
+       }
         return false;
     }
 

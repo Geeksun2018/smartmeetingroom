@@ -28,10 +28,8 @@ public class ArticleController {
     UserInfo userInfo=null;
     @ModelAttribute
     public void common(HttpServletRequest request){
-        if (user==null){
-            user = (User) request.getAttribute("user");
-            userInfo=(UserInfo)request.getAttribute("userInfo");
-        }
+        user = (User) request.getAttribute("user");
+        userInfo=(UserInfo)request.getAttribute("userInfo");
         return;
     }
     //上传文章
