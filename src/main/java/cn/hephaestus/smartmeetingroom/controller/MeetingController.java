@@ -107,7 +107,7 @@ public class MeetingController {
 
 
     @RequestMapping("/getMeetingInfoByCondition")
-    public RetJson getMeetingInfoByCondition(@Validated @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid){
+    public RetJson getMeetingInfoByCondition(@Validated @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did){
         List<ReserveInfoViewObject> list = reserveInfoService.getReserveInfoViewObjectByCondition(date,rid,did,userInfo.getOid());
         return RetJson.succcess("list",list);
     }

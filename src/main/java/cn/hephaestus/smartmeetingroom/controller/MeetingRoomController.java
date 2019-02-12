@@ -6,23 +6,17 @@ import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.*;
-import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
-import com.qcloud.cos.COS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -94,6 +88,7 @@ public class MeetingRoomController {
     //2.修改会议室信息
     @RequestMapping("alterMeetingRoom")
     public RetJson alterMeetingRoom(MeetingRoom meetingRoom){
+        System.out.println(meetingRoom);
         if (user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限");
         }
@@ -135,8 +130,17 @@ public class MeetingRoomController {
         return RetJson.succcess("meetingRooms",meetingRooms);
     }
 
+    //6.获取所有可用的会议室
+    @RequestMapping("/getAllAvailableMeetingRoom")
+    public RetJson getAllAvailableMeetingRoom(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date startTime,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date endTime,Integer num){
+        Integer oid=userInfo.getOid();
+        MeetingRoom[] meetingRooms=meetingRoomService.getAllUsableMeetingRooms(oid,startTime,endTime,num);
+        return RetJson.succcess("meetingRooms",meetingRooms);
+    }
+
     @RequestMapping("/reserveRoom")
     public RetJson reserveMeetingRoom(@Valid ReserveInfo reserveInfo){
+        System.out.println(reserveInfo);
         Integer oid = userInfo.getOid();
         reserveInfo.setReserveUid(user.getId());
         reserveInfo.setReserveOid(oid);
