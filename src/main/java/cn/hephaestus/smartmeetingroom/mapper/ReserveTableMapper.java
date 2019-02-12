@@ -29,6 +29,7 @@ public interface ReserveTableMapper {
     })
     public ReserveInfo getReserveInfoByReserveId(@Param("oid") Integer oid,@Param("reserveId") Integer reserveId);
 
+
     @Select("select * from reserve_table where rid = #{rid} and to_days(start_time)=to_days(#{date})")
     @ResultMap(value = "reserveInfoMap")
     public ReserveInfo[] getReserveInfoByRoomId(@Param("rid") Integer rid, @Param("date")Date date);

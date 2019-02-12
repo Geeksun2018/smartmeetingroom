@@ -253,6 +253,7 @@ public class MeetingRoomController {
         return RetJson.succcess("occupiedRoomId",roomSet);
     }
 
+    //取消预定会议
     @RequestMapping("/cancelReservation")
     public RetJson cancelReservationByMid(Integer mid){
         if(user.getRole() == 0){
@@ -297,6 +298,8 @@ public class MeetingRoomController {
         return RetJson.succcess("reserveInfo",reserveInfo)                         ;
     }
 
+    //========================授权===========================
+    //赋予用户权限
     @RequestMapping("/givePower")
     public RetJson giveReservePower(Integer uid){
         if(user.getRole() == 0){
@@ -311,6 +314,7 @@ public class MeetingRoomController {
         return RetJson.succcess(null);
     }
 
+    //取消用户权限
     @RequestMapping("/cancelPower")
     public RetJson cancelReservePower(Integer uid){
         User user = userService.getUserByUserId(uid);
@@ -325,6 +329,7 @@ public class MeetingRoomController {
         return RetJson.succcess(null);
     }
 
+    //申请权限
     @RequestMapping("/applyPower")
     public RetJson applyReservePower(){
         if(user.getRole() != 0){
