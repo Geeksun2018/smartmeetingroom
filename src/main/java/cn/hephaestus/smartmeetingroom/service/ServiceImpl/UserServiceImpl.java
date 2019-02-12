@@ -167,6 +167,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public int getReserveJurisdiction(Integer id) {
+        return userMapper.getReserveJurisdiction(id);
+    }
+
+    @Override
+    public boolean alterReserveJurisdiction(Integer jurisdiction, Integer id) {
+        return userMapper.alterReserveJurisdiction(jurisdiction,id);
+    }
+
+    @Override
     public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id) {
         String username=userMapper.getUserByUserId(id).getUsername();
         if (username==null){

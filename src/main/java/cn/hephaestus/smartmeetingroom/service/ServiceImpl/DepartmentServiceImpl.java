@@ -117,4 +117,16 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentMapper.setAdmin(oid,did,stringBuilder.toString());
         return true;
     }
+
+    @Override
+    public Set<Integer> getAdmin(Integer oid, Integer did) {
+        Set<Integer> set = new HashSet<>();
+        String adminStr = departmentMapper.getAdmin(oid,did);
+        String[] uid = adminStr.split("-");
+        for (Integer i=0;i < uid.length;i++){
+            set.add(Integer.valueOf(uid[i]));
+        }
+        return set;
+    }
+
 }

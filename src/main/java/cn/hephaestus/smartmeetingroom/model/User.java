@@ -35,6 +35,8 @@ public class User {
     private int role;
 
     private Integer id;
+    //0表示没有权限，1表示有权限
+    private Integer reserveJurisdiction;
 
     public User(){
 

@@ -3,6 +3,7 @@ package cn.hephaestus.smartmeetingroom.service;
 import cn.hephaestus.smartmeetingroom.model.Department;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Set;
 
 public interface DepartmentService {
 
@@ -20,5 +21,7 @@ public interface DepartmentService {
     public boolean uploadDepartmentImage(Integer oid,Integer did,MultipartFile multipartFile);
 
     public boolean addAdmin(Integer oid,Integer did,String admin);
+
+    public Set<Integer> getAdmin(Integer oid, Integer did);
 
 }
