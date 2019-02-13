@@ -69,12 +69,16 @@ public class MeetingParticipantServiceImpl implements MeetingParticipantService 
     }
 
     @Override
-    public boolean addParticipants(Integer oid,Integer mid, Integer[] uids) {
-        for(Integer uid:uids){
-            meetingParticipantMapper.addParticipant(mid,uid);
+    public boolean addParticipants(Integer uid,Integer oid,Integer mid, Integer[] uids) {
+        for(Integer id:uids){
+            meetingParticipantMapper.addParticipant(mid,id);
         }
+        //当前参会用户
         redisService.sadd(oid + "cm" + mid,toStringArray(uids));
         redisService.expire(oid  + "cm" + mid,31536000);
+        //当前签到用户,默认有发起者
+        redisService.sadd(oid+"sm"+mid,uid.toString());
+        redisService.expire(oid+"sm"+mid,31536000);
         return true;
     }
 

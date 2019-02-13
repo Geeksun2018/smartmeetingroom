@@ -170,15 +170,14 @@ public class MeetingRoomController {
         //预定会议室
         if(room!=null){
             //与该时间段有交集的reserveInfo
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            ReserveInfo[] reserveInfos = reserveInfoService.queryIsAvailable(reserveInfo.getRid(),sdf.format(reserveInfo.getStartTime()),sdf.format(reserveInfo.getEndTime()));
+            ReserveInfo[] reserveInfos = reserveInfoService.queryIsAvailable(reserveInfo.getRid(),reserveInfo.getStartTime(),reserveInfo.getEndTime());
             if(reserveInfos.length == 0){
                 //会议室有效
                 System.out.println(reserveInfo.getStartTime().toString());
                 reserveInfoService.addReserveInfo(reserveInfo);
                 //插入后直接映射到实体类了!!!
                 Integer reserveInfoId = reserveInfo.getReserveId();
-                meetingParticipantService.addParticipants(oid,reserveInfoId,reserveInfo.getParticipants());
+                meetingParticipantService.addParticipants(user.getId(),oid,reserveInfoId,reserveInfo.getParticipants());
                 //预定成功，发送消息给所有参会用户
                 newsService.sendNews("您有一个会议，请注意查看会议具体情况。",reserveInfo.getParticipants());
                 return RetJson.succcess("meetingId",reserveInfoId);
@@ -220,8 +219,7 @@ public class MeetingRoomController {
         User user = (User)request.getAttribute("user");
         UserInfo userInfo = userService.getUserInfo(user.getId());
         if(userInfo.getOid() == oid){
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            ReserveInfo[] reserveInfos = reserveInfoService.queryIsAvailable(roomId,sdf.format(startTime),sdf.format(endTime));
+            ReserveInfo[] reserveInfos = reserveInfoService.queryIsAvailable(roomId,startTime,endTime);
             if(reserveInfos.length == 0){
                 return RetJson.succcess(null);
             }else {
@@ -239,13 +237,11 @@ public class MeetingRoomController {
         }
         Set<String> keys = redisService.sGetByPattern(oid + "cm");
         Set<Integer> roomSet = new LinkedHashSet<>();
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String beginDate = sdf.format(startTime);
-        String endDate = sdf.format(endTime);
+
         for(String key:keys){
             key = key.substring(key.indexOf('m') + 1);
             Integer reserveId = Integer.parseInt(key);
-            Integer occupiedRoomId = reserveInfoService.queryIsAvailableByReserveId(reserveId,beginDate,endDate);
+            Integer occupiedRoomId = reserveInfoService.queryIsAvailableByReserveId(reserveId,startTime,endTime);
             if(occupiedRoomId != null){
                 roomSet.add(occupiedRoomId);
             }
@@ -274,8 +270,7 @@ public class MeetingRoomController {
         if(user.getRole() == 0){
             RetJson.fail(-1,"您的权限不够，预定失败！");
         }
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if(reserveInfoService.queryIsAvailable(reserveInfo.getRid(),sdf.format(reserveInfo.getStartTime()),sdf.format(reserveInfo.getEndTime())).length == 0){
+        if(reserveInfoService.queryIsAvailable(reserveInfo.getRid(),reserveInfo.getStartTime(),reserveInfo.getEndTime()).length == 0){
             reserveInfoService.updateReserveInfo(reserveInfo);
             return RetJson.succcess(null);
         }

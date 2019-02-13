@@ -16,11 +16,13 @@ public interface ReserveInfoService {
 
     public ReserveInfo getReserveInfoByReserveId(Integer oid,Integer reserveId);
 
+    public ReserveInfo getReserveInfoByReserveId(Integer uid,Integer oid,Integer reserveId);
+
     public ReserveInfo[] getReserveInfoByRoomId(Integer rid, Date date);
 
-    public ReserveInfo[] queryIsAvailable(Integer rid,String beginTime,String endTime);
+    public ReserveInfo[] queryIsAvailable(Integer rid,Date beginTime,Date endTime);
 
-    public Integer queryIsAvailableByReserveId(Integer reserveId,String beginTime,String endTime);
+    public Integer queryIsAvailableByReserveId(Integer reserveId,Date beginTime,Date endTime);
 
     public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did,Integer oid);
 }

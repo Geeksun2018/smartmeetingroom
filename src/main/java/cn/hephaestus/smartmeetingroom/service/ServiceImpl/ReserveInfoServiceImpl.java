@@ -54,17 +54,22 @@ public class ReserveInfoServiceImpl implements ReserveInfoService {
     }
 
     @Override
+    public ReserveInfo getReserveInfoByReserveId(Integer uid, Integer oid, Integer reserveId) {
+        return reserveTableMapper.getReserveInfoByReserveIdanUid(uid,oid,reserveId);
+    }
+
+    @Override
     public ReserveInfo[] getReserveInfoByRoomId(Integer rid, Date date) {
         return reserveTableMapper.getReserveInfoByRoomId(rid,date);
     }
 
     @Override
-    public ReserveInfo[] queryIsAvailable(Integer rid, String beginTime, String endTime) {
+    public ReserveInfo[] queryIsAvailable(Integer rid, Date beginTime, Date endTime) {
         return reserveTableMapper.queryIsAvailable(rid,beginTime,endTime);
     }
 
     @Override
-    public Integer queryIsAvailableByReserveId(Integer reserveId, String beginTime, String endTime) {
+    public Integer queryIsAvailableByReserveId(Integer reserveId, Date beginTime, Date endTime) {
         return reserveTableMapper.queryIsAvailableByReserveId(reserveId,beginTime,endTime);
     }
 

@@ -15,7 +15,7 @@ public interface ReserveTableMapper {
     @Delete("delete from reserve_table where reserve_id = #{reserveId} and reserve_oid=#{oid}")
     public boolean deleteReserveInfo(@Param("reserveId") Integer reserveId,Integer oid);
 
-    @Update("update reserve_table set start_time=#{startTime},end_time=#{endTime},rid=#{rid},topic=#{topic}")
+    @Update("update reserve_table set start_time=#{startTime},end_time=#{endTime},rid=#{rid},topic=#{topic} where reserve_oid=#{reserveOid} and reserve_uid=#{reserveUid} and reserve_id=#{reserveId}")
     public boolean updateReserveInfo(ReserveInfo reserveInfo);
 
     @Select("select * from reserve_table where reserve_id = #{reserveId} and reserve_oid=#{oid}")
@@ -37,7 +37,7 @@ public interface ReserveTableMapper {
     @Select("select * from reserve_table where ((#{startTime} > start_time and #{startTime} < end_time)or(#{endTime} > start_time and #{endTime} < end_time) " +
             "or (start_time >= #{startTime} and end_time <= #{endTime})) and rid=#{rid}")
     @ResultMap(value = "reserveInfoMap")
-    public ReserveInfo[] queryIsAvailable(@Param("rid") Integer rid,@Param("startTime") String startTime,@Param("endTime") String endTime);
+    public ReserveInfo[] queryIsAvailable(@Param("rid") Integer rid,@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
     @Select({"<script>",
             "SELECT * FROM reserve_table",
@@ -58,7 +58,7 @@ public interface ReserveTableMapper {
 
     @Select("select rid from reserve_table where ((#{beginTime} between start_time and end_time)or " +
             "(#{endTime} between start_time and end_time)) and reserve_id = #{reserveId}")
-    public Integer queryIsAvailableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") String beginTime,@Param("endTime") String endTime);
+    public Integer queryIsAvailableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") Date beginTime,@Param("endTime") Date endTime);
 
     @Select("select rid from reserve_table where reserve_oid=#{oid} and ( (#{startTime}>=start_time and #{startTime}<=end_time) or (#{endTime}>=start_time and #{endTime}<=end_time) )")
     public Integer[] queryAllUnUsableMeetingroom(@Param("oid")Integer oid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
@@ -68,4 +68,8 @@ public interface ReserveTableMapper {
 
     @Select("select reserve_id from reserve_table where reserve_oid=#{oid} and to_days(start_time)=to_days(#{date})")
     public Integer[] queryAllUnUsableReserveByDay(@Param("oid")Integer oid,@Param("date")Date date);
+
+    @Select("select * from reserve_table where reserve_id = #{reserveId} and reserve_oid=#{oid} and reserve_uid=#{uid}")
+    @ResultMap(value ="reserveInfoMap")
+    public ReserveInfo getReserveInfoByReserveIdanUid(@Param("uid") Integer uid, @Param("oid") Integer oid, @Param("reserveId") Integer reserveId);
 }
