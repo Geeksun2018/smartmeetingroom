@@ -58,7 +58,7 @@ public interface ReserveTableMapper {
 
     @Select("select rid from reserve_table where ((#{beginTime} between start_time and end_time)or " +
             "(#{endTime} between start_time and end_time)) and reserve_id = #{reserveId}")
-    public Integer queryIsAvailableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") Date beginTime,@Param("endTime") Date endTime);
+    public Integer queryIsAvailableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") String beginTime,@Param("endTime") String endTime);
 
     @Select("select rid from reserve_table where reserve_oid=#{oid} and ( (#{startTime}>=start_time and #{startTime}<=end_time) or (#{endTime}>=start_time and #{endTime}<=end_time) )")
     public Integer[] queryAllUnUsableMeetingroom(@Param("oid")Integer oid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
@@ -72,4 +72,19 @@ public interface ReserveTableMapper {
     @Select("select * from reserve_table where reserve_id = #{reserveId} and reserve_oid=#{oid} and reserve_uid=#{uid}")
     @ResultMap(value ="reserveInfoMap")
     public ReserveInfo getReserveInfoByReserveIdanUid(@Param("uid") Integer uid, @Param("oid") Integer oid, @Param("reserveId") Integer reserveId);
+
+    @Select("select count(reserve_id) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year}")
+    public Integer queryCountOfDepartmentMeetingByYear(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year);
+
+    @Select("select count(reserve_id) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year} and month(start_time)=#{month}")
+    public Integer queryCountOfDepartmentMeetingByMonth(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year,@Param("month")Integer month);
+
+    @Select("select sum(TIMESTAMPDIFF(MINUTE,start_time,end_time)) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year}")
+    public Integer queryCountOfDepartmentMeetingTimeByYear(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year);
+
+    @Select("select sum(TIMESTAMPDIFF(MINUTE,start_time,end_time)) from reserve_table where reserve_oid=#{oid} and reserve_did=#{did} and year(start_time)=#{year} and month(start_time)=#{month}")
+    public Integer queryCountOfDepartmentMeetingTimeByMonth(@Param("oid")Integer oid,@Param("did")Integer did,@Param("year")Integer year,@Param("month")Integer month);
+
+    @Select("select count(reserve_id) from reserve_table where to_days(start_time)=to_days(#{date})")
+    public Integer queryCountOfMeetingByDay(@Param("date")Date date);
 }

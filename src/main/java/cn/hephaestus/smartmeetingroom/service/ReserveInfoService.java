@@ -5,6 +5,7 @@ import cn.hephaestus.smartmeetingroom.vo.ReserveInfoViewObject;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface ReserveInfoService {
 
@@ -25,4 +26,14 @@ public interface ReserveInfoService {
     public Integer queryIsAvailableByReserveId(Integer reserveId,Date beginTime,Date endTime);
 
     public List<ReserveInfoViewObject> getReserveInfoViewObjectByCondition(Date date, Integer rid, Integer did,Integer oid);
+
+    public Integer queryCountOfDepartmentMeetingByYear(Integer oid,Integer did,Integer year);
+
+    public Integer queryCountOfDepartmentMeetingByMonth(Integer oid,Integer did,Integer year,Integer month);
+
+    public Integer queryCountOfDepartmentMeetingTimeByYear(Integer oid,Integer did,Integer year);
+
+    public Integer queryCountOfDepartmentMeetingTimeByMonth(Integer oid,Integer did,Integer year,Integer month);
+
+    public Map<Date,Integer> queryCountOfMeetingByDay(Date date);
 }

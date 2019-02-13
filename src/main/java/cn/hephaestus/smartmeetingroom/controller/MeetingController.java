@@ -107,7 +107,7 @@ public class MeetingController {
 
 
     @RequestMapping("/getMeetingInfoByCondition")
-    public RetJson getMeetingInfoByCondition(@Validated @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did){
+    public RetJson getMeetingInfoByCondition(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date, Integer rid, Integer did, Integer oid){
         List<ReserveInfoViewObject> list = reserveInfoService.getReserveInfoViewObjectByCondition(date,rid,did,userInfo.getOid());
         return RetJson.succcess("list",list);
     }
@@ -204,4 +204,41 @@ public class MeetingController {
 
     }
 
+
+    @RequestMapping("/getMeetingCount")
+    public RetJson getCountOfDepartmentMeeting(Integer type,Integer year,Integer month){
+        if(type == null){
+            return RetJson.fail(-1,"参数错误！");
+        }
+        Integer count = 0;
+        //0表示按年查询
+        if(type == 0){
+            count = reserveInfoService.queryCountOfDepartmentMeetingByYear(oid,did,year);
+        }else{
+            count = reserveInfoService.queryCountOfDepartmentMeetingByMonth(oid,did,year,month);
+        }
+        return RetJson.succcess("count",count);
+    }
+
+    @RequestMapping("/getMeetingTimeCount")
+    public RetJson getCountOfDepartmentMeetingTime(Integer type,Integer year,Integer month){
+        if(type == null){
+            return RetJson.fail(-1,"参数错误！");
+        }
+        Integer count = 0;
+        //0表示按年查询
+        if(type == 0){
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByYear(oid,did,year);
+        }else{
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByMonth(oid,did,year,month);
+        }
+        return RetJson.succcess("count",count);
+    }
+
+    @RequestMapping("/getMeetingCountByDay")
+    public RetJson getCountOfMeeting(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+        Map<Date,Integer> map = null;
+        map = reserveInfoService.queryCountOfMeetingByDay(date);
+        return RetJson.succcess("count",map);
+    }
 }
