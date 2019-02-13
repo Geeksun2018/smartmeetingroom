@@ -58,7 +58,7 @@ public interface ReserveTableMapper {
 
     @Select("select rid from reserve_table where ((#{beginTime} between start_time and end_time)or " +
             "(#{endTime} between start_time and end_time)) and reserve_id = #{reserveId}")
-    public Integer queryIsAvailableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") String beginTime,@Param("endTime") String endTime);
+    public Integer queryIsAvailableByReserveId(@Param("reserveId") Integer reserveId,@Param("beginTime") Date beginTime,@Param("endTime") Date endTime);
 
     @Select("select rid from reserve_table where reserve_oid=#{oid} and ( (#{startTime}>=start_time and #{startTime}<=end_time) or (#{endTime}>=start_time and #{endTime}<=end_time) )")
     public Integer[] queryAllUnUsableMeetingroom(@Param("oid")Integer oid,@Param("startTime")Date startTime,@Param("endTime")Date endTime);

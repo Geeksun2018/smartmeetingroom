@@ -8,7 +8,6 @@ import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.vo.ReserveInfoViewObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -213,9 +212,9 @@ public class MeetingController {
         Integer count = 0;
         //0表示按年查询
         if(type == 0){
-            count = reserveInfoService.queryCountOfDepartmentMeetingByYear(oid,did,year);
+            count = reserveInfoService.queryCountOfDepartmentMeetingByYear(userInfo.getOid(),userInfo.getDid(),year);
         }else{
-            count = reserveInfoService.queryCountOfDepartmentMeetingByMonth(oid,did,year,month);
+            count = reserveInfoService.queryCountOfDepartmentMeetingByMonth(userInfo.getOid(),userInfo.getDid(),year,month);
         }
         return RetJson.succcess("count",count);
     }
@@ -228,9 +227,9 @@ public class MeetingController {
         Integer count = 0;
         //0表示按年查询
         if(type == 0){
-            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByYear(oid,did,year);
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByYear(userInfo.getOid(),userInfo.getDid(),year);
         }else{
-            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByMonth(oid,did,year,month);
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByMonth(userInfo.getOid(),userInfo.getDid(),year,month);
         }
         return RetJson.succcess("count",count);
     }
