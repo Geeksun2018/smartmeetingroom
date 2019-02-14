@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.*;
 
-@Validated
 @RestController
 public class AndroidThingsController {
 

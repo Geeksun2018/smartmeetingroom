@@ -8,18 +8,13 @@ import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.vo.ReserveInfoViewObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-@Validated
 @RestController
 public class MeetingController {
 
@@ -34,16 +29,15 @@ public class MeetingController {
     @Autowired
     MeetingRoomService meetingRoomService;
 
+    @Autowired
+    NewsService newsService;
+
     User user=null;
     UserInfo userInfo=null;
-    Integer oid = null;
-    Integer did = null;
     @ModelAttribute
     public void comment(HttpServletRequest request){
         user = (User)request.getAttribute("user");
         userInfo = (UserInfo)request.getAttribute("userInfo");
-        oid = userInfo.getOid();
-        did = userInfo.getDid();
     }
 
     @RequestMapping("/updateParticipants")
@@ -61,7 +55,7 @@ public class MeetingController {
             }
         }
         meetingParticipantService.deleteParticipants(oid,reserveId);
-        meetingParticipantService.addParticipants(oid,reserveId,participants);
+        meetingParticipantService.addParticipants(user.getId(),oid,reserveId,participants);
         return RetJson.succcess(null);
     }
 
@@ -117,6 +111,99 @@ public class MeetingController {
         return RetJson.succcess("list",list);
     }
 
+    //点到功能
+    @RequestMapping("/checkInParticipant")
+    public RetJson checkInParticipant(Integer mid){
+        Integer oid = userInfo.getOid();
+        //获取参会人员列表
+        Set set1 = redisService.sget(oid + "cm" + mid);
+        Integer size1=set1.size();//应该参会人数
+        //获取签到人员列表
+        Set set2=redisService.sget(oid+"sm"+mid);
+        Integer size2=set2.size();//已经签到人数
+
+        Set set3=redisService.sget(oid+"lm"+mid);
+        Integer size3=0;
+        if (set3!=null){
+            size3=set3.size();
+        }
+
+        Map<String,String> res=new HashMap<>();
+        res.put("all",size1.toString());
+        res.put("checkIn",size2.toString());
+        res.put("askForLeave",size3.toString());
+        return RetJson.succcess("situation",res);
+    }
+
+    //请假功能
+    @RequestMapping("/askForLeave")
+    private RetJson askForLeave(Integer mid,String reason){
+        ReserveInfo reserveInfo=reserveInfoService.getReserveInfoByReserveId(userInfo.getOid(),mid);
+        Integer reserveUid=reserveInfo.getReserveUid();//获取召开者
+        Integer[] arr=new Integer[1];
+        arr[0]=reserveUid;
+        newsService.sendNews("用户"+user.getUsername()+"希望请假，理由是"+reason,arr);
+        redisService.sadd(reserveInfo.getReserveOid()+"lm"+mid,user.getId().toString());
+        return RetJson.succcess(null);
+    }
+
+    //推迟时间功能
+    @RequestMapping("/postponeTheMeeting")
+    public RetJson postponeTheMeeting(Integer mid){
+        ReserveInfo reserveInfo=reserveInfoService.getReserveInfoByReserveId(userInfo.getId(),userInfo.getOid(),mid);
+        //分别试探推迟十分钟，二十分钟，三十分钟是否可行
+        Date date1=reserveInfo.getStartTime();
+        Date date2=reserveInfo.getEndTime();
+
+        ReserveInfo[] arr=null;
+        long delay=0;
+        for (int i=3;i>=1;i--){
+            delay=1000*60*10*i;
+            arr=reserveInfoService.queryIsAvailable(reserveInfo.getRid(),new Date(date1.getTime()+delay),new Date(date2.getTime()+delay));
+            if (arr!=null&&arr.length!=0){
+                reserveInfo.setStartTime(new Date(date1.getTime()+delay));
+                reserveInfo.setEndTime(new Date(date2.getTime()+delay));
+                if (reserveInfoService.updateReserveInfo(reserveInfo)){
+                    break;//修改成功
+                }
+            }
+        }
+        if (arr==null){
+            return RetJson.fail(-1,"无法为你推迟时间");
+        }
+        Set<String> set = redisService.sget(userInfo.getOid() + "cm" + mid);
+
+        pushNews("你的会议["+reserveInfo.getTopic()+"]推迟了"+delay/(1000*60),set);
+
+        return RetJson.succcess("delay",delay/(1000*60));
+    }
+
+    //催促用户尽快到场
+    @RequestMapping("/urgeParticipant")
+    public RetJson UrgeParticipant(Integer mid){
+        Integer oid = userInfo.getOid();
+        //获取参会人员列表
+        Set<String> set1 = redisService.sget(oid + "cm" + mid);
+        //获取签到人员列表
+        Set<String> set2=redisService.sget(oid+"sm"+mid);
+        set1.removeAll(set2);
+        pushNews("你有一个会议，召开者提醒你抓紧时间入场",set1);
+        return RetJson.succcess(null);
+    }
+
+
+    private void pushNews(String news,Set<String> set){
+        List list=new ArrayList();
+        for (String s:set){
+            list.add(Integer.parseInt(s));
+        }
+        Integer[] arr=new Integer[list.size()];
+        list.toArray(arr);
+        newsService.sendNews(news,arr);
+
+    }
+
+
     @RequestMapping("/getMeetingCount")
     public RetJson getCountOfDepartmentMeeting(Integer type,Integer year,Integer month){
         if(type == null){
@@ -125,9 +212,9 @@ public class MeetingController {
         Integer count = 0;
         //0表示按年查询
         if(type == 0){
-            count = reserveInfoService.queryCountOfDepartmentMeetingByYear(oid,did,year);
+            count = reserveInfoService.queryCountOfDepartmentMeetingByYear(userInfo.getOid(),userInfo.getDid(),year);
         }else{
-            count = reserveInfoService.queryCountOfDepartmentMeetingByMonth(oid,did,year,month);
+            count = reserveInfoService.queryCountOfDepartmentMeetingByMonth(userInfo.getOid(),userInfo.getDid(),year,month);
         }
         return RetJson.succcess("count",count);
     }
@@ -140,9 +227,9 @@ public class MeetingController {
         Integer count = 0;
         //0表示按年查询
         if(type == 0){
-            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByYear(oid,did,year);
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByYear(userInfo.getOid(),userInfo.getDid(),year);
         }else{
-            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByMonth(oid,did,year,month);
+            count = reserveInfoService.queryCountOfDepartmentMeetingTimeByMonth(userInfo.getOid(),userInfo.getDid(),year,month);
         }
         return RetJson.succcess("count",count);
     }

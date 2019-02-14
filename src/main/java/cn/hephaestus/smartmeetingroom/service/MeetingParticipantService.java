@@ -7,7 +7,7 @@ public interface MeetingParticipantService {
 
     public Integer[] getParticipants(Integer oid,Integer reserveInfoId);
 
-    public boolean addParticipants(Integer oid,Integer reserveInfoId,Integer[] uids);
+    public boolean addParticipants(Integer uid,Integer oid,Integer reserveInfoId,Integer[] uids);
 
     public boolean deleteParticipants(Integer oid,Integer reserveInfoId);
 }
