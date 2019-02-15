@@ -48,4 +48,6 @@ public interface UserService {
     public int getReserveJurisdiction(Integer id);
     //修改预定权限
     public boolean alterReserveJurisdiction(Integer jurisdiction,Integer id);
+
+    public boolean addDuerosAcount(Integer uid,String deviceId);
 }

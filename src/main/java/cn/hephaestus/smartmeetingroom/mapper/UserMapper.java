@@ -28,4 +28,7 @@ public interface UserMapper {
 
     @Update("update user set reserve_jurisdiction=#{jurisdiction} where id=#{id}")
     public boolean alterReserveJurisdiction(@Param("jurisdiction") Integer jurisdiction,@Param("id")Integer id);
+
+    @Insert("insert into dueros_account(userId,deviceId) values(#{uid},#{deviceId})")
+    public boolean addDuerosAccount(@Param("uid") Integer uid,@Param("deviceId") String deviceId);
 }

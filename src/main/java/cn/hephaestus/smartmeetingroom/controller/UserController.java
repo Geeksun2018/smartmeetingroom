@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,16 @@ public class UserController {
     MeetingRoomService meetingRoomService;
     @Autowired
     DepartmentService departmentService;
+
+    User user=null;
+    UserInfo userInfo=null;
+
+    @ModelAttribute
+    public void comment(HttpServletRequest request){
+        user = (User) request.getAttribute("user");
+        userInfo=(UserInfo)request.getAttribute("userInfo");
+        return;
+    }
     //登入
     @RequestMapping("/login")
     public RetJson login(User user, Boolean isRemberMe, HttpServletRequest request){
@@ -245,5 +256,17 @@ public class UserController {
             }
         }
         return RetJson.succcess("mids",mids);
+    }
+
+
+    @RequestMapping("/bindingDueros")
+    public RetJson  bindingDueros(String code){
+        String phoneNumber=userInfo.getPhoneNum();
+        String deviceId= (String) redisService.get("dueros:"+phoneNumber+":"+code);
+        if (deviceId==null){
+            return RetJson.fail(-1,"绑定失败，验证码错误");
+        }
+        userService.addDuerosAcount(user.getId(),deviceId);
+        return RetJson.succcess(null);
     }
 }
