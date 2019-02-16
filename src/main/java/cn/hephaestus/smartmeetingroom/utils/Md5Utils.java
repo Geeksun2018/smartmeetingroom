@@ -18,7 +18,7 @@ public class Md5Utils
 
             result = byteArrayToHexString(messageDigest.digest());
         }catch(Exception e) {
-            e.printStackTrace();
+            LogUtils.getExceptionLogger().error(e.toString());
         }
         return uppercase ? result.toUpperCase():result;
     }

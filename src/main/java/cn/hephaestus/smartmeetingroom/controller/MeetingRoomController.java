@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -90,7 +89,6 @@ public class MeetingRoomController {
     //2.修改会议室信息
     @RequestMapping("alterMeetingRoom")
     public RetJson alterMeetingRoom(MeetingRoom meetingRoom){
-        System.out.println(meetingRoom);
         if (user.getRole()==0){
             return RetJson.fail(-1,"当前用户没有权限");
         }
@@ -142,7 +140,6 @@ public class MeetingRoomController {
 
     @RequestMapping("/reserveRoom")
     public RetJson reserveMeetingRoom(@Valid ReserveInfo reserveInfo){
-        System.out.println(reserveInfo);
         Integer oid = userInfo.getOid();
         reserveInfo.setReserveUid(user.getId());
         reserveInfo.setReserveOid(oid);
@@ -173,7 +170,6 @@ public class MeetingRoomController {
             ReserveInfo[] reserveInfos = reserveInfoService.queryIsAvailable(reserveInfo.getRid(),reserveInfo.getStartTime(),reserveInfo.getEndTime());
             if(reserveInfos.length == 0){
                 //会议室有效
-                System.out.println(reserveInfo.getStartTime().toString());
                 reserveInfoService.addReserveInfo(reserveInfo);
                 //插入后直接映射到实体类了!!!
                 Integer reserveInfoId = reserveInfo.getReserveId();

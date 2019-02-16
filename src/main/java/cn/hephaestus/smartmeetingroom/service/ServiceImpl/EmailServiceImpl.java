@@ -2,6 +2,7 @@ package cn.hephaestus.smartmeetingroom.service.ServiceImpl;
 
 import cn.hephaestus.smartmeetingroom.service.EmailService;
 import cn.hephaestus.smartmeetingroom.service.RedisService;
+import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -29,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
         try{
             mailSender.send(mailMessage);
         }catch (Exception e){
-            e.printStackTrace();
+            LogUtils.getExceptionLogger().error(e.toString());
             return false;
         }
         redisService.set(email,code,60*10);

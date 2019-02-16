@@ -9,6 +9,7 @@ import cn.hephaestus.smartmeetingroom.service.ServiceImpl.RedisServiceImpl;
 import cn.hephaestus.smartmeetingroom.service.ServiceImpl.UserServiceImpl;
 import cn.hephaestus.smartmeetingroom.service.UserService;
 import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
+import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import cn.hephaestus.smartmeetingroom.utils.SpringUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -124,7 +125,7 @@ public class MessageSocketServer {
                     i--;
                 }
             }
-            System.out.println("有新的连接"+id);
+            LogUtils.getBussinessLogger().info("有新的连接"+id);
         }else {
             session.close();
         }
@@ -134,7 +135,7 @@ public class MessageSocketServer {
     public void onClose() throws IOException {
         webSocketMap.remove(this.id);//连接断开，移除session
         this.session.close();
-        System.out.println("一个连接断开"+this.id);
+        LogUtils.getBussinessLogger().info("一个连接断开"+this.id);
     }
 
     //接受来自客户端的消息，服务器起转发作用
@@ -186,7 +187,7 @@ public class MessageSocketServer {
                 redisService.expire(m.getInformType() + userInfo.getDid(),m.getExpire() * 3600);
             }
         }
-        System.out.println("发送了消息"+m.toString());
+        LogUtils.getBussinessLogger().info("发送了消息"+m.toString());
     }
 
     //发送消息

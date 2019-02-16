@@ -7,7 +7,6 @@ import cn.hephaestus.smartmeetingroom.utils.COSUtils;
 import com.arcsoft.face.FaceFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,7 +47,6 @@ public class AndroidThingsController {
     //获取当前所有的会议 有很大的安全隐患，有可能mac地址泄密!!!!!!!!
     @RequestMapping("/getAllMeeting")
     public RetJson getAllMeeting(String macAddress, @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
-        System.out.println(date);
         //查找该mac地址对应的会议室id
         MeetingRoom meetingRoom=meetingRoomService.getMeetingRoomWithMacAddress(macAddress);
 

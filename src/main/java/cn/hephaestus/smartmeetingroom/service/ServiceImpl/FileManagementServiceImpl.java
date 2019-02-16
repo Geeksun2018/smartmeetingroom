@@ -4,6 +4,7 @@ import cn.hephaestus.smartmeetingroom.mapper.FileManagementMapper;
 import cn.hephaestus.smartmeetingroom.model.FileManagement;
 import cn.hephaestus.smartmeetingroom.service.FileManagementService;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
+import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public class FileManagementServiceImpl implements FileManagementService {
             try {
                 in.close();
             }catch (IOException e){
-                e.printStackTrace();
+                LogUtils.getExceptionLogger().error(e.toString());
             }
         }
         return null;

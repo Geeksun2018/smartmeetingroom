@@ -7,10 +7,7 @@ import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserFaceInfo;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.*;
-import cn.hephaestus.smartmeetingroom.utils.GenerateVerificationCode;
-import cn.hephaestus.smartmeetingroom.utils.JwtUtils;
-import cn.hephaestus.smartmeetingroom.utils.MoblieMessageUtil;
-import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
+import cn.hephaestus.smartmeetingroom.utils.*;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -76,7 +73,7 @@ public class UserController {
                     map.put("id",user.getId());
                     return RetJson.succcess(map);
                 }catch (Exception e){
-                    System.out.println("token获取失败");
+                    LogUtils.getExceptionLogger().error("token获取失败");
                 }
             }
             Map<String,Object> map=new LinkedHashMap<>();
@@ -99,7 +96,8 @@ public class UserController {
         try {
             response = MoblieMessageUtil.sendIdentifyingCode(phoneNumber, verificationCode);
         }catch (ClientException e){
-            e.printStackTrace();
+            LogUtils.getExceptionLogger().error(e.toString());
+
         }
         String code = response.getCode();
         String message = response.getMessage();
@@ -118,7 +116,7 @@ public class UserController {
         if(result.hasErrors()){
             List<ObjectError> ls = result.getAllErrors();
             for (int i = 0; i < ls.size(); i++) {
-                System.out.println("error:"+ls.get(i));
+                LogUtils.getExceptionLogger().debug("error:"+ls.get(i));
             }
         }
         if (!ValidatedUtil.validate(user)) {
