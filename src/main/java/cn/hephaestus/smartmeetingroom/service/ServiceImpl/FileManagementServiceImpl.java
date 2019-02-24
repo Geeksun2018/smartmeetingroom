@@ -61,4 +61,10 @@ public class FileManagementServiceImpl implements FileManagementService {
         return fileManagementMapper.deleteFileByFileId(id);
     }
 
+    @Override
+    public FileManagement[] getOrgFiles(Integer oid) {
+
+        return fileManagementMapper.getOrgFiles(oid);
+    }
+
 }

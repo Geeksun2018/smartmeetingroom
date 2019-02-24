@@ -114,4 +114,28 @@ public class FileManagementController {
         fileManagementService.deleteFile(fileId);
         return RetJson.succcess(null);
     }
+
+    @RequestMapping("/getOrgFiles")
+    public RetJson getOrganizationFiles(){
+        FileManagement[] fileManagements = fileManagementService.getOrgFiles(oid);
+        return RetJson.succcess("fileManagements",fileManagements);
+    }
+
+    @RequestMapping("/uploadOrgFile")
+    public RetJson uploadOrganizationFile(FileManagement fileManagement,@RequestParam("file") MultipartFile multipartFile){
+        String username = null;
+        String url = null;
+        username = userInfo.getName();
+        url = fileManagementService.uploadFileAndGetUrl(multipartFile,"groupFile/" + username + UUID.randomUUID() + "_" +  fileManagement.getFileName());
+        if(url == null){
+            return RetJson.fail(-1,"文件上传失败！");
+        }
+        //mid为null
+        fileManagement.setOid(oid);
+        fileManagement.setDid(did);
+        fileManagement.setUid(user.getId());
+        fileManagement.setPath(url);
+        fileManagementService.saveFile(fileManagement);
+        return RetJson.succcess("fileId",fileManagement.getId());
+    }
 }

@@ -27,4 +27,10 @@ public interface FileManagementMapper {
             @Result(column = "file_name",property = "fileName")
     })
     public FileManagement[] getMeetingFiles(@Param("mid")Integer mid);
+
+    @Select("select * from file_management where oid=#{oid}")
+    @Results({
+            @Result(column = "file_name",property = "fileName")
+    })
+    public FileManagement[] getOrgFiles(@Param("oid")Integer oid);
 }

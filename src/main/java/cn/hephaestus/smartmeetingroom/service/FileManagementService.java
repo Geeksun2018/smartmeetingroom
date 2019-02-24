@@ -17,4 +17,6 @@ public interface FileManagementService {
 
     public boolean deleteFile(Integer id);
 
+    public FileManagement[] getOrgFiles(Integer oid);
+
 }

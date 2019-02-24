@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 @Getter
@@ -21,7 +20,7 @@ public class FileManagement {
     private String type;
     @Null
     private String path;
-    @NotNull
+
     private Integer mid;
     @Null
     private Integer uid;
