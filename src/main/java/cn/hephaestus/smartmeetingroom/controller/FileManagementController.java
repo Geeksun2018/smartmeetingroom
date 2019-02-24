@@ -42,7 +42,7 @@ public class FileManagementController {
         did = userInfo.getDid();
     }
 
-    @RequestMapping("/uploadFle")
+    @RequestMapping("/uploadFile")
     public RetJson saveFile(FileManagement fileManagement,@RequestParam("file") MultipartFile multipartFile){
         String username = userInfo.getName();
         String url = fileManagementService.uploadFileAndGetUrl(multipartFile,"groupFile/" + username + UUID.randomUUID() + "_" +  fileManagement.getFileName());
