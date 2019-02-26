@@ -126,6 +126,9 @@ public class FileManagementController {
         String username = null;
         String url = null;
         username = userInfo.getName();
+        if(fileManagement.getFileName() == null){
+            return RetJson.fail(-1,"参数错误");
+        }
         url = fileManagementService.uploadFileAndGetUrl(multipartFile,"groupFile/" + username + UUID.randomUUID() + "_" +  fileManagement.getFileName());
         if(url == null){
             return RetJson.fail(-1,"文件上传失败！");
