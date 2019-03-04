@@ -1,9 +1,9 @@
 package cn.hephaestus.smartmeetingroom.mapper;
 
 import cn.hephaestus.smartmeetingroom.model.News;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.*;
+
+import java.util.Date;
 
 @Mapper
 public interface NewsMapper {
@@ -12,7 +12,22 @@ public interface NewsMapper {
     @Options(useGeneratedKeys = true,keyProperty = "newsId",keyColumn = "news_id")
     public boolean insertNews(News news);
 
-    //根据前端要求具体再修改，暂时不做实现
-    public News[] getNews();
+    @Select("select * from news where to_days(time) = to_days(#{date})")
+    @Results({
+            @Result(column = "news_id",property = "newsId"),
+            @Result(column = "sent_id",property = "sentId"),
+            @Result(column = "recive_id",property = "reciveId"),
+            @Result(column = "inform_type",property = "informType")
+    })
+    public News[] getNewsByDate(Date date);
+
+    @Select("select * from news where inform_type = #{informType}")
+    @Results({
+            @Result(column = "news_id",property = "newsId"),
+            @Result(column = "sent_id",property = "sentId"),
+            @Result(column = "recive_id",property = "reciveId"),
+            @Result(column = "inform_type",property = "informType")
+    })
+    public News[] getNewsByType(String informType);
 
 }

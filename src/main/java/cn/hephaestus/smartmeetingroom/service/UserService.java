@@ -50,4 +50,6 @@ public interface UserService {
     public boolean alterReserveJurisdiction(Integer jurisdiction,Integer id);
 
     public boolean addDuerosAcount(Integer uid,String deviceId);
+
+    public Integer[] getAllUserIdByOrganization( Integer oid);
 }

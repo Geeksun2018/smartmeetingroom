@@ -1,10 +1,7 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
-import cn.hephaestus.smartmeetingroom.model.MeetingRoom;
-import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
-import cn.hephaestus.smartmeetingroom.model.User;
-import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.model.*;
 import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.ValidatedUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +172,7 @@ public class MeetingRoomController {
                 Integer reserveInfoId = reserveInfo.getReserveId();
                 meetingParticipantService.addParticipants(user.getId(),oid,reserveInfoId,reserveInfo.getParticipants());
                 //预定成功，发送消息给所有参会用户
-                newsService.sendNews("您有一个会议，请注意查看会议具体情况。",reserveInfo.getParticipants());
+                newsService.sendNews("您有一个会议，请注意查看会议具体情况。",reserveInfo.getParticipants(),"other");
                 return RetJson.succcess("meetingId",reserveInfoId);
             }
             return RetJson.fail(-1,"会议室已被占用！");
@@ -327,7 +324,7 @@ public class MeetingRoomController {
             return RetJson.fail(-1,"您已有权限！");
         }
         Set<Integer> adminSet = departmentService.getAdmin(userInfo.getOid(),userInfo.getDid());
-        newsService.sendNews(user.getId() + "号用户想拥有预定会议的权限，请您尽快处理！",adminSet.toArray(new Integer[adminSet.size()]));
+        newsService.sendNews(user.getId() + "号用户想拥有预定会议的权限，请您尽快处理！",adminSet.toArray(new Integer[adminSet.size()]),"other");
         return RetJson.succcess(null);
     }
 }

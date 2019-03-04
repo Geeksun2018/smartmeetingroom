@@ -2,10 +2,7 @@ package cn.hephaestus.smartmeetingroom.controller;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.entity.UserInfoEntity;
-import cn.hephaestus.smartmeetingroom.model.Department;
-import cn.hephaestus.smartmeetingroom.model.User;
-import cn.hephaestus.smartmeetingroom.model.UserFaceInfo;
-import cn.hephaestus.smartmeetingroom.model.UserInfo;
+import cn.hephaestus.smartmeetingroom.model.*;
 import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.*;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
@@ -13,6 +10,7 @@ import com.aliyuncs.exceptions.ClientException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
@@ -44,6 +42,8 @@ public class UserController {
     FaceInfoService faceInfoService;
     @Autowired
     MeetingRoomService meetingRoomService;
+    @Autowired
+    NewsService newsService;
     @Autowired
     DepartmentService departmentService;
 
@@ -266,5 +266,40 @@ public class UserController {
         }
         userService.addDuerosAcount(user.getId(),deviceId);
         return RetJson.succcess(null);
+    }
+
+    @RequestMapping("/publishNews")
+    public RetJson publishNews(Integer oid,Integer did,String message,Integer sentId){
+        Message tempMessage = null;
+        Integer[] integers = null;
+        if(userService.getUserInfo(sentId) == null){
+            return RetJson.fail(-1,"用户不存在！");
+        }
+        if(did != null){//发给整个部门
+            integers = userService.getAllUserByDeparment(oid,did);
+            tempMessage = new Message(Message.NEWS,sentId,did,message,0,0,Message.DEPARTMENT);
+        }else {//发给整个公司
+            integers = userService.getAllUserIdByOrganization(oid);
+            tempMessage = new Message(Message.NEWS,sentId,oid,message,0,0,"organization");
+        }
+        if(integers.length == 0){
+            return RetJson.fail(-1,"参数错误!");
+        }
+        if(newsService.sendNewsToObject(tempMessage,integers)){
+            return RetJson.succcess(null);
+        }
+        return RetJson.fail(-1,"发送失败！");
+    }
+
+    @RequestMapping("/getNewsByDate")
+    public RetJson getNewsRecordByDate( @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+        News[] news = newsService.getNewsByDate(date);
+        return RetJson.succcess("news",news);
+    }
+
+    @RequestMapping("/getNewsByType")
+    public RetJson getNewsRecordByType(String informType){
+        News[] news = newsService.getNewsByType(informType);
+        return RetJson.succcess("news",news);
     }
 }

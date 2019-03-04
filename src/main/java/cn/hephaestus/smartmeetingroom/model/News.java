@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class News {
 
     public String content;//内容
 
-    public long time;//发送时间
+    public Date time;//发送时间
 
     public long expire;//持续时间
 

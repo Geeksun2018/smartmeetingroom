@@ -31,6 +31,8 @@ public class MeetingController {
 
     @Autowired
     NewsService newsService;
+    @Autowired
+    OrganizationService organizationService;
 
     User user=null;
     UserInfo userInfo=null;
@@ -142,7 +144,7 @@ public class MeetingController {
         Integer reserveUid=reserveInfo.getReserveUid();//获取召开者
         Integer[] arr=new Integer[1];
         arr[0]=reserveUid;
-        newsService.sendNews("用户"+user.getUsername()+"希望请假，理由是"+reason,arr);
+        newsService.sendNews("用户"+user.getUsername()+"希望请假，理由是"+reason,arr,"other");
         redisService.sadd(reserveInfo.getReserveOid()+"lm"+mid,user.getId().toString());
         return RetJson.succcess(null);
     }
@@ -195,8 +197,6 @@ public class MeetingController {
         pushNews("你有一个会议，召开者提醒你抓紧时间入场",set1);
         return RetJson.succcess(null);
     }
-
-
     private void pushNews(String news,Set<String> set){
         List list=new ArrayList();
         for (String s:set){
@@ -204,9 +204,8 @@ public class MeetingController {
         }
         Integer[] arr=new Integer[list.size()];
         list.toArray(arr);
-        newsService.sendNews(news,arr);
+        newsService.sendNews(news,arr,"other");//other表示给指定用户集合发通知
     }
-
 
     @RequestMapping("/getMeetingCount")
     public RetJson getCountOfDepartmentMeeting(Integer type,Integer year,Integer month){

@@ -31,4 +31,6 @@ public interface UserMapper {
 
     @Insert("insert into dueros_account(userId,deviceId) values(#{uid},#{deviceId})")
     public boolean addDuerosAccount(@Param("uid") Integer uid,@Param("deviceId") String deviceId);
+
+
 }
