@@ -1,7 +1,7 @@
 package cn.hephaestus.smartmeetingroom;
 
-import cn.hephaestus.smartmeetingroom.service.MeetingParticipantService;
-import cn.hephaestus.smartmeetingroom.service.RedisService;
+import cn.hephaestus.smartmeetingroom.model.FileManagement;
+import cn.hephaestus.smartmeetingroom.service.FileManagementService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,23 +9,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SmartmeetingroomApplicationTests {
 
     @Autowired
-    MeetingParticipantService meetingParticipantService;
-    @Autowired
-    RedisService redisService;
+    FileManagementService fileManagementService;
     @Test
     public void test(){
-        //meetingParticipantService.addParticant(1,34);
-        //meetingParticipantService.deleteParticant(1,34);
-        //meetingParticipantService.deleteParticipants(3);
-        //meetingParticipantService.addParticipants(3,new Integer[]{34,35,36});
-        //redisService.sSet("Geeksun",new Integer[]{1,2,3});
-        //System.out.println(redisService.sGet("Geeksun").toString());
+        FileManagement fileManagement = new FileManagement();
+        fileManagement.setDid(1);
+        fileManagement.setOid(5);
+        fileManagement.setPath("123455");
+        fileManagement.setMid(69);
+        fileManagement.setUid(37);
+        fileManagement.setType("txt");
+        fileManagement.setFileName("12345");
+        fileManagement.setId(1);
+        fileManagementService.updateFile(fileManagement);
     }
-
-
-
 }

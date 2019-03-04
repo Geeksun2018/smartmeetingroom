@@ -10,13 +10,13 @@ public interface MeetingParticipantMapper {
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     public int addParticipant(Integer mid,Integer uid);
 
-    @Delete({"delete from meeting_participant where mid = #{reserveInfoId} and uid = #{uid}"})
+    @Delete("delete from meeting_participant where mid = #{reserveInfoId} and uid = #{uid}")
     public boolean deleteParticipant(Integer reserveInfoId,Integer uid);
 
-    @Select({"select uid from meeting_participant where mid = #{reserveInfoId}"})
+    @Select("select uid from meeting_participant where mid = #{reserveInfoId}")
     public Integer[] getParticipants(Integer reserveInfoId);
 
-    @Delete({"delete from meeting_participant where mid = #{reserveInfoId}"})
+    @Delete("delete from meeting_participant where mid = #{reserveInfoId}")
     public boolean deleteParticipants(Integer reserveInfoId);
 
     @Select("select uid from meeting_participant where mid=(select reserve_id from reserve_table where start_time<#{date} and end_time >#{date} and rid=#{rid} and oid=#{oid})}")

@@ -48,7 +48,6 @@ public class AndroidThingsController {
     //获取当前所有的会议 有很大的安全隐患，有可能mac地址泄密!!!!!!!!
     @RequestMapping("/getAllMeeting")
     public RetJson getAllMeeting(String macAddress, @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
-        System.out.println(date);
         //查找该mac地址对应的会议室id
         MeetingRoom meetingRoom=meetingRoomService.getMeetingRoomWithMacAddress(macAddress);
 

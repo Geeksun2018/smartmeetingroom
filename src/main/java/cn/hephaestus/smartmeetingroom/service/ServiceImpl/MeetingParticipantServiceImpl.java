@@ -53,7 +53,7 @@ public class MeetingParticipantServiceImpl implements MeetingParticipantService 
         Set<String> set = redisService.sget(oid + "cm" + reserveInfoId);
         Integer[] participants = null;
         //如果没在redis中查到
-        if(set == null) {
+        if(set.size() == 0) {
             participants = meetingParticipantMapper.getParticipants(reserveInfoId);
             if (participants != null) {
                 redisService.sadd(oid + "cm" + reserveInfoId, toStringArray(participants));

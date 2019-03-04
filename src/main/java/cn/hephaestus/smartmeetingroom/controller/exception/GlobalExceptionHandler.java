@@ -1,6 +1,7 @@
 package cn.hephaestus.smartmeetingroom.controller.exception;
 
 import cn.hephaestus.smartmeetingroom.common.RetJson;
+import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,7 +25,7 @@ public class GlobalExceptionHandler {
         if(errorMessage.length()>1){
             errorMessage = errorMessage.substring(0,errorMessage.length()-1);
         }
-        System.out.println(errorMessage);
+        LogUtils.getExceptionLogger().error(errorMessage);
         return RetJson.fail(-1,errorMessage);
     }
 }

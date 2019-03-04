@@ -32,7 +32,7 @@ public class COSUtils {
             try {
                 inputStream.close();
             }catch (Exception e){
-                e.printStackTrace();
+                LogUtils.getExceptionLogger().error(e.toString());
             }
         }
         return "https://smartmeetingroom-1257009269.cos.ap-guangzhou.myqcloud.com/"+key;

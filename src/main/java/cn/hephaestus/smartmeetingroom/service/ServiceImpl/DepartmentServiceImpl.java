@@ -7,6 +7,7 @@ import cn.hephaestus.smartmeetingroom.model.Department;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
 import cn.hephaestus.smartmeetingroom.service.DepartmentService;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
+import cn.hephaestus.smartmeetingroom.utils.LogUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +58,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             String imagePath=COSUtils.addFile("/departpent/"+oid+"_"+did,inputStream);
             return departmentMapper.alterDepartmentImage(imagePath,did,oid);
         }catch (Exception e){
-            e.printStackTrace();
+            LogUtils.getExceptionLogger().error(e.toString());
             return false;
         }finally {
             try {
