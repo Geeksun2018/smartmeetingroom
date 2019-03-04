@@ -186,6 +186,14 @@ public class MessageSocketServer {
                 redisService.sadd(m.getInformType() + userInfo.getDid(),message);
                 redisService.expire(m.getInformType() + userInfo.getDid(),m.getExpire() * 3600);
             }
+        }else if(m.getType().equals(Message.NEWS)&&m.getInformType().equals(Message.DEPARTMENT)){//给整个部门发送通知
+            Integer did = m.getReciveId();
+            //此处发送者只能给自己公司的部门发送通知
+            userInfo = userService.getUserInfo(m.getSentId());
+            Integer[] integers=userService.getAllUserByDeparment(userInfo.getOid(),did);
+            sentAll(integers,message);//发送
+            //这里并没有将通知的内容放进缓存，暂时认为通知只会给用户发送一次
+
         }
         LogUtils.getBussinessLogger().info("发送了消息"+m.toString());
     }

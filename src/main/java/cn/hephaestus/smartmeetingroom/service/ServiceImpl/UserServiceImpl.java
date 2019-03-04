@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -131,6 +132,9 @@ public class UserServiceImpl implements UserService{
         String orgName=null;
         User user = userMapper.getUserByUserId(id);
         UserInfo userInfo = userInfoMapper.getUserInfoById(id);
+        if(userInfo == null){
+            return null;
+        }
         if (userInfo.getDid()!=null&&userInfo.getOid()!=null){
             departmentName = departmentService.getDepartment(userInfo.getOid(),userInfo.getDid()).getDepartmentName();
             orgName= organizationService.getOne(userInfo.getOid()).getOrgName();
@@ -198,7 +202,7 @@ public class UserServiceImpl implements UserService{
 
     private  String saveUserHeadPortrait(InputStream inputStream,String username){
         try {
-            String url= COSUtils.addFile("head_portrait/"+username+"_headportrait",inputStream);
+            String url= COSUtils.addFile("head_portrait/"+username+"_headportrait" + UUID.randomUUID(),inputStream);
             return url;
         }finally {
             try {
