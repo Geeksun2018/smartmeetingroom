@@ -34,6 +34,7 @@ public interface ReserveTableMapper {
     @ResultMap(value = "reserveInfoMap")
     public ReserveInfo[] getReserveInfoByRoomId(@Param("rid") Integer rid, @Param("date")Date date);
 
+
     @Select("select * from reserve_table where ((#{startTime} > start_time and #{startTime} < end_time)or(#{endTime} > start_time and #{endTime} < end_time) " +
             "or (start_time >= #{startTime} and end_time <= #{endTime})) and rid=#{rid}")
     @ResultMap(value = "reserveInfoMap")

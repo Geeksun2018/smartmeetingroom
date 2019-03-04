@@ -153,7 +153,7 @@ public class UserController {
 
     //获取用户信息
     @RequestMapping("/getUserinfo")
-    public RetJson getUserInfo(Integer id,HttpServletRequest request){
+    public RetJson getUserInfo(Integer id){
         UserInfoEntity userInfo=userService.getUserInfoEntity(id);
         if (userInfo==null){
             return RetJson.fail(-1,"获取用户信息失败");

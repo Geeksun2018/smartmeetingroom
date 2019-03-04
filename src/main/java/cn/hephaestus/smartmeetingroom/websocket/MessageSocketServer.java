@@ -21,13 +21,14 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint("/getMessageServer/{token}")
 @Component
 public class MessageSocketServer {
 
-    private static HashMap<Integer,MessageSocketServer> webSocketMap = new HashMap<>();
-    private static HashMap<Integer,List<String>> waitToSent=new HashMap<>();
+    private static ConcurrentHashMap<Integer,MessageSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Integer,List<String>> waitToSent=new ConcurrentHashMap<>();
 
     private Session session;
     private Integer id;

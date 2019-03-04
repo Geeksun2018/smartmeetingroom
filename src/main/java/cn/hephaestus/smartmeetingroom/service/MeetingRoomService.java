@@ -16,6 +16,8 @@ public interface MeetingRoomService {
 
     public MeetingRoom getMeetingRoomWithRoomName(String roomName);
 
+    public boolean judgeMeeting(String md5);
+
     public MeetingRoom getMeetingRoomWithRoomId(Integer roomId);
 
     public MeetingRoom[] getMeetingRoomList(Integer oid);
@@ -27,4 +29,5 @@ public interface MeetingRoomService {
     public MeetingRoom getMeetingRoomWithMacAddress(String macAddress);
 
     public ReserveInfo getProperMeetingTime(Set<Integer> participants, Date[] dates, double duration,Integer oid);
+
 }

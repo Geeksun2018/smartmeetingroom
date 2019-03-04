@@ -4,10 +4,10 @@ import cn.hephaestus.smartmeetingroom.common.RetJson;
 import cn.hephaestus.smartmeetingroom.model.*;
 import cn.hephaestus.smartmeetingroom.service.*;
 import cn.hephaestus.smartmeetingroom.utils.COSUtils;
+import cn.hephaestus.smartmeetingroom.websocket.AndroidThingsSocketServer;
 import com.arcsoft.face.FaceFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,6 +94,12 @@ public class AndroidThingsController {
 
     @RequestMapping("/faceOpen")
     public RetJson faceOpen(String encryptedString,String macAddress){
+
+        if (true){
+            AndroidThingsSocketServer.openDoor(macAddress);
+            return RetJson.succcess(null);
+        }
+
         //测试期间
         if (encryptedString!=null){
             return RetJson.succcess(null);
@@ -154,4 +160,44 @@ public class AndroidThingsController {
         return RetJson.fail(-1,"身份错误");
     }
 
+    @RequestMapping("/scanCode")
+    public RetJson scanCode(String md5){
+        //参数校验
+        if (md5==null||md5.length()!=32){
+            return RetJson.fail(-1,"请检测参数");
+        }
+        //判断该会议室是否激活
+        MeetingRoom meetingRoom=meetingRoomService.getMeetingRoomWithMacAddress(md5);
+        if (meetingRoom!=null){
+            boolean flag=false;
+            Integer[] list=meetingParticipantService.getParticipantsByTime(userInfo.getOid(),meetingRoom.getRoomId(),new Date());
+            for (int i=0;i<list.length;i++){
+                if (list[i]==user.getId()){
+                    flag=true;
+                    break;
+                }
+            }
+            if (user.getRole()==1){
+                if (flag){
+                    AndroidThingsSocketServer.openDoor(md5);
+                    return RetJson.succcess("type","开门成功");
+                }else {
+                    return RetJson.succcess("type","预定会议室");
+                }
+            }else {
+                if (flag){
+                    AndroidThingsSocketServer.openDoor(md5);
+                    return RetJson.succcess("type","开门成功");//开门成功
+                }else {
+                    return RetJson.succcess("type","未到会议时间");
+                }
+            }
+        }else {
+            if (user.getRole()==0){
+                return RetJson.succcess("type","激活会议室");//提示用户激活
+            }else {
+                return RetJson.fail(-1,"会议室还未激活");//提示用户会议室还未激活
+            }
+        }
+    }
 }
