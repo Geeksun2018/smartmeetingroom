@@ -40,6 +40,8 @@ my:
       - /getcode
       - /error
       - /alterorganization
+      - /getAllMeeting
+      - /faceOpen
 server:
   port: 8080
 #邮箱服务

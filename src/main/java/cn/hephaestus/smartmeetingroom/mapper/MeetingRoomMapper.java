@@ -52,4 +52,7 @@ public interface MeetingRoomMapper {
     })
     public MeetingRoom[] getMeetingRoomList(@Param("oid") Integer oid);
 
+    @Select("select * from meeting_room where mac_address=#{md5}")
+    public MeetingRoom[] judgeMeeting(String md5);
+
 }

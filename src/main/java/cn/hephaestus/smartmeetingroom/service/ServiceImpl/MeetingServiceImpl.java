@@ -51,6 +51,16 @@ public class MeetingServiceImpl implements MeetingRoomService {
     }
 
     @Override
+    public boolean judgeMeeting(String md5) {
+        MeetingRoom[] meetingRooms=meetingRoomMapper.judgeMeeting(md5);
+        if (meetingRooms.length==0){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    @Override
     public MeetingRoom getMeetingRoomWithRoomId(Integer roomId) {
         return meetingRoomMapper.getMeetingRoomWithRoomId(roomId);
     }

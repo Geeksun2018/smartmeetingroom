@@ -6,10 +6,7 @@ import cn.hephaestus.smartmeetingroom.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class MeetingParticipantServiceImpl implements MeetingParticipantService {
@@ -66,6 +63,11 @@ public class MeetingParticipantServiceImpl implements MeetingParticipantService 
             participants = toIntegerArray(set);
         }
         return participants;
+    }
+
+    @Override
+    public Integer[] getParticipantsByTime(Integer oid, Integer rid, Date date) {
+        return new Integer[0];
     }
 
     @Override

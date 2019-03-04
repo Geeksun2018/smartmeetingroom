@@ -1,6 +1,6 @@
 package cn.hephaestus.smartmeetingroom.controller;
 
-import cn.hephaestus.smartmeetingroom.common.RetJson;
+import cn.hephaestus.smartmeetingroom.common.*;
 import cn.hephaestus.smartmeetingroom.model.ReserveInfo;
 import cn.hephaestus.smartmeetingroom.model.User;
 import cn.hephaestus.smartmeetingroom.model.UserInfo;
@@ -156,26 +156,31 @@ public class MeetingController {
         Date date2=reserveInfo.getEndTime();
 
         ReserveInfo[] arr=null;
+        Set<ReserveInfo> temp=new HashSet<>();
+
         long delay=0;
         for (int i=3;i>=1;i--){
             delay=1000*60*10*i;
             arr=reserveInfoService.queryIsAvailable(reserveInfo.getRid(),new Date(date1.getTime()+delay),new Date(date2.getTime()+delay));
-            if (arr!=null&&arr.length!=0){
+            temp.clear();
+            for (ReserveInfo r:arr){
+                if (r.getReserveId()!=mid){
+                    temp.add(r);
+                }
+            }
+
+            if (temp.size()==0){
                 reserveInfo.setStartTime(new Date(date1.getTime()+delay));
                 reserveInfo.setEndTime(new Date(date2.getTime()+delay));
                 if (reserveInfoService.updateReserveInfo(reserveInfo)){
-                    break;//修改成功
+                    Set<String> set = redisService.sget(userInfo.getOid() + "cm" + mid);
+                    pushNews("你的会议["+reserveInfo.getTopic()+"]推迟了"+delay/(1000*60),set);
+                    return RetJson.succcess("delay",delay/(1000*60));
                 }
             }
         }
-        if (arr==null){
-            return RetJson.fail(-1,"无法为你推迟时间");
-        }
-        Set<String> set = redisService.sget(userInfo.getOid() + "cm" + mid);
 
-        pushNews("你的会议["+reserveInfo.getTopic()+"]推迟了"+delay/(1000*60),set);
-
-        return RetJson.succcess("delay",delay/(1000*60));
+        return RetJson.fail(-1,"无法为你推迟时间");
     }
 
     //催促用户尽快到场
@@ -200,7 +205,6 @@ public class MeetingController {
         Integer[] arr=new Integer[list.size()];
         list.toArray(arr);
         newsService.sendNews(news,arr);
-
     }
 
 

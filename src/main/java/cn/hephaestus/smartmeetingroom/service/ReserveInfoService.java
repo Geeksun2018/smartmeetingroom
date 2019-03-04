@@ -36,4 +36,6 @@ public interface ReserveInfoService {
     public Integer queryCountOfDepartmentMeetingTimeByMonth(Integer oid,Integer did,Integer year,Integer month);
 
     public Map<Date,Integer> queryCountOfMeetingByDay(Date date);
+
+
 }

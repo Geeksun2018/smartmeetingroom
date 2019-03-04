@@ -181,6 +181,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public boolean addDuerosAcount(Integer uid, String deviceId) {
+        return userMapper.addDuerosAccount(uid,deviceId);
+    }
+
+    @Override
     public boolean saveUserHeadPortrait(MultipartFile multipartFile, Integer id) {
         String username=userMapper.getUserByUserId(id).getUsername();
         if (username==null){
